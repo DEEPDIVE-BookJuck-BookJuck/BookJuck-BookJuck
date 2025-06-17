@@ -15,9 +15,11 @@ export default function RootLayout({
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         />
       </head>
-      <body className="bg-white text-gray-900">
-        <Header />
-        <main className="p-6">{children}</main>
+      <body>
+        <div className="bg-gray-100 text-gray-900">
+          <Header />
+          <main className="p-6">{children}</main>
+        </div>
       </body>
     </html>
   )
