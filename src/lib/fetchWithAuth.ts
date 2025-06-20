@@ -1,11 +1,13 @@
 import { useAuthStore } from '@/store/authStore'
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+
 type FetchWithAuthOptions = RequestInit & {
-  auth?: boolean // true일 경우 Authorization 헤더 삽입
+  auth?: boolean
 }
 
 export async function fetchWithAuth(
-  input: RequestInfo | URL,
+  endpoint: string,
   options: FetchWithAuthOptions = {},
 ): Promise<any> {
   const { auth = false, ...restOptions } = options
@@ -17,7 +19,7 @@ export async function fetchWithAuth(
     headers.set('Authorization', `Bearer ${token}`)
   }
 
-  const res = await fetch(input, {
+  const res = await fetch(`${BASE_URL}${endpoint}`, {
     ...restOptions,
     headers,
   })

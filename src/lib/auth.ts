@@ -1,3 +1,5 @@
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+
 type LoginParams = {
   email: string
   password: string
@@ -15,16 +17,13 @@ export async function login({
   email,
   password,
 }: LoginParams): Promise<LoginResponse> {
-  const res = await fetch(
-    'https://goorm-bookjuck-api.vercel.app/api/auth/signin',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
+  const res = await fetch(`${BASE_URL}/api/auth/signin`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
     },
-  )
+    body: JSON.stringify({ email, password }),
+  })
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
