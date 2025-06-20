@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import LibraryBookItem from '@/components/LibraryBookItem'
+import { Search } from 'lucide-react'
 
 interface Review {
   endDate: string
@@ -47,25 +48,7 @@ export default function MyLibraryPage() {
         {/* 검색창 */}
         <div className="flex gap-4">
           <div className="relative flex-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"
-            >
-              <circle
-                cx="11"
-                cy="11"
-                r="8"
-              ></circle>
-              <path d="m21 21-4.3-4.3"></path>
-            </svg>
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
               type="text"
               placeholder="제목 또는 저자 검색"

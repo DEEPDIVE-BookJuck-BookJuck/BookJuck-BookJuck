@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { PenLine } from 'lucide-react'
 
 interface LibraryBookItemProps {
   id: string
@@ -56,21 +57,7 @@ export default function LibraryBookItem({
             onClick={goToDetail}
             className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium text-white bg-slate-950 hover:bg-slate-800 h-9 rounded-md px-3 cursor-pointer"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-pen-line h-3 w-3 mr-1"
-            >
-              <path d="M12 20h9"></path>
-              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
-            </svg>
+            <PenLine className="h-3 w-3 mr-1" />
             독후감 보기
           </button>
         </div>
