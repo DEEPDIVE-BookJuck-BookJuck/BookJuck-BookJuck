@@ -1,3 +1,5 @@
+import StatisticsCard from '@/components/StatisticsCard'
+
 export default function MyPage() {
   return (
     <>
@@ -7,6 +9,12 @@ export default function MyPage() {
           <p className="mt-3 text-gray-600">
             나의 독서 통계와 기록을 확인해보세요
           </p>
+        </div>
+        <div className="grid grid-cols-4 gap-6">
+          <StatisticsCard title="totalBooks" />
+          <StatisticsCard title="reviewBooks" />
+          <StatisticsCard title="currentStreak" />
+          <StatisticsCard title="longestStreak" />
         </div>
       </div>
     </>
