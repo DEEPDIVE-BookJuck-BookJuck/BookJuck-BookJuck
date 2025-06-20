@@ -22,7 +22,7 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
-      <div className="max-w-5xl mx-auto flex items-center justify-between px-6 py-3">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
         {/* 로고 */}
         <div className="flex items-center gap-2 text-xl font-bold">
           <i className="fa-solid fa-book-open text-blue-500"></i>
