@@ -26,7 +26,7 @@ export default function StatisticsCard({
   }
 
   return (
-    <div className="flex justify-between items-center w-72 h-28 bg-white border-1 border-gray-300 rounded-xl px-6 py-8">
+    <div className="flex justify-between items-center h-28 bg-white border-1 border-gray-300 rounded-xl px-6 py-8">
       <div>
         <p className="text-sm text-gray-600 mb-1 text-">
           {iconObj[title].title}
