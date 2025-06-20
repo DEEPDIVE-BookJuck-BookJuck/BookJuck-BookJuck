@@ -16,9 +16,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <div className="bg-gray-100 text-gray-900">
+        <div className="min-h-screen bg-gray-100 text-gray-900">
           <Header />
-          <main className="p-6">{children}</main>
+          <main className="max-w-7xl mx-auto px-6 pt-24">
+            {children}
+          </main>
         </div>
       </body>
     </html>
