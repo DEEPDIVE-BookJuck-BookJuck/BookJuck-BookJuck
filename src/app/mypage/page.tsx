@@ -1,4 +1,6 @@
 import Graph from '@/components/Graph'
+import RecentBook from '@/components/RecentBook'
+
 import StatisticsCard from '@/components/StatisticsCard'
 
 export default function MyPage() {
@@ -21,6 +23,7 @@ export default function MyPage() {
           <Graph title="MonthlyGraph" />
           <Graph title="TagGraph" />
         </div>
+        <RecentBook />
       </div>
     </>
   )
