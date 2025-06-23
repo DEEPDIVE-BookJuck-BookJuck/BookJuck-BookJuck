@@ -12,13 +12,13 @@ export default function RootLayout({
       <head>
         <link
           rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          href="https://fastly.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.1/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css"
         />
       </head>
       <body>
-        <div className="min-h-screen bg-gray-100 text-gray-900">
+        <div className="font-sans min-h-screen bg-gray-100 text-gray-900">
           <Header />
-          <main className="max-w-7xl mx-auto px-6 pt-24">
+          <main className="max-w-7xl mx-auto px-6 pt-24 pb-12">
             {children}
           </main>
         </div>
