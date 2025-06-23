@@ -1,6 +1,10 @@
-| **name**   | **about**   | **title** | **assignees** |
-| ---------- | ----------- | --------- | ------------- |
-| Bug report | 버그 리포트 | [BUG]     |               |
+---
+name: Bug report
+about: 버그 리포트
+title: '[BUG]'
+labels: ''
+assignees: ''
+---
 
 ## 어떤 버그인가요?
 

@@ -1,6 +1,10 @@
-| **name**        | **about**        | **title** | **assignees** |
-| --------------- | ---------------- | --------- | ------------- |
-| Feature request | 기능 이슈 템플릿 | [FEAT]    |               |
+---
+name: Feature request
+about: 기능 이슈 템플릿
+title: '[FEAT]'
+labels: ''
+assignees: ''
+---
 
 ## 🚀 기능 설명
 
