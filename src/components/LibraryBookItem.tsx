@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { PenLine } from 'lucide-react'
+import Image from 'next/image'
 
 interface LibraryBookItemProps {
   id: string
@@ -9,7 +10,7 @@ interface LibraryBookItemProps {
   author: string
   thumbnailUrl: string
   review: {
-    endDate: String
+    endDate: string
     tags: string[]
   }
 }
@@ -18,7 +19,7 @@ export default function LibraryBookItem({
   id,
   title,
   author,
-  thumbnailUrl,
+  // thumbnailUrl,
   review,
 }: LibraryBookItemProps) {
   const router = useRouter()
@@ -27,7 +28,7 @@ export default function LibraryBookItem({
   return (
     <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
       <div className="flex gap-4">
-        <img
+        <Image
           // src={thumbnailUrl}
           src="https://kzmofp7ao28a6ox52yiz.lite.vusercontent.net/placeholder.svg?height=200&width=150"
           alt={title}

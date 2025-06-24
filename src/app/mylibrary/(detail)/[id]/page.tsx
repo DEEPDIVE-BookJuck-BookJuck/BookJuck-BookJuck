@@ -1,13 +1,13 @@
 'use client'
 
-import { useRouter, useParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Trash2, Save, X, Plus, Star } from 'lucide-react'
-import { BookType, ReviewType } from '@/app/types/mylibrary'
+import { BookType } from '@/app/types/mylibrary'
+import Image from 'next/image'
 
 export default function BookDetailPage() {
   const { id } = useParams()
-  const router = useRouter()
 
   const [book, setBook] = useState<BookType | null>(null)
   const [memo, setMemo] = useState<string>('')
@@ -68,7 +68,7 @@ export default function BookDetailPage() {
       <div className="lg:col-span-1">
         <div className="rounded-lg border border-gray-300 bg-white shadow-sm p-6">
           <div className="flex flex-col items-center text-center">
-            <img
+            <Image
               src={book.thumbnailUrl}
               alt={book.title}
               className="w-32 h-40 object-cover rounded mx-auto mb-4"

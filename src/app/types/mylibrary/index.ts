@@ -1,5 +1,3 @@
-import { ReactElement } from 'react'
-
 export interface ReviewType {
   endDate: string
   memo: string
