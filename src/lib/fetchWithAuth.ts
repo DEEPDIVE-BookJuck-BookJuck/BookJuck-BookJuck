@@ -3,10 +3,10 @@ import { useAuthStore } from '@/store/authStore'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
-export async function fetchWithAuth(
+export async function fetchWithAuth<T = unknown>(
   endpoint: string,
   options: FetchWithAuthOptionsType = {},
-): Promise<any> {
+): Promise<T> {
   const { auth = false, ...restOptions } = options
   const token = useAuthStore.getState().accessToken
 
@@ -23,8 +23,11 @@ export async function fetchWithAuth(
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({}))
-    throw new Error(error.message || '요청 중 문제가 발생했습니다.')
+    throw new Error(
+      (error as { message?: string }).message ||
+        '요청 중 문제가 발생했습니다.',
+    )
   }
 
-  return res.json()
+  return res.json() as Promise<T>
 }
