@@ -1,14 +1,11 @@
+import { FetchWithAuthOptionsType } from '@/app/types/auth'
 import { useAuthStore } from '@/store/authStore'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
-type FetchWithAuthOptions = RequestInit & {
-  auth?: boolean
-}
-
 export async function fetchWithAuth(
   endpoint: string,
-  options: FetchWithAuthOptions = {},
+  options: FetchWithAuthOptionsType = {},
 ): Promise<any> {
   const { auth = false, ...restOptions } = options
   const token = useAuthStore.getState().accessToken
