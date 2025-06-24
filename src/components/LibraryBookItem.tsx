@@ -31,6 +31,8 @@ export default function LibraryBookItem({
         <Image
           // src={thumbnailUrl}
           src="https://kzmofp7ao28a6ox52yiz.lite.vusercontent.net/placeholder.svg?height=200&width=150"
+          width={150}
+          height={200}
           alt={title}
           className="w-16 h-20 object-cover rounded"
         />
