@@ -16,8 +16,12 @@ export default function LoginPage() {
       const { accessToken, user } = await login({ email, password })
       setAuth(accessToken, user)
       router.push('/mypage')
-    } catch (error: any) {
-      alert(error.message)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert(error.message)
+      } else {
+        alert('알 수 없는 오류가 발생했습니다.')
+      }
     }
   }
 
