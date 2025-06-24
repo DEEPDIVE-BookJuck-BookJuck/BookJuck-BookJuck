@@ -70,6 +70,8 @@ export default function BookDetailPage() {
           <div className="flex flex-col items-center text-center">
             <Image
               src={book.thumbnailUrl}
+              width={150}
+              height={200}
               alt={book.title}
               className="w-32 h-40 object-cover rounded mx-auto mb-4"
             />
