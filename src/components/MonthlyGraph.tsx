@@ -9,46 +9,55 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-let data = [
+const data = [
   {
-    month: '2025-06',
-    readBooks: 6,
-    reviewBooks: 2,
+    name: 'Page A',
+    uv: 4000,
+    pv: 2400,
+    amt: 2400,
   },
   {
-    month: '2025-05',
-    readBooks: 0,
-    reviewBooks: 1,
+    name: 'Page B',
+    uv: 3000,
+    pv: 1398,
+    amt: 2210,
   },
   {
-    month: '2025-04',
-    readBooks: 0,
-    reviewBooks: 0,
+    name: 'Page C',
+    uv: 2000,
+    pv: 9800,
+    amt: 2290,
   },
   {
-    month: '2025-03',
-    readBooks: 0,
-    reviewBooks: 0,
+    name: 'Page D',
+    uv: 2780,
+    pv: 3908,
+    amt: 2000,
   },
   {
-    month: '2025-02',
-    readBooks: 0,
-    reviewBooks: 0,
+    name: 'Page E',
+    uv: 1890,
+    pv: 4800,
+    amt: 2181,
   },
   {
-    month: '2025-01',
-    readBooks: 0,
-    reviewBooks: 0,
+    name: 'Page F',
+    uv: 2390,
+    pv: 3800,
+    amt: 2500,
+  },
+  {
+    name: 'Page G',
+    uv: 3490,
+    pv: 4300,
+    amt: 2100,
   },
 ]
-
-data = data.reverse()
 
 export default function MonthlyGraph() {
   return (
     <ResponsiveContainer
       width={'100%'}
-      // height={'85%'}
       height={300}
     >
       <BarChart
@@ -56,31 +65,31 @@ export default function MonthlyGraph() {
         margin={{
           top: 5,
           right: 30,
-          left: -10,
+          left: 20,
           bottom: 5,
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="month" />
+        <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
         <Bar
-          dataKey="readBooks"
-          fill="#72A9F7"
+          dataKey="uv"
+          fill="#B3CDAD"
           activeBar={
             <Rectangle
-              fill="#6482AD"
-              stroke="#DFF2EB"
+              fill="pink"
+              stroke="blue"
             />
           }
         />
         <Bar
-          dataKey="reviewBooks"
-          fill="#87CEEB"
+          dataKey="pv"
+          fill="#FF5F5E"
           activeBar={
             <Rectangle
-              fill="#8DBCC7"
-              stroke="#DFF2EB"
+              fill="gold"
+              stroke="purple"
             />
           }
         />
