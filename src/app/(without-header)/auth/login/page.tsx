@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { login } from '@/lib/auth'
 import { useAuthStore } from '@/store/authStore'
@@ -15,45 +15,40 @@ export default function LoginPage() {
   const setAuth = useAuthStore((state) => state.setAuth)
   const router = useRouter()
 
+  const validateEmail = (email: string) => {
+    const trimmed = email.trim()
+    if (!trimmed) return '이 입력란을 작성하세요.'
+    const emailRegex =
+      /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/
+    if (!emailRegex.test(trimmed))
+      return '올바른 이메일 주소를 입력해 주세요.'
+    return ''
+  }
+
+  const validatePassword = (password: string) => {
+    const trimmed = password.trim()
+    if (!trimmed) return '이 입력란을 작성하세요.'
+    if (trimmed.length < 8)
+      return '비밀번호는 최소 8자 이상이어야 합니다.'
+    return ''
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setEmailError('')
-    setPasswordError('')
 
-    const trimmedEmail = email.trim()
-    const trimmedPassword = password.trim()
-    let valid = true
+    const emailMsg = validateEmail(email)
+    const passwordMsg = validatePassword(password)
 
-    if (!trimmedEmail) {
-      setEmailError('이 입력란을 작성하세요.')
-      valid = false
-    } else if (!trimmedEmail.includes('@')) {
-      setEmailError(
-        `이메일 주소에 '@'를 포함해 주세요. '${trimmedEmail}'에 '@'가 없습니다.`,
-      )
-      valid = false
-    } else {
-      const domain = trimmedEmail.split('@')[1]
-      if (!domain) {
-        setEmailError(
-          `'@' 뒷 부분을 입력해 주세요. '${trimmedEmail}'이 완전하지 않습니다.`,
-        )
-        valid = false
-      }
-    }
+    setEmailError(emailMsg)
+    setPasswordError(passwordMsg)
 
-    if (!trimmedPassword) {
-      setPasswordError('이 입력란을 작성하세요.')
-      valid = false
-    }
-
-    if (!valid || isLoading) return
+    if (emailMsg || passwordMsg || isLoading) return
 
     try {
       setIsLoading(true)
       const { accessToken, user } = await login({
-        email: trimmedEmail,
-        password: trimmedPassword,
+        email: email.trim(),
+        password: password.trim(),
       })
       setAuth(accessToken, user)
       router.push('/')
@@ -124,7 +119,12 @@ export default function LoginPage() {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full h-10 px-3 py-2 bg-slate-950 text-white mt-4 mb-4 rounded-lg hover:bg-gray-800 hover:cursor-pointer disabled:opacity-50"
+        className={`w-full h-10 px-3 py-2 mt-4 mb-4 rounded-md text-white 
+          ${
+            isLoading
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-slate-950 hover:bg-gray-800 hover:cursor-pointer'
+          }`}
       >
         {isLoading ? '로그인 중...' : '로그인'}
       </button>
