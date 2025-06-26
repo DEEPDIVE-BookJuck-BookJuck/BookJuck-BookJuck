@@ -1,7 +1,6 @@
-import Graph from '@/components/Graph'
-import RecentBook from '@/components/RecentBook'
-
-import StatisticsCard from '@/components/StatisticsCard'
+import Graph from './_components/graph'
+import RecentBook from './_components/recent-book'
+import StatisticsCard from './_components/statistics-card'
 
 export default function MyPage() {
   return (

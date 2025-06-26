@@ -1,5 +1,5 @@
-import groupExtraTags from '@/\butils/groupExtraTags'
-import { TagType, TooltipPropsType } from '@/app/types/mypage'
+import groupExtraTags from '@/utils/group-extra-tags'
+import { TagType } from '../_types'
 import { FC } from 'react'
 import {
   PieChart,
@@ -8,6 +8,13 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts'
+
+interface TooltipPropsType {
+  active?: boolean
+  payload?: Array<{
+    payload: TagType
+  }>
+}
 
 const data: TagType[] = [
   {

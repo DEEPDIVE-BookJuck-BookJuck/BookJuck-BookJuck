@@ -1,4 +1,4 @@
-import RecentBookItem from './RecentBookItem'
+import RecentBookItem from './recent-book-item'
 
 export default function RecentBook() {
   return (

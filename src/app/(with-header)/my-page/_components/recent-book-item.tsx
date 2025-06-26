@@ -1,4 +1,9 @@
-import { RecentBookItemPropsType } from '@/app/types/mypage'
+interface RecentBookItemPropsType {
+  title: string
+  author: string
+  date: string
+  rating: number
+}
 
 export default function RecentBookItem({
   title,

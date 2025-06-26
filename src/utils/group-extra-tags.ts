@@ -1,4 +1,4 @@
-import { TagType } from '@/app/types/mypage'
+import { TagType } from '@/app/(with-header)/my-page/_types'
 
 const groupExtraTags = (data: TagType[]): TagType[] => {
   if (data.length <= 7) return data

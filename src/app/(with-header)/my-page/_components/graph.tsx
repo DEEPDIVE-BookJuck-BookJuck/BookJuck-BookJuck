@@ -1,8 +1,8 @@
 'use client'
 
 import { Calendar, Tag } from 'lucide-react'
-import MonthlyGraph from './MonthlyGraph'
-import TagGraph from './TagGraph'
+import MonthlyGraph from './monthly-graph'
+import TagGraph from './tag-graph'
 
 export default function Graph({ title }: { title: string }) {
   return (
