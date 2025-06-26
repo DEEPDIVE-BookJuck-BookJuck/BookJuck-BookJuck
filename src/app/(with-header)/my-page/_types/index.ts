@@ -25,23 +25,9 @@ export interface IconObjType {
   }
 }
 
-export interface RecentBookItemPropsType {
-  title: string
-  author: string
-  date: string
-  rating: number
-}
-
 export interface TagType {
   tag: string
   count: number
   percent: number
   originalItems?: Array<{ tag: string; count: number }>
-}
-
-export interface TooltipPropsType {
-  active?: boolean
-  payload?: Array<{
-    payload: TagType
-  }>
 }

@@ -1,4 +1,4 @@
-import { IconKeyType, IconObjType } from '@/app/types/mypage'
+import { IconKeyType, IconObjType } from '../_types'
 import { Award, BookOpen, FileText, TrendingUp } from 'lucide-react'
 
 export default function StatisticsCard({
