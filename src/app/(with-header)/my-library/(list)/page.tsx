@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import LibraryBookItem from '@/components/LibraryBookItem'
+import LibraryBookItem from '@/app/(with-header)/my-library/_components/library-book-item'
 import { Search } from 'lucide-react'
 
 interface Review {
@@ -79,7 +79,7 @@ export default function MyLibraryPage() {
       {/* 더 보기 버튼 */}
       {filtered.length > 0 && (
         <div className="text-center mt-6">
-          <button className="bg-gray-200 px-6 py-2 rounded hover:bg-gray-300">
+          <button className="bg-gray-200 px-6 py-2 rounded hover:bg-gray-300 cursor-pointer">
             더 보기
           </button>
         </div>

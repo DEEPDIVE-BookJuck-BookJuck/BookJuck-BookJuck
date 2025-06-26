@@ -1,5 +1,6 @@
 import '../globals.css'
 import { ReactNode } from 'react'
+<<<<<<< feature#27
 import Header from '@/components/Header'
 import { Metadata } from 'next/types'
 
@@ -7,6 +8,9 @@ export const metadata: Metadata = {
   title: 'BOOKJUCK-BOOKJUCK',
   description: 'goorm-deepdive: 1st Team Project',
 }
+=======
+import Header from '@/common/common-header'
+>>>>>>> dev
 
 export default function RootLayout({
   children,

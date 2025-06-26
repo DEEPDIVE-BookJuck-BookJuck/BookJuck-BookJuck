@@ -1,5 +1,5 @@
-import { FetchWithAuthOptionsType } from '@/app/types/auth'
-import { useAuthStore } from '@/store/authStore'
+import { FetchWithAuthOptionsType } from '@/app/(without-header)/auth/_types'
+import { useAuthStore } from '@/store/auth-store'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
