@@ -14,12 +14,12 @@ export default function Header() {
       icon: () => <House className="size-4" />,
     },
     {
-      href: '/mylibrary',
+      href: '/my-library',
       label: 'My Library',
       icon: () => <Library className="size-4" />,
     },
     {
-      href: '/mypage',
+      href: '/my-page',
       label: '마이페이지',
       icon: () => <User className="size-4" />,
     },
@@ -59,12 +59,12 @@ export default function Header() {
         </nav>
 
         <div className="flex gap-2 text-sm">
-          <Link href="/auth/login">
+          <Link href="/auth/log-in">
             <button className="px-4 py-2 border border-gray-200 rounded hover:bg-gray-100 hover: cursor-pointer">
               로그인
             </button>
           </Link>
-          <Link href="/auth/signup">
+          <Link href="/auth/sign-up">
             <button className="px-4 py-2 bg-slate-950 text-white rounded hover:bg-gray-800 hover: cursor-pointer">
               회원가입
             </button>
