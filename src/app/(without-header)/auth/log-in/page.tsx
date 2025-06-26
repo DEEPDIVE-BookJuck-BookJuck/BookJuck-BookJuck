@@ -119,11 +119,11 @@ export default function LoginPage() {
       <button
         type="submit"
         disabled={isLoading}
-        className={`w-full h-10 px-3 py-2 mt-4 mb-4 rounded-md text-white 
+        className={`w-full h-10 px-3 py-2 mt-4 mb-4 rounded-md text-white hover:cursor-pointer
           ${
             isLoading
               ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-slate-950 hover:bg-gray-800 hover:cursor-pointer'
+              : 'bg-slate-950 hover:bg-gray-800'
           }`}
       >
         {isLoading ? '로그인 중...' : '로그인'}
@@ -132,7 +132,7 @@ export default function LoginPage() {
       <div className="text-sm text-center">
         계정이 없으신가요?{' '}
         <a
-          href="/auth/signup"
+          href="/auth/sign-up"
           className="text-blue-500 font-semibold"
         >
           회원가입

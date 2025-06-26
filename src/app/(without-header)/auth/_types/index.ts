@@ -24,6 +24,21 @@ export interface LoginResponseType {
   }
 }
 
+export interface SignupParamsType {
+  nickName: string
+  email: string
+  password: string
+}
+
+export interface SignupResponseType {
+  message: string
+  accessToken: string
+  user: {
+    email: string
+    nickName: string
+  }
+}
+
 export interface FetchWithAuthOptionsType extends RequestInit {
   auth?: boolean
 }
