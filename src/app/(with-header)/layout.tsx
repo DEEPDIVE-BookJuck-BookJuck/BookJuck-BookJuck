@@ -8,11 +8,15 @@ export const metadata: Metadata = {
   description: 'goorm-deepdive: 1st Team Project',
 }
 
+interface RootLayoutProps {
+  children: ReactNode
+  modal: ReactNode
+}
+
 export default function RootLayout({
   children,
-}: {
-  children: ReactNode
-}) {
+  modal,
+}: RootLayoutProps) {
   return (
     <html lang="ko">
       <head>
@@ -27,6 +31,7 @@ export default function RootLayout({
           <main className="max-w-7xl mx-auto px-6 pt-24 pb-12">
             {children}
           </main>
+          {modal ? modal : null}
         </div>
       </body>
     </html>
