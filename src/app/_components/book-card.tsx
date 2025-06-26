@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { BookType } from '@/app/types/mypageHome/bookTypes'
+import { BookType } from '@/app/_types/index'
 import { FC } from 'react'
 
 export interface BookCardPropsType {

@@ -1,22 +1,29 @@
 'use client'
 
 import { useState } from 'react'
-import BookCard from '@/components/BookCard'
-import { BookType, RawBookItemType } from '@/app/types/mypageHome/bookTypes'
+import BookCard from '@/app/_components/book-card'
+import { BookType, RawBookItemType } from '@/app/_types/index'
 import { Search } from 'lucide-react'
 
 export default function Home() {
   const [query, setQuery] = useState('')
   const [books, setBooks] = useState<BookType[]>([])
   const [loading, setLoading] = useState(false)
-
+ 
   const handleSearch = async () => {
     if (!query.trim()) return
     setLoading(true)
 
     try {
+      const apiKey = process.env.NEXT_PUBLIC_ALADIN_API_KEY; // .env에서 API 키 불러오기
+
+      if (!apiKey) {
+        console.error('API 키가 없습니다. .env 파일을 확인해주세요.');
+        return;
+      }
+
       const response = await fetch(
-        `https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=YOUR_TTB_KEY&Query=${encodeURIComponent(
+        `https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=${apiKey}&Query=${encodeURIComponent(
           query
         )}&QueryType=Keyword&MaxResults=10&start=1&SearchTarget=Book&output=JS&Version=20131101`
       )
@@ -70,4 +77,3 @@ export default function Home() {
     </main>
   )
 }
-
