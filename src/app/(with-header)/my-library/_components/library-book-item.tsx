@@ -23,7 +23,7 @@ export default function LibraryBookItem({
   review,
 }: LibraryBookItemProps) {
   const router = useRouter()
-  const goToDetail = () => router.push(`/mylibrary/${id}`)
+  const goToDetail = () => router.push(`/my-library/${id}`)
 
   return (
     <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
