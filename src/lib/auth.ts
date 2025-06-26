@@ -1,4 +1,7 @@
-import { LoginParamsType, LoginResponseType } from '@/app/types/auth'
+import {
+  LoginParamsType,
+  LoginResponseType,
+} from '@/app/(without-header)/auth/_types'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 

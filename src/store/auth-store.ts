@@ -1,4 +1,4 @@
-import { AuthStateType } from '@/app/types/auth'
+import { AuthStateType } from '@/app/(without-header)/auth/_types'
 import { create } from 'zustand'
 
 export const useAuthStore = create<AuthStateType>((set) => ({
