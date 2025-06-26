@@ -1,22 +1,11 @@
+import { LoginParamsType, LoginResponseType } from '@/app/types/auth'
+
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
-
-type LoginParams = {
-  email: string
-  password: string
-}
-
-type LoginResponse = {
-  accessToken: string
-  user: {
-    email: string
-    nickname: string
-  }
-}
 
 export async function login({
   email,
   password,
-}: LoginParams): Promise<LoginResponse> {
+}: LoginParamsType): Promise<LoginResponseType> {
   const res = await fetch(`${BASE_URL}/api/auth/signin`, {
     method: 'POST',
     headers: {
