@@ -1,12 +1,22 @@
 import '../globals.css'
 import { ReactNode } from 'react'
-import Header from '@/components/Header'
+import Header from '@/common/common-header'
+import { Metadata } from 'next/types'
+
+export const metadata: Metadata = {
+  title: 'BOOKJUCK-BOOKJUCK',
+  description: 'goorm-deepdive: 1st Team Project',
+}
+
+interface RootLayoutProps {
+  children: ReactNode
+  modal: ReactNode
+}
 
 export default function RootLayout({
   children,
-}: {
-  children: ReactNode
-}) {
+  modal,
+}: RootLayoutProps) {
   return (
     <html lang="ko">
       <head>
@@ -21,6 +31,7 @@ export default function RootLayout({
           <main className="max-w-7xl mx-auto px-6 pt-24 pb-12">
             {children}
           </main>
+          {modal ? modal : null}
         </div>
       </body>
     </html>

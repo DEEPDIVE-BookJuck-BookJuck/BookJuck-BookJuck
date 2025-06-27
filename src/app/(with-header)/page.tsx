@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import BookCard from '@/components/BookCard'
-import { BookType, RawBookItemType } from '@/app/types/mypageHome/bookTypes'
+import BookCard from '@/app/_components/book-card'
+import { BookType, RawBookItemType } from '@/app/_types/index'
 import { Search } from 'lucide-react'
 
 export default function Home() {
@@ -15,21 +15,32 @@ export default function Home() {
     setLoading(true)
 
     try {
+      const apiKey = process.env.NEXT_PUBLIC_ALADIN_API_KEY // .env에서 API 키 불러오기
+
+      if (!apiKey) {
+        console.error('API 키가 없습니다. .env 파일을 확인해주세요.')
+        return
+      }
+
       const response = await fetch(
-        `https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=YOUR_TTB_KEY&Query=${encodeURIComponent(
-          query
-        )}&QueryType=Keyword&MaxResults=10&start=1&SearchTarget=Book&output=JS&Version=20131101`
+        `https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=${apiKey}&Query=${encodeURIComponent(
+          query,
+        )}&QueryType=Keyword&MaxResults=10&start=1&SearchTarget=Book&output=JS&Version=20131101`,
       )
 
       const text = await response.text()
       const data = JSON.parse(text)
 
-      const mappedBooks: BookType[] = (data.item || []).map((item: RawBookItemType) => ({
-        id: item.itemId,
-        cover: item.cover || 'https://via.placeholder.com/96x144?text=No+Image',
-        title: item.title || '제목 없음',
-        author: item.author || '저자 미상',
-      }))
+      const mappedBooks: BookType[] = (data.item || []).map(
+        (item: RawBookItemType) => ({
+          id: item.itemId,
+          cover:
+            item.cover ||
+            'https://via.placeholder.com/96x144?text=No+Image',
+          title: item.title || '제목 없음',
+          author: item.author || '저자 미상',
+        }),
+      )
 
       setBooks(mappedBooks)
     } catch (error) {
@@ -62,12 +73,16 @@ export default function Home() {
 
       {/* 검색 결과 */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-        {!loading && books.length === 0 && <p>검색 결과가 없습니다.</p>}
+        {!loading && books.length === 0 && (
+          <p>검색 결과가 없습니다.</p>
+        )}
         {books.map((book) => (
-          <BookCard key={book.id} book={book} />
+          <BookCard
+            key={book.id}
+            book={book}
+          />
         ))}
       </div>
     </main>
   )
 }
-
