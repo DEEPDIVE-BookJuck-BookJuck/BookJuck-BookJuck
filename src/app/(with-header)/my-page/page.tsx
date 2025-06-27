@@ -2,8 +2,23 @@ import Graph from './_components/graph'
 import RecentBook from './_components/recent-book'
 import StatisticsCard from './_components/statistics-card'
 import Link from 'next/link'
+import { StatisicType } from './_types'
+import { fetchWithAuth } from '@/lib/fetch-with-auth'
 
-export default function MyPage() {
+export default async function MyPage() {
+  let statisicData: StatisicType | null = null
+
+  try {
+    statisicData = await fetchWithAuth('/api/reading/statistics', {
+      auth: true,
+      method: 'GET',
+    })
+  } catch (error) {
+    if (error instanceof Error)
+      console.error('통계 데이터 로딩 실패:', error.message)
+    else console.error('왜 나는지 모르는 에러:', error)
+  }
+
   return (
     <>
       <div className="flex flex-col gap-6">
@@ -21,12 +36,26 @@ export default function MyPage() {
             회원 정보
           </Link>
         </section>
-        <div className="grid grid-cols-4 gap-6">
-          <StatisticsCard title="totalBooks" />
-          <StatisticsCard title="reviewBooks" />
-          <StatisticsCard title="currentStreak" />
-          <StatisticsCard title="longestStreak" />
-        </div>
+        {statisicData && (
+          <div className="grid grid-cols-4 gap-6">
+            <StatisticsCard
+              title="totalBooks"
+              data={statisicData.totalBooks}
+            />
+            <StatisticsCard
+              title="reviewBooks"
+              data={statisicData.reviewBooks}
+            />
+            <StatisticsCard
+              title="currentStreak"
+              data={statisicData.currentStreak}
+            />
+            <StatisticsCard
+              title="longestStreak"
+              data={statisicData.longestStreak}
+            />
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-6">
           <Graph title="MonthlyGraph" />
           <Graph title="TagGraph" />

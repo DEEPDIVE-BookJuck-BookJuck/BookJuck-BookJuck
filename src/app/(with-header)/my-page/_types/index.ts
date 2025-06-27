@@ -31,3 +31,10 @@ export interface TagType {
   percent: number
   originalItems?: Array<{ tag: string; count: number }>
 }
+
+export interface StatisicType {
+  totalBooks: number
+  reviewBooks: number
+  currentStreak: number
+  longestStreak: number
+}
