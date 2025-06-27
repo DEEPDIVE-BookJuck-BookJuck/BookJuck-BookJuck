@@ -1,7 +1,10 @@
 import { FetchWithAuthOptionsType } from '@/app/(without-header)/auth/_types'
 import { useAuthStore } from '@/store/auth-store'
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+const API_URL =
+  typeof window === 'undefined'
+    ? process.env.API_URL
+    : process.env.NEXT_PUBLIC_BASE_URL
 
 export async function fetchWithAuth<T = unknown>(
   endpoint: string,
@@ -16,7 +19,7 @@ export async function fetchWithAuth<T = unknown>(
     headers.set('Authorization', `Bearer ${token}`)
   }
 
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
+  const res = await fetch(`${API_URL}${endpoint}`, {
     ...restOptions,
     headers,
   })
