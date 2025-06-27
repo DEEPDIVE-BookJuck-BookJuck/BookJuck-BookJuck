@@ -2,8 +2,18 @@ import Graph from './_components/graph'
 import RecentBook from './_components/recent-book'
 import StatisticsCard from './_components/statistics-card'
 import Link from 'next/link'
+import { StatisicType } from './_types'
+import { fetchWithAuth } from '@/lib/fetch-with-auth'
 
-export default function MyPage() {
+export default async function MyPage() {
+  const statisicData: StatisicType = await fetchWithAuth(
+    '/api/reading/statistics',
+    {
+      auth: true,
+      method: 'GET',
+    },
+  )
+
   return (
     <>
       <div className="flex flex-col gap-6">
@@ -22,10 +32,22 @@ export default function MyPage() {
           </Link>
         </section>
         <div className="grid grid-cols-4 gap-6">
-          <StatisticsCard title="totalBooks" />
-          <StatisticsCard title="reviewBooks" />
-          <StatisticsCard title="currentStreak" />
-          <StatisticsCard title="longestStreak" />
+          <StatisticsCard
+            title="totalBooks"
+            data={statisicData.totalBooks}
+          />
+          <StatisticsCard
+            title="reviewBooks"
+            data={statisicData.reviewBooks}
+          />
+          <StatisticsCard
+            title="currentStreak"
+            data={statisicData.currentStreak}
+          />
+          <StatisticsCard
+            title="longestStreak"
+            data={statisicData.longestStreak}
+          />
         </div>
         <div className="grid grid-cols-2 gap-6">
           <Graph title="MonthlyGraph" />

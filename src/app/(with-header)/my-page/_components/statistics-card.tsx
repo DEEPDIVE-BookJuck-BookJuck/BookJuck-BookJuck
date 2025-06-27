@@ -3,8 +3,10 @@ import { Award, BookOpen, FileText, TrendingUp } from 'lucide-react'
 
 export default function StatisticsCard({
   title,
+  data,
 }: {
   title: IconKeyType
+  data: number
 }) {
   const iconObj: IconObjType = {
     totalBooks: {
@@ -31,7 +33,7 @@ export default function StatisticsCard({
         <p className="text-sm text-gray-600 mb-1 text-">
           {iconObj[title].title}
         </p>
-        <span className="font-bold text-3xl">24</span>
+        <span className="font-bold text-3xl">{data}</span>
         {(title === 'currentStreak' || title === 'longestStreak') && (
           <span className="font-bold text-3xl">일</span>
         )}
