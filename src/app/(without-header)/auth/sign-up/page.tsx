@@ -18,6 +18,7 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   const router = useRouter()
+  console.log(isFormValid) //임시
 
   const validateNickname = (nickName: string) =>
     nickName.trim() ? '' : '사용하실 닉네임을 입력해 주세요.'
