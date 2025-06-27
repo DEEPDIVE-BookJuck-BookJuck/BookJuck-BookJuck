@@ -9,25 +9,14 @@ export default function Home() {
   const [query, setQuery] = useState('')
   const [books, setBooks] = useState<BookType[]>([])
   const [loading, setLoading] = useState(false)
- 
+
   const handleSearch = async () => {
     if (!query.trim()) return
     setLoading(true)
 
     try {
-      const apiKey = process.env.NEXT_PUBLIC_ALADIN_API_KEY; // .env에서 API 키 불러오기
-
-      if (!apiKey) {
-        console.error('API 키가 없습니다. .env 파일을 확인해주세요.');
-        return;
-      }
-
-      const response = await fetch(
-        `https://www.aladin.co.kr/ttb/api/ItemSearch.aspx?ttbkey=${apiKey}&Query=${encodeURIComponent(
-          query
-        )}&QueryType=Keyword&MaxResults=10&start=1&SearchTarget=Book&output=JS&Version=20131101`
-      )
-
+      // ✅ 변경된 부분: 백엔드 API 경유
+      const response = await fetch(`/api/aladin-search?query=${encodeURIComponent(query)}`)
       const text = await response.text()
       const data = JSON.parse(text)
 
@@ -77,3 +66,4 @@ export default function Home() {
     </main>
   )
 }
+
