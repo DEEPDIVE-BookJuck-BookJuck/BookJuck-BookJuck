@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import LibraryBookItem from '@/app/(with-header)/my-library/_components/library-book-item'
+import LibraryBookItem from '@/app/(with-header)/(protected)/my-library/_components/library-book-item'
 import { Search } from 'lucide-react'
 
 interface Review {

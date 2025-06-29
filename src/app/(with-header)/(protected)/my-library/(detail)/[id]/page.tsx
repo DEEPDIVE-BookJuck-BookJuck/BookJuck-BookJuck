@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Trash2, Save, X, Plus, Star } from 'lucide-react'
-import { BookType } from '@/app/(with-header)/my-library/_types'
+import { BookType } from '@/app/(with-header)/(protected)/my-library/_types'
 import Image from 'next/image'
 
 export default function BookDetailPage() {
