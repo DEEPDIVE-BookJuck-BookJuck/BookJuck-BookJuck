@@ -20,7 +20,7 @@ export default function RecentBookItem({
       </div>
       <div>
         <span className="text-yellow-500">{'★'.repeat(rating)}</span>
-        <span className="text-gray-500">
+        <span className="text-gray-300">
           {'★'.repeat(5 - rating)}
         </span>
       </div>
