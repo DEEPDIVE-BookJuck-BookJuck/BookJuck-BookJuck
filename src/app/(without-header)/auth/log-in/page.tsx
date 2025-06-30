@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation'
 import { login } from '@/lib/auth'
 import { useAuthStore } from '@/store/auth-store'
 
+import Input from '../_components/input'
+import FormError from '../_components/form-error'
+import Button from '../_components/button'
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -79,21 +83,15 @@ export default function LoginPage() {
       >
         이메일
       </label>
-      <input
+      <Input
         id="email"
-        className={`w-full h-10 px-3 py-2 mb-1 border rounded-lg focus:ring-1 focus:outline-none text-sm ${
-          emailError
-            ? 'border-red-500 focus:ring-red-500'
-            : 'border-gray-300 focus:ring-gray-500'
-        }`}
         type="email"
-        placeholder="your@email.com"
         value={email}
+        placeholder="your@email.com"
         onChange={(e) => setEmail(e.target.value)}
+        hasError={!!emailError}
       />
-      {emailError && (
-        <p className="text-red-500 text-sm mb-3">{emailError}</p>
-      )}
+      <FormError message={emailError} />
 
       <label
         className="text-sm font-semibold mt-5 mb-2 block"
@@ -101,33 +99,16 @@ export default function LoginPage() {
       >
         비밀번호
       </label>
-      <input
+      <Input
         id="password"
-        className={`w-full h-10 px-3 py-2 mb-1 border rounded-lg focus:ring-1 focus:outline-none text-sm ${
-          passwordError
-            ? 'border-red-500 focus:ring-red-500'
-            : 'border-gray-300 focus:ring-gray-500'
-        }`}
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        hasError={!!passwordError}
       />
-      {passwordError && (
-        <p className="text-red-500 text-sm mb-3">{passwordError}</p>
-      )}
+      <FormError message={passwordError} />
 
-      <button
-        type="submit"
-        disabled={isLoading}
-        className={`w-full h-10 px-3 py-2 mt-4 mb-4 rounded-md text-white hover:cursor-pointer
-          ${
-            isLoading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-slate-950 hover:bg-gray-800'
-          }`}
-      >
-        {isLoading ? '로그인 중...' : '로그인'}
-      </button>
+      <Button isLoading={isLoading}>로그인</Button>
 
       <div className="text-sm text-center">
         계정이 없으신가요?{' '}
