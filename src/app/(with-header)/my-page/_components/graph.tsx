@@ -3,8 +3,15 @@
 import { Calendar, Tag } from 'lucide-react'
 import MonthlyGraph from './monthly-graph'
 import TagGraph from './tag-graph'
+import { MonthlyBookType } from '../_types'
 
-export default function Graph({ title }: { title: string }) {
+export default function Graph({
+  title,
+  data,
+}: {
+  title: string
+  data: MonthlyBookType[]
+}) {
   return (
     <div className="h-96 bg-white border-1 border-gray-300 rounded-xl px-6 py-6">
       <div className="flex items-center gap-2 mb-3">
@@ -15,7 +22,7 @@ export default function Graph({ title }: { title: string }) {
             : '태그별 독후감 분포'}
         </p>
       </div>
-      {title == 'MonthlyGraph' && <MonthlyGraph />}
+      {title == 'MonthlyGraph' && <MonthlyGraph data={data} />}
       {title == 'TagGraph' && <TagGraph />}
     </div>
   )

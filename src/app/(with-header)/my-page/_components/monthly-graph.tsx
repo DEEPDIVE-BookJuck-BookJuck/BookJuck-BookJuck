@@ -8,43 +8,13 @@ import {
   Rectangle,
   ResponsiveContainer,
 } from 'recharts'
+import { MonthlyBookType } from '../_types'
 
-let data = [
-  {
-    month: '2025-06',
-    readBooks: 6,
-    reviewBooks: 2,
-  },
-  {
-    month: '2025-05',
-    readBooks: 0,
-    reviewBooks: 1,
-  },
-  {
-    month: '2025-04',
-    readBooks: 0,
-    reviewBooks: 0,
-  },
-  {
-    month: '2025-03',
-    readBooks: 0,
-    reviewBooks: 0,
-  },
-  {
-    month: '2025-02',
-    readBooks: 0,
-    reviewBooks: 0,
-  },
-  {
-    month: '2025-01',
-    readBooks: 0,
-    reviewBooks: 0,
-  },
-]
-
-data = data.reverse()
-
-export default function MonthlyGraph() {
+export default function MonthlyGraph({
+  data,
+}: {
+  data: MonthlyBookType[]
+}) {
   return (
     <ResponsiveContainer
       width={'100%'}
@@ -52,7 +22,7 @@ export default function MonthlyGraph() {
       height={300}
     >
       <BarChart
-        data={data}
+        data={data.reverse()}
         margin={{
           top: 5,
           right: 30,

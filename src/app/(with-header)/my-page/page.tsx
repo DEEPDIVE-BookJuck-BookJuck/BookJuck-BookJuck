@@ -2,11 +2,12 @@ import Graph from './_components/graph'
 import RecentBook from './_components/recent-book'
 import StatisticsCard from './_components/statistics-card'
 import Link from 'next/link'
-import { StatisicType } from './_types'
+import { MonthlyBookType, StatisicType } from './_types'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
 
 export default async function MyPage() {
   let statisicData: StatisicType | null = null
+  let monthlyBookData: MonthlyBookType[] | null = null
 
   try {
     statisicData = await fetchWithAuth('/api/reading/statistics', {
@@ -16,6 +17,17 @@ export default async function MyPage() {
   } catch (error) {
     if (error instanceof Error)
       console.error('통계 데이터 로딩 실패:', error.message)
+    else console.error('왜 나는지 모르는 에러:', error)
+  }
+
+  try {
+    monthlyBookData = await fetchWithAuth('/api/reading/monthly', {
+      auth: true,
+      method: 'GET',
+    })
+  } catch (error) {
+    if (error instanceof Error)
+      console.error('월별 독서량 데이터 로딩 실패:', error.message)
     else console.error('왜 나는지 모르는 에러:', error)
   }
 
@@ -57,7 +69,12 @@ export default async function MyPage() {
           </div>
         )}
         <div className="grid grid-cols-2 gap-6">
-          <Graph title="MonthlyGraph" />
+          {monthlyBookData && (
+            <Graph
+              title="MonthlyGraph"
+              data={monthlyBookData.reverse()}
+            />
+          )}
           <Graph title="TagGraph" />
         </div>
         <RecentBook />
