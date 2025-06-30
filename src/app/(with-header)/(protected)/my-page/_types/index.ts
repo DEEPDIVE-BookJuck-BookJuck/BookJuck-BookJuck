@@ -38,3 +38,9 @@ export interface StatisicType {
   currentStreak: number
   longestStreak: number
 }
+
+export interface MonthlyBookType {
+  month: string
+  readBooks: number
+  reviewBooks: number
+}
