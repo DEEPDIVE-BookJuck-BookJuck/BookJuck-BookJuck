@@ -2,13 +2,19 @@ import Graph from './_components/graph'
 import RecentBook from './_components/recent-book'
 import StatisticsCard from './_components/statistics-card'
 import Link from 'next/link'
-import { MonthlyBookType, StatisicType, TagBookType } from './_types'
+import {
+  MonthlyBookType,
+  RecentBookType,
+  StatisicType,
+  TagBookType,
+} from './_types'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
 
 export default async function MyPage() {
   let statisicData: StatisicType | null = null
   let monthlyBookData: MonthlyBookType[] | null = null
   let tagBookData: TagBookType[] | null = null
+  let recentBookData: RecentBookType[] | null = null
 
   try {
     statisicData = await fetchWithAuth('/api/reading/statistics', {
@@ -43,6 +49,20 @@ export default async function MyPage() {
   } catch (error) {
     if (error instanceof Error)
       console.error('태그별 독서량 데이터 로딩 실패:', error.message)
+    else console.error('왜 나는지 모르는 에러:', error)
+  }
+
+  try {
+    recentBookData = await fetchWithAuth(
+      '/api/library/review/recent',
+      {
+        auth: true,
+        method: 'GET',
+      },
+    )
+  } catch (error) {
+    if (error instanceof Error)
+      console.error('최근 읽은 책 데이터 로딩 실패:', error.message)
     else console.error('왜 나는지 모르는 에러:', error)
   }
 
@@ -97,7 +117,7 @@ export default async function MyPage() {
             />
           )}
         </div>
-        <RecentBook />
+        {recentBookData && <RecentBook data={recentBookData} />}
       </div>
     </>
   )
