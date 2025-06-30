@@ -16,16 +16,22 @@ export default function Home() {
 
     try {
       // ✅ 변경된 부분: 백엔드 API 경유
-      const response = await fetch(`/api/aladin-search?query=${encodeURIComponent(query)}`)
+      const response = await fetch(
+        `/api/aladin-search?query=${encodeURIComponent(query)}`,
+      )
       const text = await response.text()
       const data = JSON.parse(text)
 
-      const mappedBooks: BookType[] = (data.item || []).map((item: RawBookItemType) => ({
-        id: item.itemId,
-        cover: item.cover || 'https://via.placeholder.com/96x144?text=No+Image',
-        title: item.title || '제목 없음',
-        author: item.author || '저자 미상',
-      }))
+      const mappedBooks: BookType[] = (data.item || []).map(
+        (item: RawBookItemType) => ({
+          id: item.itemId,
+          cover:
+            item.cover ||
+            'https://via.placeholder.com/96x144?text=No+Image',
+          title: item.title || '제목 없음',
+          author: item.author || '저자 미상',
+        }),
+      )
 
       setBooks(mappedBooks)
     } catch (error) {
@@ -37,33 +43,40 @@ export default function Home() {
   }
 
   return (
-    <main className="max-w-3xl mx-auto pt-2 p-8">
+    <main className="flex flex-col justify-center w-full mx-auto pt-2 p-8">
       <h1 className="text-4xl font-bold mb-6 text-center">
         당신만의 독서 여행을 시작해보세요
       </h1>
+      <div className="flex flex-col justify-center items-center">
+        <div className="relative  mb-6">
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 justify-center">
+            <Search className="w-5 h-5" />
+          </span>
+          <input
+            type="text"
+            placeholder="책 제목이나 저자를 검색해보세요"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            className="w-[672px] pl-10 pr-4 py-4 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white placeholder-gray-500"
+          />
+        </div>
 
-      <div className="relative w-full mb-6">
-        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-          <Search className="w-5 h-5" />
-        </span>
-        <input
-          type="text"
-          placeholder="책 제목이나 저자를 검색해보세요"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          className="w-[672px] pl-10 pr-4 py-4 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white placeholder-gray-500"
-        />
-      </div>
-
-      {/* 검색 결과 */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-        {!loading && books.length === 0 && <p>검색 결과가 없습니다.</p>}
-        {books.map((book) => (
-          <BookCard key={book.id} book={book} />
-        ))}
+        {!loading && books.length === 0 && (
+          <p className="flex justify-center ">
+            검색 결과가 없습니다.
+          </p>
+        )}
+        {/* 검색 결과 */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          {books.map((book) => (
+            <BookCard
+              key={book.id}
+              book={book}
+            />
+          ))}
+        </div>
       </div>
     </main>
   )
 }
-
