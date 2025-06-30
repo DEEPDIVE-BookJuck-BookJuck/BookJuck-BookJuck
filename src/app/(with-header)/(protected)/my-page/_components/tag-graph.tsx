@@ -60,7 +60,7 @@ export default function TagGraph({ data }: { data: TagBookType[] }) {
   if (data.length === 0)
     return (
       <h3 className="flex h-full justify-center items-center font-medium">
-        작성한 독후감이 없습니다.
+        작성한 독후감이 없습니다
       </h3>
     )
   const groupingData = groupExtraTags(data)
