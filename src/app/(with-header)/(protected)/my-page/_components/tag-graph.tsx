@@ -1,5 +1,5 @@
 import groupExtraTags from '@/utils/group-extra-tags'
-import { TagType } from '../_types'
+import { TagBookType, TagType } from '../_types'
 import { FC } from 'react'
 import {
   PieChart,
@@ -15,51 +15,6 @@ interface TooltipPropsType {
     payload: TagType
   }>
 }
-
-const data: TagType[] = [
-  {
-    tag: '인스타툰',
-    count: 2,
-    percent: 22.2,
-  },
-  {
-    tag: '힐링',
-    count: 1,
-    percent: 11.1,
-  },
-  {
-    tag: '유머',
-    count: 1,
-    percent: 11.1,
-  },
-  {
-    tag: '노벨문학상',
-    count: 1,
-    percent: 11.1,
-  },
-  {
-    tag: '에세이',
-    count: 1,
-    percent: 11.1,
-  },
-  {
-    tag: '한국문학',
-    count: 1,
-    percent: 11.1,
-  },
-  {
-    tag: '단편소설',
-    count: 1,
-    percent: 11.1,
-  },
-  {
-    tag: '감동',
-    count: 1,
-    percent: 11.1,
-  },
-]
-
-const data1 = groupExtraTags(data)
 
 const COLORS = [
   '#5B9BD5',
@@ -101,7 +56,15 @@ const CustomTooltip: FC<TooltipPropsType> = ({ active, payload }) => {
   return null
 }
 
-export default function TagGraph() {
+export default function TagGraph({ data }: { data: TagBookType[] }) {
+  if (data.length === 0)
+    return (
+      <h3 className="flex h-full justify-center items-center font-medium">
+        작성한 독후감이 없습니다.
+      </h3>
+    )
+  const groupingData = groupExtraTags(data)
+
   return (
     <div className="flex flex-col w-full h-full ">
       <ResponsiveContainer
@@ -110,7 +73,7 @@ export default function TagGraph() {
       >
         <PieChart>
           <Pie
-            data={data1}
+            data={groupingData}
             cx="50%"
             cy="50%"
             outerRadius={80}
@@ -119,7 +82,7 @@ export default function TagGraph() {
             label={({ tag, percent }) => `${tag} (${percent}%)`}
             labelLine={true}
           >
-            {data1.map((_, index) => (
+            {groupingData.map((_, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={COLORS[index % COLORS.length]}
@@ -130,7 +93,7 @@ export default function TagGraph() {
         </PieChart>
       </ResponsiveContainer>
       <div className="flex flex-wrap gap-2 mt-4 items-center">
-        {data1.map((tag, index) => (
+        {groupingData.map((tag, index) => (
           <div
             key={tag.tag}
             className="flex items-center gap-1 text-sm bg-gray-100 w-auto px-1.5 rounded-xl"

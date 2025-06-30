@@ -44,3 +44,9 @@ export interface MonthlyBookType {
   readBooks: number
   reviewBooks: number
 }
+
+export interface TagBookType {
+  tag: string
+  count: number
+  percent: number
+}
