@@ -1,13 +1,15 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Trash2, Save, X, Plus, Star } from 'lucide-react'
 import { BookType } from '@/app/(with-header)/(protected)/my-library/_types'
 import Image from 'next/image'
+import { fetchWithAuth } from '@/lib/fetch-with-auth'
 
 export default function BookDetailPage() {
   const { id } = useParams()
+  const router = useRouter()
 
   const [book, setBook] = useState<BookType | null>(null)
   const [memo, setMemo] = useState<string>('')
@@ -15,27 +17,38 @@ export default function BookDetailPage() {
   const [tags, setTags] = useState<string[]>([])
   const [newTag, setNewTag] = useState<string>('')
 
-  const recommendedTags: string[] = ['감동', '유익', '재미있음']
+  const recommendedTags: string[] = [
+    '감동',
+    '유익',
+    '재미있음',
+    '어려움',
+    '추천',
+    '실망',
+    '깊이있음',
+    '가벼움',
+  ]
 
   useEffect(() => {
-    const sample: BookType = {
-      id: id as string,
-      title: '클린 코드',
-      author: '로버트 C. 마틴',
-      thumbnailUrl:
-        'https://kzmofp7ao28a6ox52yiz.lite.vusercontent.net/placeholder.svg?height=200&width=150',
-      review: {
-        endDate: '2025-06-23',
-        memo: '이 책은 정말 개발자라면 꼭 읽어야 할 필독서라고 생각합니다.',
-        rating: 2,
-        tags: ['개발', '프로그래밍', '유익'],
-      },
+    async function fetchBookDetail() {
+      try {
+        const data = await fetchWithAuth<BookType>(
+          `/api/library/review/${id}`,
+          {
+            auth: true,
+          },
+        )
+        setBook(data)
+        setMemo(data.review?.memo || '')
+        setRating(data.review?.rating || 0)
+        setTags(data.review?.tags || [])
+      } catch (error) {
+        console.error('책 상세 조회 실패:', error)
+      }
     }
 
-    setBook(sample)
-    setMemo(sample.review.memo)
-    setRating(sample.review.rating)
-    setTags(sample.review.tags)
+    if (id) {
+      fetchBookDetail()
+    }
   }, [id])
 
   const addTag = (tagToAdd: string) => {
@@ -50,14 +63,66 @@ export default function BookDetailPage() {
   }
 
   const onSave = async () => {
-    console.log('저장할 태그:', tags)
-    console.log('저장할 평점:', rating)
-    // TODO: API 연동 예정
+    if (!book) return
+
+    const isNew =
+      !book.review || Object.keys(book.review).length === 0
+    const method = isNew ? 'POST' : 'PATCH'
+
+    try {
+      const response = await fetchWithAuth<BookType>(
+        `/api/library/review/${book.id}`,
+        {
+          auth: true,
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            endDate:
+              book.review?.endDate ||
+              new Date().toISOString().slice(0, 10),
+            memo,
+            rating,
+            tags,
+          }),
+        },
+      )
+
+      setBook(response)
+      alert(
+        isNew ? '리뷰가 작성되었습니다.' : '리뷰가 수정되었습니다.',
+      )
+      router.back()
+    } catch (error) {
+      console.error(
+        isNew ? '리뷰 작성 실패:' : '리뷰 수정 실패:',
+        error,
+      )
+      alert(
+        isNew
+          ? '리뷰 작성에 실패했습니다.'
+          : '리뷰 수정에 실패했습니다.',
+      )
+    }
   }
 
   const onDelete = async () => {
-    console.log('삭제')
-    // TODO: API 연동 예정
+    if (!book) return
+
+    if (!confirm('정말 삭제하시겠습니까?')) return
+
+    try {
+      await fetchWithAuth(`/api/library/review/${book.id}`, {
+        auth: true,
+        method: 'DELETE',
+      })
+      alert('리뷰가 삭제되었습니다.')
+      router.back()
+    } catch (error) {
+      console.error('삭제 실패:', error)
+      alert('삭제에 실패했습니다.')
+    }
   }
 
   if (!book) return <p>책을 찾을 수 없습니다.</p>
@@ -82,7 +147,7 @@ export default function BookDetailPage() {
               {book.author}
             </p>
             <p className="text-sm text-gray-400">
-              읽은 날짜 : {book.review.endDate}
+              읽은 날짜 : {book.review?.endDate || '-'}
             </p>
           </div>
         </div>
@@ -202,14 +267,14 @@ export default function BookDetailPage() {
             <div className="flex justify-between pt-4">
               <button
                 onClick={onDelete}
-                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 h-10 px-4"
+                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 h-10 px-4 cursor-pointer"
               >
                 <Trash2 size={16} />
                 삭제
               </button>
               <button
                 onClick={onSave}
-                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 h-10 px-4"
+                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 h-10 px-4 cursor-pointer"
               >
                 <Save size={16} />
                 저장
