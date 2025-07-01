@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import LibraryBookItem from '../_components/library-book-item'
 import { Search } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
@@ -29,34 +29,37 @@ export default function MyLibraryPage() {
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false)
 
-  const fetchBooks = async (reset = false) => {
-    try {
-      setLoading(true)
-      const currentOffset = reset ? 0 : offset
-      const res = await fetchWithAuth<Book[]>(
-        `/api/library?offset=${currentOffset}&limit=${LIMIT}&q=${query}`,
-        { auth: true },
-      )
+  const fetchBooks = useCallback(
+    async (reset = false) => {
+      try {
+        setLoading(true)
+        const currentOffset = reset ? 0 : offset
+        const res = await fetchWithAuth<Book[]>(
+          `/api/library?offset=${currentOffset}&limit=${LIMIT}&q=${query}`,
+          { auth: true },
+        )
 
-      if (reset) {
-        setBooks(res)
-        setOffset(LIMIT)
-      } else {
-        setBooks((prev) => [...prev, ...res])
-        setOffset((prev) => prev + LIMIT)
+        if (reset) {
+          setBooks(res)
+          setOffset(LIMIT)
+        } else {
+          setBooks((prev) => [...prev, ...res])
+          setOffset((prev) => prev + LIMIT)
+        }
+
+        setHasMore(res.length === LIMIT)
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setLoading(false)
       }
-
-      setHasMore(res.length === LIMIT)
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setLoading(false)
-    }
-  }
+    },
+    [offset, query],
+  ) // offset, query 의존성 포함
 
   useEffect(() => {
     fetchBooks(true)
-  }, [query])
+  }, [fetchBooks]) // fetchBooks가 변경될 때마다 실행
 
   return (
     <div>
