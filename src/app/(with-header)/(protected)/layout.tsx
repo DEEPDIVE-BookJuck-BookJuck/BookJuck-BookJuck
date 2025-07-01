@@ -20,7 +20,9 @@ export default function ProtectedLayout({
   // API 연동 완료 후 수정 예정
   const pathname = usePathname()
   const protectedPaths = ['/my-library', '/my-page', '/profile']
-  const isProtected = protectedPaths.includes(pathname)
+  const isProtected = protectedPaths.some((path) =>
+    pathname.startsWith(path),
+  )
 
   useEffect(() => {
     if (!isProtected && !user) {
