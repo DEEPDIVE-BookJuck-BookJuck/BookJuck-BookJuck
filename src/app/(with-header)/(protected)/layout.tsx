@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAuthStore } from '@/store/auth-store'
 import Modal from '@/common/modal'
 
@@ -17,8 +17,13 @@ export default function ProtectedLayout({
   const [showModal, setShowModal] = useState(false)
   const [countdown, setCountdown] = useState(3) // 시작 초 설정 : 3초
 
+  // API 연동 완료 후 수정 예정
+  const pathname = usePathname()
+  const protectedPaths = ['/my-library', '/my-page', '/profile']
+  const isProtected = protectedPaths.includes(pathname)
+
   useEffect(() => {
-    if (!user) {
+    if (!isProtected && !user) {
       setShowModal(true)
 
       const interval = setInterval(() => {
@@ -33,11 +38,11 @@ export default function ProtectedLayout({
 
       return () => clearInterval(interval)
     }
-  }, [user, router])
+  }, [user, router, isProtected])
 
-  if (!user && !showModal) return null
+  if (!isProtected && !user && !showModal) return null
 
-  if (!user && showModal) {
+  if (!isProtected && !user && showModal) {
     return (
       <Modal>
         <p className="text-center text-lg font-semibold mb-2">
