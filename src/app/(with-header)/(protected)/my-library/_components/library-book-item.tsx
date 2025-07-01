@@ -2,7 +2,8 @@
 
 import { useRouter } from 'next/navigation'
 import { PenLine } from 'lucide-react'
-import Image from 'next/image'
+import BookThumbnail from './book-thumbnail'
+import TagList from './tag-list'
 
 interface LibraryBookItemProps {
   id: string
@@ -19,49 +20,45 @@ export default function LibraryBookItem({
   id,
   title,
   author,
-  // thumbnailUrl,
+  thumbnailUrl,
   review,
 }: LibraryBookItemProps) {
   const router = useRouter()
   const goToDetail = () => router.push(`/my-library/${id}`)
 
+  const hasReview = Boolean(review?.endDate)
+
   return (
     <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
       <div className="flex gap-4">
-        <Image
-          // src={thumbnailUrl}
-          src="https://kzmofp7ao28a6ox52yiz.lite.vusercontent.net/placeholder.svg?height=200&width=150"
-          width={150}
-          height={200}
-          alt={title}
-          className="w-16 h-20 object-cover rounded"
+        <BookThumbnail
+          title={title}
+          src={thumbnailUrl}
         />
         <div className="flex-1">
           <h3 className="font-semibold text-lg mb-1">{title}</h3>
           <p className="text-gray-600 text-sm mb-2">{author}</p>
-          <p className="text-gray-500 text-xs mb-3">
-            읽은 날: {review.endDate}
-          </p>
+          {hasReview && (
+            <p className="text-gray-500 text-xs mb-3">
+              읽은 날: {review.endDate}
+            </p>
+          )}
 
-          {/* 태그 */}
-          <div className="flex flex-wrap gap-1 mb-3">
-            {review.tags.map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center px-2.5 py-0.5 bg-gray-100 rounded-full text-xs font-semibold"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
+          <TagList tags={review?.tags ?? []} />
 
-          {/* 독후감 보기 버튼 */}
+          {/* 버튼 */}
           <button
             onClick={goToDetail}
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium text-white bg-slate-950 hover:bg-slate-800 h-9 rounded-md px-3 cursor-pointer"
+            className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-9 rounded-md px-3 cursor-pointer
+              ${
+                hasReview
+                  ? 'text-white bg-slate-950 hover:bg-slate-800'
+                  : 'text-gray-800 bg-white border border-gray-300 hover:bg-gray-50'
+              }
+            `}
           >
             <PenLine className="h-3 w-3 mr-1" />
-            독후감 보기
+            {hasReview ? '독후감 보기' : '독후감 작성'}
           </button>
         </div>
       </div>

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import LibraryBookItem from '@/app/(with-header)/(protected)/my-library/_components/library-book-item'
+import { useEffect, useState } from 'react'
+import LibraryBookItem from '../_components/library-book-item'
 import { Search } from 'lucide-react'
+import { fetchWithAuth } from '@/lib/fetch-with-auth'
 
 interface Review {
   endDate: string
@@ -19,33 +20,48 @@ interface Book {
   review: Review
 }
 
-// 샘플 데이터
-const SAMPLE_BOOKS: Book[] = Array.from({ length: 6 }, (_, i) => ({
-  id: `${i}`,
-  title: `책 제목 예시 ${i + 1}`,
-  author: `저자 ${i + 1}`,
-  thumbnailUrl: '/images/placeholder-book.png',
-  review: {
-    endDate: '2025-06-16',
-    memo: '간단한 독후감 예시입니다.',
-    rating: Math.floor(Math.random() * 6),
-    tags: ['감동', '추천', '지식'],
-  },
-}))
+const LIMIT = 9
 
 export default function MyLibraryPage() {
+  const [books, setBooks] = useState<Book[]>([])
   const [query, setQuery] = useState('')
+  const [offset, setOffset] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+  const [loading, setLoading] = useState(false)
 
-  // 검색된 리스트
-  const filtered = SAMPLE_BOOKS.filter(
-    (book) =>
-      book.title.includes(query) || book.author.includes(query),
-  )
+  const fetchBooks = async (reset = false) => {
+    try {
+      setLoading(true)
+      const currentOffset = reset ? 0 : offset
+      const res = await fetchWithAuth<Book[]>(
+        `/api/library?offset=${currentOffset}&limit=${LIMIT}&q=${query}`,
+        { auth: true },
+      )
+
+      if (reset) {
+        setBooks(res)
+        setOffset(LIMIT)
+      } else {
+        setBooks((prev) => [...prev, ...res])
+        setOffset((prev) => prev + LIMIT)
+      }
+
+      setHasMore(res.length === LIMIT)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchBooks(true)
+  }, [query])
 
   return (
     <div>
+      {/* 검색창 */}
       <div className="mb-8 space-y-4">
-        {/* 검색창 */}
         <div className="flex gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -60,26 +76,36 @@ export default function MyLibraryPage() {
         </div>
       </div>
 
-      {/* 저장된 책이 없을 때 */}
-      {filtered.length === 0 ? (
+      {/* 상태 표시 */}
+      {loading && books.length === 0 && (
+        <p className="text-center text-gray-500 mt-20">
+          불러오는 중...
+        </p>
+      )}
+      {!loading && books.length === 0 && (
         <p className="text-center text-gray-500 mt-20">
           아직 저장된 책이 없습니다.
         </p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((book) => (
-            <LibraryBookItem
-              key={book.id}
-              {...book}
-            />
-          ))}
-        </div>
       )}
 
+      {/* 리스트 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {books.map((book) => (
+          <LibraryBookItem
+            key={book.id}
+            {...book}
+          />
+        ))}
+      </div>
+
       {/* 더 보기 버튼 */}
-      {filtered.length > 0 && (
+      {hasMore && (
         <div className="text-center mt-6">
-          <button className="bg-gray-200 px-6 py-2 rounded hover:bg-gray-300 cursor-pointer">
+          <button
+            disabled={loading}
+            onClick={() => fetchBooks()}
+            className="bg-gray-200 px-6 py-2 rounded hover:bg-gray-300 cursor-pointer disabled:opacity-50"
+          >
             더 보기
           </button>
         </div>
