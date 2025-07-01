@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import LibraryBookItem from '../_components/library-book-item'
 import { Search } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
+import { useDebounce } from '@/hooks/use-debounce'
 
 interface Review {
   endDate: string
@@ -25,6 +26,7 @@ const LIMIT = 9
 export default function MyLibraryPage() {
   const [books, setBooks] = useState<Book[]>([])
   const [query, setQuery] = useState('')
+  const debouncedQuery = useDebounce(query, 300)
   const [offset, setOffset] = useState(0)
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -35,7 +37,7 @@ export default function MyLibraryPage() {
         setLoading(true)
         const currentOffset = reset ? 0 : offset
         const res = await fetchWithAuth<Book[]>(
-          `/api/library?offset=${currentOffset}&limit=${LIMIT}&q=${query}`,
+          `/api/library?offset=${currentOffset}&limit=${LIMIT}&q=${debouncedQuery}`,
           { auth: true },
         )
 
@@ -54,12 +56,12 @@ export default function MyLibraryPage() {
         setLoading(false)
       }
     },
-    [offset, query],
-  ) // offset, query 의존성 포함
+    [debouncedQuery, offset],
+  )
 
   useEffect(() => {
     fetchBooks(true)
-  }, [fetchBooks]) // fetchBooks가 변경될 때마다 실행
+  }, [debouncedQuery])
 
   return (
     <div>
