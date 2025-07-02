@@ -17,7 +17,7 @@ export default function Header() {
     },
     {
       href: '/my-library',
-      label: 'My Library',
+      label: '내 서재',
       icon: () => <Library className="size-4" />,
     },
     {
