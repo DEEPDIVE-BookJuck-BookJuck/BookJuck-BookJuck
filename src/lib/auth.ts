@@ -47,3 +47,13 @@ export async function signup({
 
   return res.json()
 }
+
+export function logout() {
+  document.cookie = 'accessToken=; Max-Age=0; path=/'
+
+  if (typeof window !== 'undefined') {
+    const { clearAuth } =
+      require('@/store/auth-store').useAuthStore.getState()
+    clearAuth()
+  }
+}

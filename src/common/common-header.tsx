@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { BookOpen, House, Library, User } from 'lucide-react'
+import { useAuthStore } from '@/store/auth-store'
+import { logout } from '@/lib/auth'
 
 export default function Header() {
   const pathname = usePathname()
@@ -24,6 +26,15 @@ export default function Header() {
       icon: () => <User className="size-4" />,
     },
   ]
+
+  const accessToken = useAuthStore((state) => state.accessToken)
+  const clearAuth = useAuthStore((state) => state.clearAuth)
+
+  const handleLogout = () => {
+    logout()
+    clearAuth()
+    window.location.href = '/'
+  }
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
@@ -59,16 +70,27 @@ export default function Header() {
         </nav>
 
         <div className="flex gap-2 text-sm">
-          <Link href="/auth/log-in">
-            <button className="px-4 py-2 border border-gray-200 rounded hover:bg-gray-100 hover: cursor-pointer">
-              로그인
+          {accessToken ? (
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 border bg-slate-950 text-white rounded hover:bg-gray-800 hover: cursor-pointer"
+            >
+              로그아웃
             </button>
-          </Link>
-          <Link href="/auth/sign-up">
-            <button className="px-4 py-2 bg-slate-950 text-white rounded hover:bg-gray-800 hover: cursor-pointer">
-              회원가입
-            </button>
-          </Link>
+          ) : (
+            <>
+              <Link href="/auth/log-in">
+                <button className="px-4 py-2 border border-gray-200 rounded hover:bg-gray-100 hover: cursor-pointer">
+                  로그인
+                </button>
+              </Link>
+              <Link href="/auth/sign-up">
+                <button className="px-4 py-2 bg-slate-950 text-white rounded hover:bg-gray-800 hover: cursor-pointer">
+                  회원가입
+                </button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
