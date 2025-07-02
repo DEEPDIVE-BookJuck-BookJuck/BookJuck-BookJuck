@@ -61,7 +61,7 @@ export default function MyLibraryPage() {
 
   useEffect(() => {
     fetchBooks(true)
-  }, [debouncedQuery])
+  }, [debouncedQuery, fetchBooks])
 
   return (
     <div>
