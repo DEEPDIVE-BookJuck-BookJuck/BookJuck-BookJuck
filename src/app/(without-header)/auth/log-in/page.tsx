@@ -57,6 +57,9 @@ export default function LoginPage() {
         email: email.trim(),
         password: password.trim(),
       })
+
+      document.cookie = `accessToken=${accessToken}; path=/; max-age=86400`
+
       setAuth(accessToken, user)
       router.push('/')
     } catch (error: unknown) {
