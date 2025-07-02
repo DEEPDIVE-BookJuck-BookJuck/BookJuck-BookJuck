@@ -8,7 +8,7 @@ import {
   StatisicType,
   TagBookType,
 } from './_types'
-import { fetchWithAuth } from '@/lib/fetch-with-auth'
+import { fetchWithAuthOnServer } from '@/lib/fetch-with-auth-server'
 
 export default async function MyPage() {
   let statisicData: StatisicType | null = null
@@ -17,10 +17,9 @@ export default async function MyPage() {
   let recentBookData: RecentBookType[] | null = null
 
   try {
-    statisicData = await fetchWithAuth('/api/reading/statistics', {
-      auth: true,
-      method: 'GET',
-    })
+    statisicData = await fetchWithAuthOnServer(
+      '/api/reading/statistics',
+    )
   } catch (error) {
     if (error instanceof Error)
       console.error('통계 데이터 로딩 실패:', error.message)
@@ -28,10 +27,9 @@ export default async function MyPage() {
   }
 
   try {
-    monthlyBookData = await fetchWithAuth('/api/reading/monthly', {
-      auth: true,
-      method: 'GET',
-    })
+    monthlyBookData = await fetchWithAuthOnServer(
+      '/api/reading/monthly',
+    )
   } catch (error) {
     if (error instanceof Error)
       console.error('월별 독서량 데이터 로딩 실패:', error.message)
@@ -39,12 +37,8 @@ export default async function MyPage() {
   }
 
   try {
-    tagBookData = await fetchWithAuth(
+    tagBookData = await fetchWithAuthOnServer(
       '/api/reading/tags/statistics',
-      {
-        auth: true,
-        method: 'GET',
-      },
     )
   } catch (error) {
     if (error instanceof Error)
@@ -53,12 +47,8 @@ export default async function MyPage() {
   }
 
   try {
-    recentBookData = await fetchWithAuth(
+    recentBookData = await fetchWithAuthOnServer(
       '/api/library/review/recent',
-      {
-        auth: true,
-        method: 'GET',
-      },
     )
   } catch (error) {
     if (error instanceof Error)
