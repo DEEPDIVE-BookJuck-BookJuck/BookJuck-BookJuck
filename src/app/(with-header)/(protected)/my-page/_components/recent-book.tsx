@@ -14,7 +14,7 @@ export default function RecentBook({
           최근 작성한 독후감이 없습니다
         </span>
       ) : (
-        <div className="grid gap-6">
+        <div className="w-full flex flex-col gap-6">
           {data.map((recentBook) => (
             <RecentBookItem
               key={recentBook.id}

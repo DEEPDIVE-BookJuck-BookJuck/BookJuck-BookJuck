@@ -74,7 +74,7 @@ export default async function MyPage() {
           </Link>
         </section>
         {statisicData && (
-          <div className="grid grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatisticsCard
               title="totalBooks"
               data={statisicData.totalBooks}
@@ -93,7 +93,7 @@ export default async function MyPage() {
             />
           </div>
         )}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {monthlyBookData && (
             <Graph
               title="MonthlyGraph"
