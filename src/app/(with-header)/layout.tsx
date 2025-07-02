@@ -26,7 +26,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <div className="font-sans min-h-screen bg-gray-100 text-gray-900">
+        <div className="font-sans min-h-screen min-w-lg bg-gray-100 text-gray-900">
           <Header />
           <main className="max-w-7xl mx-auto px-6 pt-24 pb-12">
             {children}
