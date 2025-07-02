@@ -52,9 +52,10 @@ export default function Home() {
       const mappedBooks: BookType[] = (data.item || []).map(
         (item: RawBookItemType) => ({
           id: item.itemId,
-          cover: item.cover || 'https://via.placeholder.com/96x144?text=No+Image',
+          cover: item.cover || '/images/placeholder-book.svg',
           title: item.title || '제목 없음',
           author: item.author || '저자 미상',
+          isbn: item.isbn || '',
         })
       )
 

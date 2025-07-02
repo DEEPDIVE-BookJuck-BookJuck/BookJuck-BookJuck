@@ -3,6 +3,7 @@ export interface RawBookItemType {
   cover?: string
   title?: string
   author?: string
+  isbn?: string  
 }
 
 export interface BookType {
@@ -10,4 +11,5 @@ export interface BookType {
   cover: string
   title: string
   author: string
+  isbn: string
 }

@@ -2,7 +2,7 @@
 
 import { NextRequest } from 'next/server'
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   const apiKey = process.env.NEXT_PUBLIC_ALADIN_API_KEY
   if (!apiKey) {
     return new Response('API key not found', { status: 500 })
