@@ -63,9 +63,11 @@ export default function MyLibraryPage() {
     [debouncedQuery, offset],
   )
 
-  // 검색어나 fetchBooks 변경 시 초기 로드 -> 검색어가 바뀔 때만 0번째 페이지 재로딩
+  // 검색어 변경 시 첫 페이지(9개) 초기 로드
   useEffect(() => {
     fetchBooks(true)
+    // fetchBooks를 deps에서 제외해 offset 변경 시 재실행 방지
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedQuery])
 
   // 화면 크기 체크해서 모바일 여부 결정
