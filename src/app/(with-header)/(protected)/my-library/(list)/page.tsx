@@ -30,6 +30,7 @@ export default function MyLibraryPage() {
   const [offset, setOffset] = useState(0)
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   const fetchBooks = useCallback(
     async (reset = false) => {
@@ -40,15 +41,18 @@ export default function MyLibraryPage() {
           `/api/library?offset=${currentOffset}&limit=${LIMIT}&q=${debouncedQuery}`,
           { auth: true },
         )
-
         if (reset) {
           setBooks(res)
           setOffset(LIMIT)
         } else {
-          setBooks((prev) => [...prev, ...res])
+          setBooks((prev) => {
+            // 중복 id 거르기
+            const existingIds = new Set(prev.map((b) => b.id))
+            const filtered = res.filter((b) => !existingIds.has(b.id))
+            return [...prev, ...filtered]
+          })
           setOffset((prev) => prev + LIMIT)
         }
-
         setHasMore(res.length === LIMIT)
       } catch (e) {
         console.error(e)
@@ -59,9 +63,35 @@ export default function MyLibraryPage() {
     [debouncedQuery, offset],
   )
 
+  // 검색어나 fetchBooks 변경 시 초기 로드 -> 검색어가 바뀔 때만 0번째 페이지 재로딩
   useEffect(() => {
     fetchBooks(true)
-  }, [debouncedQuery, fetchBooks])
+  }, [debouncedQuery])
+
+  // 화면 크기 체크해서 모바일 여부 결정
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 767px)')
+    const onChange = (e: MediaQueryListEvent) =>
+      setIsMobile(e.matches)
+    setIsMobile(mql.matches)
+    mql.addEventListener('change', onChange)
+    return () => mql.removeEventListener('change', onChange)
+  }, [])
+
+  // 모바일: 무한 스크롤
+  useEffect(() => {
+    if (!isMobile) return
+    const handleScroll = () => {
+      if (loading || !hasMore) return
+      const { scrollTop, clientHeight, scrollHeight } =
+        document.documentElement
+      if (scrollHeight - scrollTop - clientHeight < 100) {
+        fetchBooks()
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [isMobile, loading, hasMore, fetchBooks])
 
   return (
     <div>
@@ -103,8 +133,8 @@ export default function MyLibraryPage() {
         ))}
       </div>
 
-      {/* 더 보기 버튼 */}
-      {hasMore && (
+      {/* 모바일이 아닐 때만 '더 보기' 버튼 */}
+      {!isMobile && hasMore && (
         <div className="text-center mt-6">
           <button
             disabled={loading}
