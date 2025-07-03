@@ -17,43 +17,49 @@ export default async function MyPage() {
   let recentBookData: RecentBookType[] | null = null
 
   try {
-    statisicData = await fetchWithAuthOnServer(
-      '/api/reading/statistics',
-    )
-  } catch (error) {
-    if (error instanceof Error)
-      console.error('통계 데이터 로딩 실패:', error.message)
-    else console.error('왜 나는지 모르는 에러:', error)
-  }
+    const results = await Promise.allSettled<
+      [
+        Promise<StatisicType>,
+        Promise<MonthlyBookType[]>,
+        Promise<TagBookType[]>,
+        Promise<RecentBookType[]>,
+      ]
+    >([
+      fetchWithAuthOnServer('/api/reading/statistics'),
+      fetchWithAuthOnServer('/api/reading/monthly'),
+      fetchWithAuthOnServer('/api/reading/tags/statistics'),
+      fetchWithAuthOnServer('/api/library/review/recent'),
+    ])
 
-  try {
-    monthlyBookData = await fetchWithAuthOnServer(
-      '/api/reading/monthly',
-    )
-  } catch (error) {
-    if (error instanceof Error)
-      console.error('월별 독서량 데이터 로딩 실패:', error.message)
-    else console.error('왜 나는지 모르는 에러:', error)
-  }
+    if (results[0].status === 'fulfilled')
+      statisicData = results[0].value
+    else console.error('통계 데이터 로딩 실패:', results[0].reason)
 
-  try {
-    tagBookData = await fetchWithAuthOnServer(
-      '/api/reading/tags/statistics',
-    )
-  } catch (error) {
-    if (error instanceof Error)
-      console.error('태그별 독서량 데이터 로딩 실패:', error.message)
-    else console.error('왜 나는지 모르는 에러:', error)
-  }
+    if (results[1].status === 'fulfilled')
+      monthlyBookData = results[1].value
+    else
+      console.error(
+        '월별 독서량 데이터 로딩 실패:',
+        results[1].reason,
+      )
 
-  try {
-    recentBookData = await fetchWithAuthOnServer(
-      '/api/library/review/recent',
-    )
+    if (results[2].status === 'fulfilled')
+      tagBookData = results[2].value
+    else
+      console.error(
+        '태그별 데이터 데이터 로딩 실패:',
+        results[2].reason,
+      )
+
+    if (results[3].status === 'fulfilled')
+      recentBookData = results[3].value
+    else
+      console.error(
+        '최근 읽은 책 데이터 로딩 실패:',
+        results[3].reason,
+      )
   } catch (error) {
-    if (error instanceof Error)
-      console.error('최근 읽은 책 데이터 로딩 실패:', error.message)
-    else console.error('왜 나는지 모르는 에러:', error)
+    console.error('전체 데이터 로딩 중 오류:', error)
   }
 
   return (
