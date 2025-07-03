@@ -188,7 +188,7 @@ export default function SignupPage() {
                   router.push('/auth/log-in')
                 }
               }}
-              className="bg-slate-950 hover:bg-gray-800 text-white text-sm py-2 px-4 rounded"
+              className="bg-slate-950 hover:bg-gray-800 hover:cursor-pointer text-white text-sm py-2 px-4 rounded"
             >
               확인
             </button>
