@@ -6,6 +6,7 @@ import { Trash2, Save, X, Plus, Star } from 'lucide-react'
 import { BookType } from '@/app/(with-header)/(protected)/my-library/_types'
 import Image from 'next/image'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
+import Modal from '@/common/modal'
 
 export default function BookDetailPage() {
   const { id } = useParams()
@@ -16,6 +17,11 @@ export default function BookDetailPage() {
   const [rating, setRating] = useState<number>(0)
   const [tags, setTags] = useState<string[]>([])
   const [newTag, setNewTag] = useState<string>('')
+  const [modalMessage, setModalMessage] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [shouldGoBack, setShouldGoBack] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] =
+    useState<boolean>(false)
 
   const recommendedTags: string[] = [
     '감동',
@@ -43,6 +49,8 @@ export default function BookDetailPage() {
         setTags(data.review?.tags || [])
       } catch (error) {
         console.error('책 상세 조회 실패:', error)
+        setModalMessage('책 상세 조회에 실패했습니다.')
+        setShowModal(true)
       }
     }
 
@@ -51,24 +59,29 @@ export default function BookDetailPage() {
     }
   }, [id])
 
+  // 태그 추가/삭제
   const addTag = (tagToAdd: string) => {
     const trimmed = tagToAdd.trim()
     if (trimmed && !tags.includes(trimmed)) {
       setTags([...tags, trimmed])
     }
   }
-
   const removeTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove))
   }
 
+  // 모달 닫기 핸들러
+  const handleModalClose = () => {
+    setShowModal(false)
+    if (shouldGoBack) router.back()
+  }
+
+  // 저장 / 수정 처리
   const onSave = async () => {
     if (!book) return
-
     const isNew =
       !book.review || Object.keys(book.review).length === 0
     const method = isNew ? 'POST' : 'PATCH'
-
     try {
       const response = await fetchWithAuth<BookType>(
         `/api/library/review/${book.id}`,
@@ -88,40 +101,49 @@ export default function BookDetailPage() {
           }),
         },
       )
-
       setBook(response)
-      alert(
+      setModalMessage(
         isNew ? '리뷰가 작성되었습니다.' : '리뷰가 수정되었습니다.',
       )
-      router.back()
+      setShouldGoBack(true)
+      setShowModal(true)
     } catch (error) {
       console.error(
         isNew ? '리뷰 작성 실패:' : '리뷰 수정 실패:',
         error,
       )
-      alert(
+      setModalMessage(
         isNew
           ? '리뷰 작성에 실패했습니다.'
           : '리뷰 수정에 실패했습니다.',
       )
+      setShouldGoBack(false)
+      setShowModal(true)
     }
   }
 
-  const onDelete = async () => {
+  // 삭제 모달 열기
+  const onDelete = () => {
+    setShowDeleteConfirm(true)
+  }
+
+  // 실제 삭제 처리
+  const confirmDelete = async () => {
     if (!book) return
-
-    if (!confirm('정말 삭제하시겠습니까?')) return
-
+    setShowDeleteConfirm(false)
     try {
       await fetchWithAuth(`/api/library/review/${book.id}`, {
         auth: true,
         method: 'DELETE',
       })
-      alert('리뷰가 삭제되었습니다.')
-      router.back()
-    } catch (error) {
-      console.error('삭제 실패:', error)
-      alert('삭제에 실패했습니다.')
+      setModalMessage('리뷰가 삭제되었습니다.')
+      setShouldGoBack(true)
+      setShowModal(true)
+    } catch (err) {
+      console.error('삭제 실패:', err)
+      setModalMessage('리뷰 삭제에 실패했습니다.')
+      setShouldGoBack(false)
+      setShowModal(true)
     }
   }
 
@@ -266,23 +288,63 @@ export default function BookDetailPage() {
             {/* 삭제/저장 버튼 */}
             <div className="flex justify-between pt-4">
               <button
-                onClick={onDelete}
-                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 h-10 px-4 cursor-pointer"
-              >
-                <Trash2 size={16} />
-                삭제
-              </button>
-              <button
                 onClick={onSave}
                 className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 h-10 px-4 cursor-pointer"
               >
                 <Save size={16} />
                 저장
               </button>
+              <button
+                onClick={onDelete}
+                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 h-10 px-4 cursor-pointer"
+              >
+                <Trash2 size={16} />
+                삭제
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* 삭제 확인 모달 */}
+      {showDeleteConfirm && (
+        <Modal>
+          <p className="text-center text-lg font-semibold mb-4">
+            정말 삭제하시겠습니까?
+          </p>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={confirmDelete}
+              className="rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 h-10 px-4 cursor-pointer"
+            >
+              삭제
+            </button>
+            <button
+              onClick={() => setShowDeleteConfirm(false)}
+              className="rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 h-10 px-4 cursor-pointer"
+            >
+              취소
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {/* 결과 모달 */}
+      {showModal && (
+        <Modal>
+          <p className="text-center text-lg font-semibold mb-2">
+            {modalMessage}
+          </p>
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={handleModalClose}
+              className="bg-slate-950 text-white py-2 px-4 rounded cursor-pointer"
+            >
+              닫기
+            </button>
+          </div>
+        </Modal>
+      )}
     </>
   )
 }
