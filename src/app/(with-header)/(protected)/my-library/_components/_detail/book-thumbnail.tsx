@@ -7,7 +7,7 @@ export default function BookThumbnail({ book }: { book: BookType }) {
     <div className="lg:col-span-1">
       <div className="rounded-lg border border-gray-300 bg-white shadow-sm p-6 text-center">
         <Image
-          src={book.thumbnailUrl}
+          src={book.thumbnailUrl || '/images/placeholder-book.svg'}
           width={150}
           height={200}
           alt={book.title}
