@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react'
 import LibraryBookItem from '../_components/_list/library-book-item'
+import ListPageSkeleton from '../_components/skeleton/list-page-skeleton'
 import { Search } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
 import { useDebounce } from '@/hooks/use-debounce'
@@ -93,6 +94,11 @@ export default function MyLibraryPage() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [isMobile, loading, hasMore, fetchBooks])
+
+  // 스켈레톤 노출
+  if (loading && books.length === 0) {
+    return <ListPageSkeleton />
+  }
 
   return (
     <div className="min-h-screen">
