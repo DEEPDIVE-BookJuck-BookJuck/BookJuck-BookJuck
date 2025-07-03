@@ -71,7 +71,11 @@ export default function ProfileItem() {
         <label className="font-bold w-1/4 text-sm text-center pr-2 pt-1">
           E-mail
         </label>
-        <p className="w-2/3">{email}</p>
+        {email ? (
+          <p className="w-2/3">{email}</p>
+        ) : (
+          <div className="w-2/3 h-6 bg-gray-200 rounded animate-pulse"></div>
+        )}
       </div>
       <div className="flex w-5/6 justify-between items-center">
         <label className="font-bold w-1/4 text-sm text-center pr-2 pt-1">
