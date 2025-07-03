@@ -8,7 +8,7 @@ export default function TagList({ tags = [] }: TagListProps) {
       {tags.map((tag) => (
         <span
           key={tag}
-          className="inline-flex items-center px-2.5 py-0.5 bg-gray-100 rounded-full text-xs font-semibold"
+          className="inline-flex items-center px-2.5 py-0.5 bg-gray-100 rounded-full text-xs font-semibold truncate"
         >
           #{tag}
         </span>

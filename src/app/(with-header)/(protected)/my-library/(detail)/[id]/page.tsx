@@ -11,6 +11,7 @@ import RatingInput from '../../_components/_detail/rating-input'
 import TagInput from '../../_components/_detail/tag-input'
 import ConfirmModal from '../../_components/_detail/confirm-modal'
 import ResultModal from '../../_components/_detail/result-modal'
+import DetailPageSkeleton from '../../_components/skeleton/detail-page-skeleton'
 
 export default function BookDetailPage() {
   const { id } = useParams()
@@ -20,6 +21,7 @@ export default function BookDetailPage() {
   const [memo, setMemo] = useState('')
   const [rating, setRating] = useState(0)
   const [tags, setTags] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [showResultModal, setShowResultModal] = useState(false)
@@ -27,6 +29,7 @@ export default function BookDetailPage() {
 
   useEffect(() => {
     async function load() {
+      setLoading(true)
       try {
         const data = await fetchWithAuth<BookType>(
           `/api/library/review/${id}`,
@@ -41,6 +44,8 @@ export default function BookDetailPage() {
         setModalMessage('상세 조회에 실패했습니다.')
         setShouldGoBack(false)
         setShowResultModal(true)
+      } finally {
+        setLoading(false)
       }
     }
     if (id) load()
@@ -103,6 +108,11 @@ export default function BookDetailPage() {
   const handleResultClose = () => {
     setShowResultModal(false)
     if (shouldGoBack) router.back()
+  }
+
+  // 스켈레톤 노출
+  if (loading) {
+    return <DetailPageSkeleton />
   }
 
   if (!book) return <p>책을 찾을 수 없습니다.</p>
