@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import LibraryBookItem from '../_components/_list/library-book-item'
 import { Search } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
@@ -27,23 +27,23 @@ export default function MyLibraryPage() {
   const [books, setBooks] = useState<Book[]>([])
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
-  const [offset, setOffset] = useState(0)
+  const offsetRef = useRef(0)
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
   const fetchBooks = useCallback(
     async (reset = false) => {
+      setLoading(true)
       try {
-        setLoading(true)
-        const currentOffset = reset ? 0 : offset
+        const currentOffset = reset ? 0 : offsetRef.current
         const res = await fetchWithAuth<Book[]>(
           `/api/library?offset=${currentOffset}&limit=${LIMIT}&q=${debouncedQuery}`,
           { auth: true },
         )
         if (reset) {
           setBooks(res)
-          setOffset(LIMIT)
+          offsetRef.current = LIMIT
         } else {
           setBooks((prev) => {
             // 중복 id 거르기
@@ -51,7 +51,7 @@ export default function MyLibraryPage() {
             const filtered = res.filter((b) => !existingIds.has(b.id))
             return [...prev, ...filtered]
           })
-          setOffset((prev) => prev + LIMIT)
+          offsetRef.current += LIMIT
         }
         setHasMore(res.length === LIMIT)
       } catch (e) {
@@ -60,17 +60,15 @@ export default function MyLibraryPage() {
         setLoading(false)
       }
     },
-    [debouncedQuery, offset],
+    [debouncedQuery],
   )
 
   // 검색어 변경 시 첫 페이지(9개) 초기 로드
   useEffect(() => {
     fetchBooks(true)
-    // fetchBooks를 deps에서 제외해 offset 변경 시 재실행 방지
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedQuery])
+  }, [fetchBooks])
 
-  // 화면 크기 체크해서 모바일 여부 결정
+  // 화면 크기 체크 (모바일 여부)
   useEffect(() => {
     const mql = window.matchMedia('(max-width: 767px)')
     const onChange = (e: MediaQueryListEvent) =>
@@ -83,6 +81,7 @@ export default function MyLibraryPage() {
   // 모바일: 무한 스크롤
   useEffect(() => {
     if (!isMobile) return
+
     const handleScroll = () => {
       if (loading || !hasMore) return
       const { scrollTop, clientHeight, scrollHeight } =
@@ -96,7 +95,7 @@ export default function MyLibraryPage() {
   }, [isMobile, loading, hasMore, fetchBooks])
 
   return (
-    <div>
+    <div className="h-screen">
       {/* 검색창 */}
       <div className="mb-8 space-y-4">
         <div className="flex gap-4">
@@ -135,7 +134,7 @@ export default function MyLibraryPage() {
         ))}
       </div>
 
-      {/* 모바일이 아닐 때만 '더 보기' 버튼 */}
+      {/* 태블릿, 데스크탑: 더보기 버튼 */}
       {!isMobile && hasMore && (
         <div className="text-center mt-6">
           <button
