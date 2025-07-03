@@ -3,11 +3,13 @@ import Image from 'next/image'
 interface BookThumbnailProps {
   title: string
   src: string
+  className?: string
 }
 
 export default function BookThumbnail({
   title,
   src,
+  className = 'w-16 h-20',
 }: BookThumbnailProps) {
   return (
     <Image
@@ -15,7 +17,7 @@ export default function BookThumbnail({
       width={150}
       height={200}
       alt={title}
-      className="w-16 h-20 object-cover rounded"
+      className={`object-cover rounded ${className}`}
     />
   )
 }
