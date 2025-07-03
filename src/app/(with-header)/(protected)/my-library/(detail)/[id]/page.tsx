@@ -1,99 +1,67 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { Trash2, Save, X, Plus, Star } from 'lucide-react'
+import { useEffect, useState, FormEvent } from 'react'
+import { Save, Trash2 } from 'lucide-react'
 import { BookType } from '@/app/(with-header)/(protected)/my-library/_types'
-import Image from 'next/image'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
-import Modal from '@/common/modal'
+
+import BookThumbnail from '../../_components/_detail/book-thumbnail'
+import RatingInput from '../../_components/_detail/rating-input'
+import TagInput from '../../_components/_detail/tag-input'
+import ConfirmModal from '../../_components/_detail/confirm-modal'
+import ResultModal from '../../_components/_detail/result-modal'
 
 export default function BookDetailPage() {
   const { id } = useParams()
   const router = useRouter()
 
   const [book, setBook] = useState<BookType | null>(null)
-  const [memo, setMemo] = useState<string>('')
-  const [rating, setRating] = useState<number>(0)
+  const [memo, setMemo] = useState('')
+  const [rating, setRating] = useState(0)
   const [tags, setTags] = useState<string[]>([])
-  const [newTag, setNewTag] = useState<string>('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
-  const [showModal, setShowModal] = useState(false)
+  const [showResultModal, setShowResultModal] = useState(false)
   const [shouldGoBack, setShouldGoBack] = useState(false)
-  const [showDeleteConfirm, setShowDeleteConfirm] =
-    useState<boolean>(false)
-
-  const recommendedTags: string[] = [
-    '감동',
-    '유익',
-    '재미있음',
-    '어려움',
-    '추천',
-    '실망',
-    '깊이있음',
-    '가벼움',
-  ]
 
   useEffect(() => {
-    async function fetchBookDetail() {
+    async function load() {
       try {
         const data = await fetchWithAuth<BookType>(
           `/api/library/review/${id}`,
-          {
-            auth: true,
-          },
+          { auth: true },
         )
         setBook(data)
-        setMemo(data.review?.memo || '')
-        setRating(data.review?.rating || 0)
-        setTags(data.review?.tags || [])
-      } catch (error) {
-        console.error('책 상세 조회 실패:', error)
-        setModalMessage('책 상세 조회에 실패했습니다.')
-        setShowModal(true)
+        setMemo(data.review?.memo ?? '')
+        setRating(data.review?.rating ?? 0)
+        setTags(data.review?.tags ?? [])
+      } catch (e) {
+        console.error('상세 조회 실패:', e)
+        setModalMessage('상세 조회에 실패했습니다.')
+        setShouldGoBack(false)
+        setShowResultModal(true)
       }
     }
-
-    if (id) {
-      fetchBookDetail()
-    }
+    if (id) load()
   }, [id])
 
-  // 태그 추가/삭제
-  const addTag = (tagToAdd: string) => {
-    const trimmed = tagToAdd.trim()
-    if (trimmed && !tags.includes(trimmed)) {
-      setTags([...tags, trimmed])
-    }
-  }
-  const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove))
-  }
-
-  // 모달 닫기 핸들러
-  const handleModalClose = () => {
-    setShowModal(false)
-    if (shouldGoBack) router.back()
-  }
-
-  // 저장 / 수정 처리
-  const onSave = async () => {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
     if (!book) return
     const isNew =
       !book.review || Object.keys(book.review).length === 0
     const method = isNew ? 'POST' : 'PATCH'
     try {
-      const response = await fetchWithAuth<BookType>(
+      const res = await fetchWithAuth<BookType>(
         `/api/library/review/${book.id}`,
         {
           auth: true,
           method,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             endDate:
-              book.review?.endDate ||
+              book.review?.endDate ??
               new Date().toISOString().slice(0, 10),
             memo,
             rating,
@@ -101,33 +69,18 @@ export default function BookDetailPage() {
           }),
         },
       )
-      setBook(response)
-      setModalMessage(
-        isNew ? '리뷰가 작성되었습니다.' : '리뷰가 수정되었습니다.',
-      )
+      setBook(res)
+      setModalMessage(isNew ? '리뷰 작성 완료' : '리뷰 수정 완료')
       setShouldGoBack(true)
-      setShowModal(true)
-    } catch (error) {
-      console.error(
-        isNew ? '리뷰 작성 실패:' : '리뷰 수정 실패:',
-        error,
-      )
-      setModalMessage(
-        isNew
-          ? '리뷰 작성에 실패했습니다.'
-          : '리뷰 수정에 실패했습니다.',
-      )
+      setShowResultModal(true)
+    } catch (e) {
+      console.error('저장 실패:', e)
+      setModalMessage(isNew ? '작성 실패' : '수정 실패')
       setShouldGoBack(false)
-      setShowModal(true)
+      setShowResultModal(true)
     }
   }
 
-  // 삭제 모달 열기
-  const onDelete = () => {
-    setShowDeleteConfirm(true)
-  }
-
-  // 실제 삭제 처리
   const confirmDelete = async () => {
     if (!book) return
     setShowDeleteConfirm(false)
@@ -136,15 +89,20 @@ export default function BookDetailPage() {
         auth: true,
         method: 'DELETE',
       })
-      setModalMessage('리뷰가 삭제되었습니다.')
+      setModalMessage('리뷰 삭제 완료')
       setShouldGoBack(true)
-      setShowModal(true)
-    } catch (err) {
-      console.error('삭제 실패:', err)
-      setModalMessage('리뷰 삭제에 실패했습니다.')
+      setShowResultModal(true)
+    } catch (e) {
+      console.error('삭제 실패:', e)
+      setModalMessage('삭제 실패')
       setShouldGoBack(false)
-      setShowModal(true)
+      setShowResultModal(true)
     }
+  }
+
+  const handleResultClose = () => {
+    setShowResultModal(false)
+    if (shouldGoBack) router.back()
   }
 
   if (!book) return <p>책을 찾을 수 없습니다.</p>
@@ -152,28 +110,7 @@ export default function BookDetailPage() {
   return (
     <>
       {/* 책 썸네일 */}
-      <div className="lg:col-span-1">
-        <div className="rounded-lg border border-gray-300 bg-white shadow-sm p-6">
-          <div className="flex flex-col items-center text-center">
-            <Image
-              src={book.thumbnailUrl}
-              width={150}
-              height={200}
-              alt={book.title}
-              className="w-32 h-40 object-cover rounded mx-auto mb-4"
-            />
-            <h3 className="font-semibold text-lg mb-1">
-              {book.title}
-            </h3>
-            <p className="text-gray-600 text-base mb-2">
-              {book.author}
-            </p>
-            <p className="text-sm text-gray-400">
-              읽은 날짜 : {book.review?.endDate || '-'}
-            </p>
-          </div>
-        </div>
-      </div>
+      <BookThumbnail book={book} />
 
       {/* 정보 입력 영역 */}
       <div className="lg:col-span-2">
@@ -181,34 +118,15 @@ export default function BookDetailPage() {
           <div className="flex flex-col space-y-1.5 p-6">
             <h3 className="text-2xl font-semibold">독후감</h3>
           </div>
-
-          <div className="p-6 pt-0 space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            className="p-6 pt-0 space-y-6"
+          >
             {/* 평점 */}
-            <div>
-              <label className="text-base font-medium mb-3 block">
-                평점
-              </label>
-              <div className="flex gap-2">
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <Star
-                    key={value}
-                    size={24}
-                    fill={value <= rating ? '#FBBF24' : '#D1D5DB'}
-                    stroke="none"
-                    className="cursor-pointer"
-                    onClick={() =>
-                      setRating((prev) =>
-                        prev === value ? 0 : value,
-                      )
-                    }
-                    aria-label={`${value}점 별`}
-                  />
-                ))}
-                <span className="ml-2 text-gray-600">
-                  ({rating}/5)
-                </span>
-              </div>
-            </div>
+            <RatingInput
+              rating={rating}
+              setRating={setRating}
+            />
 
             <hr className="border-gray-300" />
 
@@ -227,124 +145,49 @@ export default function BookDetailPage() {
             <hr className="border-gray-300" />
 
             {/* 태그 */}
-            <div>
-              <label className="text-base font-medium mb-3 block">
-                태그
-              </label>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {tags.map((tag, index) => (
-                  <div
-                    key={index}
-                    className="rounded-full border border-gray-300 px-2.5 py-0.5 text-xs font-semibold bg-slate-100 flex items-center gap-1"
-                  >
-                    {tag}
-                    <button
-                      onClick={() => removeTag(tag)}
-                      className="ml-1 hover:text-red-500"
-                    >
-                      <X size={10} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* 새 태그 입력 */}
-              <div className="flex gap-2 mb-4">
-                <input
-                  type="text"
-                  value={newTag}
-                  placeholder="새 태그 입력"
-                  onChange={(e) => setNewTag(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                />
-                <button
-                  onClick={() => {
-                    addTag(newTag)
-                    setNewTag('')
-                  }}
-                  className="inline-flex items-center justify-center gap-2 text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 h-9 rounded-md px-3"
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-
-              {/* 추천 태그 */}
-              <div className="space-y-2">
-                <p className="text-sm text-gray-600">추천 태그:</p>
-                <div className="flex flex-wrap gap-2">
-                  {recommendedTags.map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => addTag(tag)}
-                      className="inline-flex items-center justify-center gap-2 font-medium border border-gray-300 bg-transparent hover:bg-gray-200 h-9 rounded-md px-3 text-xs cursor-pointer"
-                    >
-                      #{tag}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <TagInput
+              tags={tags}
+              addTag={(t) => {
+                const v = t.trim()
+                if (v && !tags.includes(v)) setTags([...tags, v])
+              }}
+              removeTag={(t) => setTags(tags.filter((x) => x !== t))}
+            />
 
             {/* 삭제/저장 버튼 */}
             <div className="flex justify-between pt-4">
               <button
-                onClick={onSave}
-                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 h-10 px-4 cursor-pointer"
-              >
-                <Save size={16} />
-                저장
-              </button>
-              <button
-                onClick={onDelete}
+                type="button"
+                onClick={() => setShowDeleteConfirm(true)}
                 className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 h-10 px-4 cursor-pointer"
               >
-                <Trash2 size={16} />
-                삭제
+                <Trash2 size={16} /> 삭제
+              </button>
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 h-10 px-4 cursor-pointer"
+              >
+                <Save size={16} /> 저장
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
 
       {/* 삭제 확인 모달 */}
-      {showDeleteConfirm && (
-        <Modal>
-          <p className="text-center text-lg font-semibold mb-4">
-            정말 삭제하시겠습니까?
-          </p>
-          <div className="flex justify-center gap-4">
-            <button
-              onClick={confirmDelete}
-              className="rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 h-10 px-4 cursor-pointer"
-            >
-              삭제
-            </button>
-            <button
-              onClick={() => setShowDeleteConfirm(false)}
-              className="rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 h-10 px-4 cursor-pointer"
-            >
-              취소
-            </button>
-          </div>
-        </Modal>
-      )}
+      <ConfirmModal
+        open={showDeleteConfirm}
+        message="정말 삭제하시겠습니까?"
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
 
       {/* 결과 모달 */}
-      {showModal && (
-        <Modal>
-          <p className="text-center text-lg font-semibold mb-2">
-            {modalMessage}
-          </p>
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={handleModalClose}
-              className="bg-slate-950 text-white py-2 px-4 rounded cursor-pointer"
-            >
-              닫기
-            </button>
-          </div>
-        </Modal>
-      )}
+      <ResultModal
+        open={showResultModal}
+        message={modalMessage}
+        onClose={handleResultClose}
+      />
     </>
   )
 }
