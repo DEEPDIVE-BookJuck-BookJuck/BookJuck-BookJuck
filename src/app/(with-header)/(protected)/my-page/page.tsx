@@ -9,12 +9,14 @@ import {
   TagBookType,
 } from './_types'
 import { fetchWithAuthOnServer } from '@/lib/fetch-with-auth-server'
+import { ProfileType } from '../profile/_types'
 
 export default async function MyPage() {
   let statisicData: StatisicType | null = null
   let monthlyBookData: MonthlyBookType[] | null = null
   let tagBookData: TagBookType[] | null = null
   let recentBookData: RecentBookType[] | null = null
+  let profileData: ProfileType | null = null
 
   try {
     const results = await Promise.allSettled<
@@ -23,12 +25,14 @@ export default async function MyPage() {
         Promise<MonthlyBookType[]>,
         Promise<TagBookType[]>,
         Promise<RecentBookType[]>,
+        Promise<ProfileType>,
       ]
     >([
       fetchWithAuthOnServer('/api/reading/statistics'),
       fetchWithAuthOnServer('/api/reading/monthly'),
       fetchWithAuthOnServer('/api/reading/tags/statistics'),
       fetchWithAuthOnServer('/api/library/review/recent'),
+      fetchWithAuthOnServer('/api/user/profile'),
     ])
 
     if (results[0].status === 'fulfilled')
@@ -58,6 +62,11 @@ export default async function MyPage() {
         '최근 읽은 책 데이터 로딩 실패:',
         results[3].reason,
       )
+
+    if (results[4].status === 'fulfilled')
+      profileData = results[4].value
+    else
+      console.error('프로파일 데이터 로딩 실패:', results[4].reason)
   } catch (error) {
     console.error('전체 데이터 로딩 중 오류:', error)
   }
@@ -67,7 +76,9 @@ export default async function MyPage() {
       <div className="flex flex-col gap-6">
         <section className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">마이페이지</h1>
+            <h1 className="text-3xl font-bold">
+              {profileData?.nickName}의 독서통계
+            </h1>
             <p className="mt-3 text-gray-600">
               나의 독서 통계와 기록을 확인해보세요
             </p>
