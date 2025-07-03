@@ -95,7 +95,7 @@ export default function MyLibraryPage() {
   }, [isMobile, loading, hasMore, fetchBooks])
 
   return (
-    <div className="h-screen">
+    <div className="min-h-screen">
       {/* 검색창 */}
       <div className="mb-8 space-y-4">
         <div className="flex gap-4">
