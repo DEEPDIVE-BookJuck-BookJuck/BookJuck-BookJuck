@@ -5,6 +5,8 @@ import {
   SignupResponseType,
 } from '@/app/(without-header)/auth/_types'
 
+import { useAuthStore } from '@/store/auth-store'
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 export async function login({
@@ -52,8 +54,7 @@ export function logout() {
   document.cookie = 'accessToken=; Max-Age=0; path=/'
 
   if (typeof window !== 'undefined') {
-    const { clearAuth } =
-      require('@/store/auth-store').useAuthStore.getState()
+    const { clearAuth } = useAuthStore.getState()
     clearAuth()
   }
 }
