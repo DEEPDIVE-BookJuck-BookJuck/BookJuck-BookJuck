@@ -18,7 +18,6 @@ export default function MonthlyGraph({
   return (
     <ResponsiveContainer
       width={'100%'}
-      // height={'85%'}
       height={300}
     >
       <BarChart
