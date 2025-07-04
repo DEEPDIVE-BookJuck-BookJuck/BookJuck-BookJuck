@@ -1,4 +1,4 @@
-import { TagType } from '@/app/(with-header)/my-page/_types'
+import { TagType } from '@/app/(with-header)/(protected)/my-page/_types'
 
 const groupExtraTags = (data: TagType[]): TagType[] => {
   if (data.length <= 7) return data
@@ -18,7 +18,7 @@ const groupExtraTags = (data: TagType[]): TagType[] => {
   const etcItem: TagType = {
     tag: '기타',
     count: othersCount,
-    percent: othersPercent,
+    percent: Number(othersPercent.toFixed(1)),
     originalItems: others.map((item) => ({
       tag: item.tag,
       count: item.count,

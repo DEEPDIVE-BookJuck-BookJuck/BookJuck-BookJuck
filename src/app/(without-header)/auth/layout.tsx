@@ -15,8 +15,8 @@ export default function AuthLayout({
         />
       </head>
       <body>
-        <div className="flex items-center justify-center font-sans min-h-screen bg-gray-100 text-gray-900">
-          <div className="py-8 px-6 border-gray-300 rounded-lg shadow-md w-full max-w-md bg-white">
+        <div className="flex items-center justify-center font-sans min-h-screen bg-white md:bg-gray-100 text-gray-900">
+          <div className="py-8 px-6 border-gray-300 rounded-lg w-full max-w-md bg-white md:shadow-md">
             {children}
           </div>
         </div>
