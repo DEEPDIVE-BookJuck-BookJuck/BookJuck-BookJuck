@@ -74,7 +74,7 @@ export default async function MyPage() {
         <section className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">
-              {profileData?.nickName}의 독서통계
+              {profileData?.nickName} 님의 독서통계
             </h1>
             <p className="mt-3 text-gray-600">
               나의 독서 통계와 기록을 확인해보세요
