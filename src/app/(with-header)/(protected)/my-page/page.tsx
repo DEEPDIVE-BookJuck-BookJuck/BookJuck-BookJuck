@@ -2,20 +2,15 @@ import Graph from './_components/graph'
 import RecentBook from './_components/recent-book'
 import StatisticsCard from './_components/statistics-card'
 import Link from 'next/link'
-import {
-  MonthlyBookType,
-  RecentBookType,
-  StatisicType,
-  TagBookType,
-} from './_types'
+import { MonthlyBookType, StatisicType, TagBookType } from './_types'
 import { fetchWithAuthOnServer } from '@/lib/fetch-with-auth-server'
-import { ProfileType } from '../profile/_types'
+import { BookType, ProfileType } from '../_types'
 
 export default async function MyPage() {
   let statisicData: StatisicType | null = null
   let monthlyBookData: MonthlyBookType[] | null = null
   let tagBookData: TagBookType[] | null = null
-  let recentBookData: RecentBookType[] | null = null
+  let recentBookData: BookType[] | null = null
   let profileData: ProfileType | null = null
 
   try {
@@ -24,7 +19,7 @@ export default async function MyPage() {
         Promise<StatisicType>,
         Promise<MonthlyBookType[]>,
         Promise<TagBookType[]>,
-        Promise<RecentBookType[]>,
+        Promise<BookType[]>,
         Promise<ProfileType>,
       ]
     >([

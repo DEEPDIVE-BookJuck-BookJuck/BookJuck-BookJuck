@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
-import { ProfileType } from '../_types'
+import { ProfileType } from '../../_types'
 
 export default function ProfileItem() {
   const [nickName, setNickName] = useState('')

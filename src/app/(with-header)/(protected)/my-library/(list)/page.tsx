@@ -6,26 +6,12 @@ import ListPageSkeleton from '../_components/skeleton/list-page-skeleton'
 import { Search } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
 import { useDebounce } from '@/hooks/use-debounce'
-
-interface Review {
-  endDate: string
-  memo: string
-  rating: number
-  tags: string[]
-}
-
-interface Book {
-  id: string
-  title: string
-  author: string
-  thumbnailUrl: string
-  review: Review
-}
+import { BookType } from '../../_types'
 
 const LIMIT = 9
 
 export default function MyLibraryPage() {
-  const [books, setBooks] = useState<Book[]>([])
+  const [books, setBooks] = useState<BookType[]>([])
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 300)
   const offsetRef = useRef(0)
@@ -38,7 +24,7 @@ export default function MyLibraryPage() {
       setLoading(true)
       try {
         const currentOffset = reset ? 0 : offsetRef.current
-        const res = await fetchWithAuth<Book[]>(
+        const res = await fetchWithAuth<BookType[]>(
           `/api/library?offset=${currentOffset}&limit=${LIMIT}&q=${debouncedQuery}`,
           { auth: true },
         )
