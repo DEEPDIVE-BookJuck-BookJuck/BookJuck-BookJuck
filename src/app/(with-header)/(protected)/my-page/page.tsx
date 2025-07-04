@@ -6,6 +6,8 @@ import { MonthlyBookType, StatisicType, TagBookType } from './_types'
 import { fetchWithAuthOnServer } from '@/lib/fetch-with-auth-server'
 import { BookType, ProfileType } from '../_types'
 
+export const dynamic = 'force-dynamic'
+
 export default async function MyPage() {
   let statisicData: StatisicType | null = null
   let monthlyBookData: MonthlyBookType[] | null = null
