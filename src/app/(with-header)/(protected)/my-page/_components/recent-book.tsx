@@ -1,11 +1,7 @@
-import { RecentBookType } from '../_types'
+import { BookType } from '../../_types'
 import RecentBookItem from './recent-book-item'
 
-export default function RecentBook({
-  data,
-}: {
-  data: RecentBookType[]
-}) {
+export default function RecentBook({ data }: { data: BookType[] }) {
   return (
     <div className="bg-white border-1 border-gray-300 rounded-xl px-6 py-6">
       <p className="text-2xl font-bold mb-3">최근 읽은 책</p>

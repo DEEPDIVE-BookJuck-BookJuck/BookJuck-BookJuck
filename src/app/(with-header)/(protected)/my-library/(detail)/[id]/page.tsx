@@ -3,7 +3,6 @@
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState, FormEvent } from 'react'
 import { Save, Trash2 } from 'lucide-react'
-import { BookType } from '@/app/(with-header)/(protected)/my-library/_types'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
 
 import BookThumbnail from '../../_components/_detail/book-thumbnail'
@@ -12,6 +11,7 @@ import TagInput from '../../_components/_detail/tag-input'
 import ConfirmModal from '../../_components/_detail/confirm-modal'
 import ResultModal from '../../_components/_detail/result-modal'
 import DetailPageSkeleton from '../../_components/skeleton/detail-page-skeleton'
+import { BookType } from '../../../_types'
 
 export default function BookDetailPage() {
   const { id } = useParams()

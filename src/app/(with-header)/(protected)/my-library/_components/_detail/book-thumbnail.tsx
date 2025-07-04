@@ -1,6 +1,7 @@
 'use client'
+
 import Image from 'next/image'
-import { BookType } from '@/app/(with-header)/(protected)/my-library/_types'
+import { BookType } from '../../../_types'
 
 export default function BookThumbnail({ book }: { book: BookType }) {
   return (

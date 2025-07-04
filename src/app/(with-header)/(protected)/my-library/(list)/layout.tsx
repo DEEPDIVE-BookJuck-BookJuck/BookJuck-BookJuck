@@ -1,9 +1,6 @@
 import React, { ReactNode } from 'react'
 import { fetchWithAuthOnServer } from '@/lib/fetch-with-auth-server'
-
-interface UserProfile {
-  nickName: string
-}
+import { ProfileType } from '../../_types'
 
 export default async function MyLibraryLayout({
   children,
@@ -12,7 +9,7 @@ export default async function MyLibraryLayout({
 }) {
   let nickName = '사용자'
   try {
-    const user = await fetchWithAuthOnServer<UserProfile>(
+    const user = await fetchWithAuthOnServer<ProfileType>(
       '/api/user/profile',
     )
     nickName = user.nickName
