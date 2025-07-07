@@ -61,7 +61,12 @@ export default function LoginPage() {
       document.cookie = `accessToken=${accessToken}; path=/; max-age=86400`
 
       setAuth(accessToken, user)
-      router.push('/')
+
+      const redirectPath =
+        sessionStorage.getItem('redirectAfterLogin') || '/'
+      sessionStorage.removeItem('redirectAfterLogin')
+
+      router.push(redirectPath)
     } catch (error: unknown) {
       const message =
         error instanceof Error
