@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react'
+import { cookies } from 'next/headers'
 import { fetchWithAuthOnServer } from '@/lib/fetch-with-auth-server'
 import { ProfileType } from '../../_types'
 
@@ -9,6 +10,15 @@ export default async function MyLibraryLayout({
 }: {
   children: ReactNode
 }) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get('accessToken')?.value
+  if (!token) {
+    return (
+      <p className="text-center text-gray-500 mt-20">
+        로그인 후 이용해주세요
+      </p>
+    )
+  }
   let nickName = '사용자'
   try {
     const user = await fetchWithAuthOnServer<ProfileType>(
