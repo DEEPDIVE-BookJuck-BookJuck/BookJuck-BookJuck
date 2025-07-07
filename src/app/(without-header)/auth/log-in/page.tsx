@@ -66,7 +66,9 @@ export default function LoginPage() {
         sessionStorage.getItem('redirectAfterLogin') || '/'
       sessionStorage.removeItem('redirectAfterLogin')
 
-      router.push(redirectPath)
+      router.push(
+        redirectPath.startsWith('/auth') ? '/' : redirectPath,
+      )
     } catch (error: unknown) {
       const message =
         error instanceof Error

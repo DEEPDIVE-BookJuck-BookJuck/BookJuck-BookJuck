@@ -20,7 +20,10 @@ export default function ProtectedLayout({
 
   useEffect(() => {
     if (!user) {
-      sessionStorage.setItem('redirectAfterLogin', pathname)
+      const isAuthPage = pathname.startsWith('/auth')
+      if (!isAuthPage) {
+        sessionStorage.setItem('redirectAfterLogin', pathname)
+      }
 
       setShowModal(true)
 
