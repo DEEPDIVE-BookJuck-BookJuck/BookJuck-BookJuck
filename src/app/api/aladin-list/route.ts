@@ -1,7 +1,3 @@
-// /app/api/aladin-list/route.ts
-
-import { NextRequest } from 'next/server'
-
 export async function GET() {
   const apiKey = process.env.NEXT_PUBLIC_ALADIN_API_KEY
   if (!apiKey) {
