@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { login } from '@/lib/auth'
 import { useAuthStore } from '@/store/auth-store'
+import { validateEmail, validatePassword } from '@/lib/validation'
 
 import Input from '../_components/input'
 import FormError from '../_components/form-error'
@@ -22,29 +23,13 @@ export default function LoginPage() {
   const setAuth = useAuthStore((state) => state.setAuth)
   const router = useRouter()
 
-  const validateEmail = (email: string) => {
-    const trimmed = email.trim()
-    if (!trimmed) return '이 입력란을 작성하세요.'
-    const emailRegex =
-      /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/
-    if (!emailRegex.test(trimmed))
-      return '올바른 이메일 주소를 입력해 주세요.'
-    return ''
-  }
-
-  const validatePassword = (password: string) => {
-    const trimmed = password.trim()
-    if (!trimmed) return '이 입력란을 작성하세요.'
-    if (trimmed.length < 8)
-      return '비밀번호는 최소 8자 이상이어야 합니다.'
-    return ''
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     const emailMsg = validateEmail(email)
-    const passwordMsg = validatePassword(password)
+    const passwordMsg = validatePassword(password, {
+      requireSpecialChar: false,
+    })
 
     setEmailError(emailMsg)
     setPasswordError(passwordMsg)
