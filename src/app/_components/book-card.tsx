@@ -12,14 +12,31 @@ export interface BookCardPropsType {
   book: BookType
 }
 
+function isErrorWithStatus(error: unknown): error is { status?: number } {
+  return typeof error === 'object' && error !== null && 'status' in error
+}
+
 const BookCard: FC<BookCardPropsType> = ({ book }) => {
   const [isAdded, setIsAdded] = useState(false)
   const [modalMessage, setModalMessage] = useState<string | null>(null)
+  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] = useState(false)
   const router = useRouter()
 
   const handleAddToLibrary = async () => {
     try {
-      const res = await fetchWithAuth<AddBookResponse>('/api/library', {
+    
+      const cookies = document.cookie
+      const accessToken = cookies
+        .split('; ')
+        .find(row => row.startsWith('accessToken='))
+        ?.split('=')[1]
+      if (!accessToken) {
+        setModalMessage('로그인 후 이용해주세요.')
+        setShouldRedirectAfterModal(true)
+        return
+      }
+
+      await fetchWithAuth<AddBookResponse>('/api/library', {
         method: 'POST',
         auth: true,
         headers: {
@@ -35,18 +52,24 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
 
       setModalMessage('내 서재에 추가되었습니다!')
       setIsAdded(true)
-    } catch (error: any) {
-      const status = error?.status
+      setShouldRedirectAfterModal(false)
+    } catch (error: unknown) {
+      let status: number | undefined = undefined
+      if (isErrorWithStatus(error)) {
+        status = error.status
+      }
 
       if (status === 401) {
         setModalMessage('로그인 후 이용해주세요.')
-        router.push('/auth/log-in')
+        setShouldRedirectAfterModal(true)
       } else if (status === 409) {
         setModalMessage('이미 내 서재에 있는 책입니다.')
         setIsAdded(true)
+        setShouldRedirectAfterModal(false)
       } else {
         console.error('서재 추가 실패:', error)
         setModalMessage('서재 추가에 실패했습니다.')
+        setShouldRedirectAfterModal(false)
       }
     }
   }
@@ -102,7 +125,12 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
           <div className="text-center">
             <p className="mb-4">{modalMessage}</p>
             <button
-              onClick={() => setModalMessage(null)}
+              onClick={() => {
+                setModalMessage(null)
+                if (shouldRedirectAfterModal) {
+                  router.push('/auth/log-in')
+                }
+              }}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               확인
