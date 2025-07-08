@@ -33,7 +33,6 @@ export default function MyLibraryPage() {
           offsetRef.current = LIMIT
         } else {
           setBooks((prev) => {
-            // 중복 id 거르기
             const existingIds = new Set(prev.map((b) => b.id))
             const filtered = res.filter((b) => !existingIds.has(b.id))
             return [...prev, ...filtered]
@@ -50,12 +49,10 @@ export default function MyLibraryPage() {
     [debouncedQuery],
   )
 
-  // 검색어 변경 시 첫 페이지(9개) 초기 로드
   useEffect(() => {
     fetchBooks(true)
   }, [fetchBooks])
 
-  // 화면 크기 체크 (모바일 여부)
   useEffect(() => {
     const mql = window.matchMedia('(max-width: 767px)')
     const onChange = (e: MediaQueryListEvent) =>
@@ -88,7 +85,6 @@ export default function MyLibraryPage() {
 
   return (
     <div className="min-h-screen">
-      {/* 검색창 */}
       <div className="mb-8 space-y-4">
         <div className="flex gap-4">
           <div className="relative flex-1">
@@ -103,8 +99,6 @@ export default function MyLibraryPage() {
           </div>
         </div>
       </div>
-
-      {/* 상태 표시 */}
       {loading && books.length === 0 && (
         <p className="text-center text-gray-500 mt-20">
           불러오는 중...
@@ -115,8 +109,6 @@ export default function MyLibraryPage() {
           아직 저장된 책이 없습니다.
         </p>
       )}
-
-      {/* 리스트 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {books.map((book) => (
           <LibraryBookItem
@@ -125,8 +117,6 @@ export default function MyLibraryPage() {
           />
         ))}
       </div>
-
-      {/* 태블릿, 데스크탑: 더보기 버튼 */}
       {!isMobile && hasMore && (
         <div className="text-center mt-6">
           <button

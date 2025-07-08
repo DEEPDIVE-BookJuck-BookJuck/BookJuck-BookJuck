@@ -4,7 +4,7 @@ interface TagListProps {
 
 export default function TagList({ tags = [] }: TagListProps) {
   return (
-    <div className="flex flex-wrap gap-1 mb-3">
+    <div className="flex flex-wrap gap-1">
       {tags.map((tag) => (
         <span
           key={tag}
