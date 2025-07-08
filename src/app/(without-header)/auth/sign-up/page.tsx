@@ -3,6 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { signup } from '@/lib/auth'
+import {
+  validateNickname,
+  validateEmail,
+  validatePassword,
+  validateConfirm,
+} from '@/lib/validation'
+
 import Input from '../_components/input'
 import FormError from '../_components/form-error'
 import Button from '../_components/button'
@@ -25,39 +32,14 @@ export default function SignupPage() {
 
   const router = useRouter()
 
-  const validateNickname = (nickName: string) =>
-    nickName.trim() ? '' : '사용하실 닉네임을 입력해 주세요.'
-
-  const validateEmail = (email: string) =>
-    !email.trim()
-      ? '이메일을 입력해 주세요.'
-      : /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/.test(
-          email.trim(),
-        )
-      ? ''
-      : '올바른 이메일 주소를 입력해 주세요.'
-
-  const validatePassword = (pw: string) => {
-    const trimmed = pw.trim()
-    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>_\-+=\\[\]~`]/
-
-    if (!trimmed) return '비밀번호를 입력해 주세요.'
-    if (trimmed.length < 8)
-      return '비밀번호는 최소 8자 이상이어야 합니다.'
-    if (!specialCharRegex.test(trimmed))
-      return '비밀번호에 특수문자를 하나 이상 포함해 주세요.'
-    return ''
-  }
-
-  const validateConfirm = (confirm: string, pw: string) =>
-    confirm !== pw ? '비밀번호가 일치하지 않습니다.' : ''
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     const nickNameMsg = validateNickname(nickName)
     const emailMsg = validateEmail(email)
-    const pwMsg = validatePassword(password)
+    const pwMsg = validatePassword(password, {
+      requireSpecialChar: true,
+    })
     const confirmMsg = validateConfirm(confirmPassword, password)
 
     setNickNameError(nickNameMsg)
