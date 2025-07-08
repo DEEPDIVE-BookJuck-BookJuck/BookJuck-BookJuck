@@ -119,10 +119,7 @@ export default function BookDetailPage() {
 
   return (
     <>
-      {/* 책 썸네일 */}
       <BookThumbnail book={book} />
-
-      {/* 정보 입력 영역 */}
       <div className="lg:col-span-2">
         <div className="rounded-lg border border-gray-300 text-gray-900 bg-white shadow-sm mb-8">
           <div className="flex flex-col space-y-1.5 p-6">
@@ -132,7 +129,6 @@ export default function BookDetailPage() {
             onSubmit={handleSubmit}
             className="p-6 pt-0 space-y-6"
           >
-            {/* 평점 */}
             <RatingInput
               rating={rating}
               setRating={setRating}
@@ -140,7 +136,6 @@ export default function BookDetailPage() {
 
             <hr className="border-gray-300" />
 
-            {/* 리뷰 */}
             <div>
               <label className="text-base font-medium mb-3 block">
                 리뷰
@@ -151,10 +146,7 @@ export default function BookDetailPage() {
                 className="flex w-full rounded-md border border-gray-300 px-3 py-2 text-sm min-h-[200px] resize-none"
               />
             </div>
-
             <hr className="border-gray-300" />
-
-            {/* 태그 */}
             <TagInput
               tags={tags}
               addTag={(t) => {
@@ -163,8 +155,6 @@ export default function BookDetailPage() {
               }}
               removeTag={(t) => setTags(tags.filter((x) => x !== t))}
             />
-
-            {/* 삭제/저장 버튼 */}
             <div className="flex justify-between pt-4">
               <button
                 type="button"
@@ -184,7 +174,6 @@ export default function BookDetailPage() {
         </div>
       </div>
 
-      {/* 삭제 확인 모달 */}
       <ConfirmModal
         open={showDeleteConfirm}
         message="정말 삭제하시겠습니까?"
@@ -192,7 +181,6 @@ export default function BookDetailPage() {
         onCancel={() => setShowDeleteConfirm(false)}
       />
 
-      {/* 결과 모달 */}
       <ResultModal
         open={showResultModal}
         message={modalMessage}
