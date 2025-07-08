@@ -54,6 +54,15 @@ export default function BookDetailPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!book) return
+    if (
+      !book?.review ||
+      (memo === '' && rating === 0 && tags.length === 0)
+    ) {
+      setModalMessage('독후감을 작성해주세요')
+      setShouldGoBack(false)
+      setShowResultModal(true)
+      return
+    }
     const isNew =
       !book.review || Object.keys(book.review).length === 0
     const method = isNew ? 'POST' : 'PATCH'
@@ -75,14 +84,35 @@ export default function BookDetailPage() {
         },
       )
       setBook(res)
-      setModalMessage(isNew ? '리뷰 작성 완료' : '리뷰 수정 완료')
+      setModalMessage(
+        isNew
+          ? '독후감이 저장되었습니다.'
+          : '독후감이 수정되었습니다.',
+      )
       setShouldGoBack(true)
       setShowResultModal(true)
     } catch (e) {
       console.error('저장 실패:', e)
-      setModalMessage(isNew ? '작성 실패' : '수정 실패')
+      setModalMessage(
+        isNew
+          ? '독후감 저장에 실패하였습니다.'
+          : '독후감 수정에 실패하였습니다.',
+      )
       setShouldGoBack(false)
       setShowResultModal(true)
+    }
+  }
+
+  const handleDeleteClick = () => {
+    if (
+      !book?.review ||
+      (memo === '' && rating === 0 && tags.length === 0)
+    ) {
+      setModalMessage('독후감을 작성해주세요')
+      setShouldGoBack(false)
+      setShowResultModal(true)
+    } else {
+      setShowDeleteConfirm(true)
     }
   }
 
@@ -94,12 +124,12 @@ export default function BookDetailPage() {
         auth: true,
         method: 'DELETE',
       })
-      setModalMessage('리뷰 삭제 완료')
+      setModalMessage('독후감이 삭제되었습니다.')
       setShouldGoBack(true)
       setShowResultModal(true)
     } catch (e) {
       console.error('삭제 실패:', e)
-      setModalMessage('삭제 실패')
+      setModalMessage('독후감 삭제에 실패했습니다.')
       setShouldGoBack(false)
       setShowResultModal(true)
     }
@@ -158,14 +188,14 @@ export default function BookDetailPage() {
             <div className="flex justify-between pt-4">
               <button
                 type="button"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 h-10 px-4 cursor-pointer"
+                onClick={handleDeleteClick}
+                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-30 cursor-pointer"
               >
                 <Trash2 size={16} /> 삭제
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 h-10 px-4 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800  cursor-pointer"
               >
                 <Save size={16} /> 저장
               </button>
