@@ -189,7 +189,7 @@ export default function BookDetailPage() {
               <button
                 type="button"
                 onClick={handleDeleteClick}
-                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-30 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 cursor-pointer"
               >
                 <Trash2 size={16} /> 삭제
               </button>
