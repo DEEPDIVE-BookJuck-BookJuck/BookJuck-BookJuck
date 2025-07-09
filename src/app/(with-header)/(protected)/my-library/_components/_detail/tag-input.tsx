@@ -72,8 +72,6 @@ export default function TagInput({
   return (
     <div>
       <label className="text-base font-medium mb-3 block">태그</label>
-
-      {/* 현재 태그 */}
       <div className="flex flex-wrap gap-2 mb-4">
         {tags.map((t, i) => (
           <div
@@ -90,8 +88,6 @@ export default function TagInput({
           </div>
         ))}
       </div>
-
-      {/* 새 태그 입력 */}
       <div className="flex gap-2 mb-4">
         <input
           type="text"
@@ -114,8 +110,6 @@ export default function TagInput({
           <Plus size={16} />
         </button>
       </div>
-
-      {/* 추천 태그 */}
       <p className="text-sm text-gray-600 mb-2">추천 태그:</p>
       <div className="flex flex-wrap gap-2 mb-2">
         {recommended.map((t) => (
@@ -129,8 +123,6 @@ export default function TagInput({
           </button>
         ))}
       </div>
-
-      {/* 에러 모달 */}
       {showErrorModal && (
         <Modal>
           <p className="text-center text-lg font-semibold mb-2">
