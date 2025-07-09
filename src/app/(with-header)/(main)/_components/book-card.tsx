@@ -1,12 +1,13 @@
 'use client'
 
 import Image from 'next/image'
-import { BookType, AddBookResponse } from '@/app/_types/index'
+
 import { FC, useState } from 'react'
 import { BookOpen } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
 import Modal from '@/common/modal'
+import { AddBookResponse, BookType } from '../_types'
 
 export interface BookCardPropsType {
   book: BookType
@@ -14,8 +15,11 @@ export interface BookCardPropsType {
 
 const BookCard: FC<BookCardPropsType> = ({ book }) => {
   const [isAdded, setIsAdded] = useState(false)
-  const [modalMessage, setModalMessage] = useState<string | null>(null)
-  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] = useState(false)
+  const [modalMessage, setModalMessage] = useState<string | null>(
+    null,
+  )
+  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] =
+    useState(false)
   const router = useRouter()
 
   const handleAddToLibrary = async () => {
@@ -61,7 +65,11 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
       let status: number | undefined =
         err.status ?? err.response?.status ?? err.statusCode
 
-      if (!status && err instanceof Error && err.message.includes('이미')) {
+      if (
+        !status &&
+        err instanceof Error &&
+        err.message.includes('이미')
+      ) {
         status = 409
       }
 
@@ -116,13 +124,22 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
         </div>
 
         <div className="h-[40%] px-3 py-2 flex flex-col justify-center items-center text-center">
-          <h3 className="text-lg font-semibold w-full truncate" title={book.title}>
+          <h3
+            className="text-lg font-semibold w-full truncate"
+            title={book.title}
+          >
             {book.title}
           </h3>
-          <p className="text-base text-gray-500 w-full truncate" title={book.author}>
+          <p
+            className="text-base text-gray-500 w-full truncate"
+            title={book.author}
+          >
             {book.author}
           </p>
-          <p className="text-sm text-gray-400 w-full truncate" title={book.isbn}>
+          <p
+            className="text-sm text-gray-400 w-full truncate"
+            title={book.isbn}
+          >
             ISBN: {book.isbn || '정보 없음'}
           </p>
         </div>

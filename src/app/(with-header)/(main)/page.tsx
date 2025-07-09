@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import BookCard from '@/app/_components/book-card'
-import { BookType, RawBookItemType } from '@/app/_types/index'
+
 import { Search } from 'lucide-react'
+import { BookType, RawBookItemType } from './_types'
+import BookCard from './_components/book-card'
 
 export default function Home() {
   const [query, setQuery] = useState('')
@@ -16,18 +17,22 @@ export default function Home() {
 
     try {
       const response = await fetch(
-        `/api/aladin-search?query=${encodeURIComponent(query)}`
+        `/api/aladin-search?query=${encodeURIComponent(query)}`,
       )
       const text = await response.text()
       const data = JSON.parse(text)
 
-      const mappedBooks: BookType[] = (data.item || []).map((item: RawBookItemType) => ({
-        id: item.itemId,
-        cover: item.cover || 'https://via.placeholder.com/96x144?text=No+Image',
-        title: item.title || '제목 없음',
-        author: item.author || '저자 미상',
-        isbn: item.isbn || '',
-      }))
+      const mappedBooks: BookType[] = (data.item || []).map(
+        (item: RawBookItemType) => ({
+          id: item.itemId,
+          cover:
+            item.cover ||
+            'https://via.placeholder.com/96x144?text=No+Image',
+          title: item.title || '제목 없음',
+          author: item.author || '저자 미상',
+          isbn: item.isbn || '',
+        }),
+      )
 
       setBooks(mappedBooks)
     } catch (error) {
@@ -46,13 +51,17 @@ export default function Home() {
       const text = await response.text()
       const data = JSON.parse(text)
 
-      const mappedBooks: BookType[] = (data.item || []).map((item: RawBookItemType) => ({
-        id: item.itemId,
-        cover: item.cover || 'https://via.placeholder.com/96x144?text=No+Image',
-        title: item.title || '제목 없음',
-        author: item.author || '저자 미상',
-        isbn: item.isbn || '',
-      }))
+      const mappedBooks: BookType[] = (data.item || []).map(
+        (item: RawBookItemType) => ({
+          id: item.itemId,
+          cover:
+            item.cover ||
+            'https://via.placeholder.com/96x144?text=No+Image',
+          title: item.title || '제목 없음',
+          author: item.author || '저자 미상',
+          isbn: item.isbn || '',
+        }),
+      )
 
       setBooks(mappedBooks)
     } catch (error) {
@@ -92,9 +101,11 @@ export default function Home() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-
           {books.map((book) => (
-            <BookCard key={book.id} book={book} />
+            <BookCard
+              key={book.id}
+              book={book}
+            />
           ))}
         </div>
       </div>
