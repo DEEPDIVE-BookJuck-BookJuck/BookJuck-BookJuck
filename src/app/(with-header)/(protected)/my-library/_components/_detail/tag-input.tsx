@@ -35,12 +35,10 @@ export default function TagInput({
 
   const tryAdd = (raw: string) => {
     const trimmed = raw.trim()
-    if (trimmed.length < 2) {
-      setErrorMessage('태그는 최소 2글자 이상이어야 합니다.')
-      setShowErrorModal(true)
+    if (!trimmed) {
       return
     }
-    if (!/^[가-힣0-9A-Za-z]+$/.test(trimmed)) {
+    if (!/^[ㄱ-ㅎ가-힣0-9A-Za-z]+$/.test(trimmed)) {
       setErrorMessage('태그는 한글 또는 영숫자만 가능합니다.')
       setShowErrorModal(true)
       return
