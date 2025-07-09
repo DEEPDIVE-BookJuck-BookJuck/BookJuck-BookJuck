@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { PenLine } from 'lucide-react'
 import BookThumbnail from './book-thumbnail'
-import TagList from './tag-list'
+import TagList from '../../../_components/tag-list'
 import { BookType } from '../../../_types'
 
 export default function LibraryBookItem({
