@@ -54,6 +54,15 @@ export default function BookDetailPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!book) return
+    if (
+      !book?.review ||
+      (memo === '' && rating === 0 && tags.length === 0)
+    ) {
+      setModalMessage('독후감을 작성해주세요')
+      setShouldGoBack(false)
+      setShowResultModal(true)
+      return
+    }
     const isNew =
       !book.review || Object.keys(book.review).length === 0
     const method = isNew ? 'POST' : 'PATCH'
@@ -75,14 +84,35 @@ export default function BookDetailPage() {
         },
       )
       setBook(res)
-      setModalMessage(isNew ? '리뷰 작성 완료' : '리뷰 수정 완료')
+      setModalMessage(
+        isNew
+          ? '독후감이 저장되었습니다.'
+          : '독후감이 수정되었습니다.',
+      )
       setShouldGoBack(true)
       setShowResultModal(true)
     } catch (e) {
       console.error('저장 실패:', e)
-      setModalMessage(isNew ? '작성 실패' : '수정 실패')
+      setModalMessage(
+        isNew
+          ? '독후감 저장에 실패하였습니다.'
+          : '독후감 수정에 실패하였습니다.',
+      )
       setShouldGoBack(false)
       setShowResultModal(true)
+    }
+  }
+
+  const handleDeleteClick = () => {
+    if (
+      !book?.review ||
+      (memo === '' && rating === 0 && tags.length === 0)
+    ) {
+      setModalMessage('독후감을 작성해주세요')
+      setShouldGoBack(false)
+      setShowResultModal(true)
+    } else {
+      setShowDeleteConfirm(true)
     }
   }
 
@@ -94,12 +124,12 @@ export default function BookDetailPage() {
         auth: true,
         method: 'DELETE',
       })
-      setModalMessage('리뷰 삭제 완료')
+      setModalMessage('독후감이 삭제되었습니다.')
       setShouldGoBack(true)
       setShowResultModal(true)
     } catch (e) {
       console.error('삭제 실패:', e)
-      setModalMessage('삭제 실패')
+      setModalMessage('독후감 삭제에 실패했습니다.')
       setShouldGoBack(false)
       setShowResultModal(true)
     }
@@ -119,10 +149,7 @@ export default function BookDetailPage() {
 
   return (
     <>
-      {/* 책 썸네일 */}
       <BookThumbnail book={book} />
-
-      {/* 정보 입력 영역 */}
       <div className="lg:col-span-2">
         <div className="rounded-lg border border-gray-300 text-gray-900 bg-white shadow-sm mb-8">
           <div className="flex flex-col space-y-1.5 p-6">
@@ -132,7 +159,6 @@ export default function BookDetailPage() {
             onSubmit={handleSubmit}
             className="p-6 pt-0 space-y-6"
           >
-            {/* 평점 */}
             <RatingInput
               rating={rating}
               setRating={setRating}
@@ -140,7 +166,6 @@ export default function BookDetailPage() {
 
             <hr className="border-gray-300" />
 
-            {/* 리뷰 */}
             <div>
               <label className="text-base font-medium mb-3 block">
                 리뷰
@@ -151,10 +176,7 @@ export default function BookDetailPage() {
                 className="flex w-full rounded-md border border-gray-300 px-3 py-2 text-sm min-h-[200px] resize-none"
               />
             </div>
-
             <hr className="border-gray-300" />
-
-            {/* 태그 */}
             <TagInput
               tags={tags}
               addTag={(t) => {
@@ -163,19 +185,17 @@ export default function BookDetailPage() {
               }}
               removeTag={(t) => setTags(tags.filter((x) => x !== t))}
             />
-
-            {/* 삭제/저장 버튼 */}
             <div className="flex justify-between pt-4">
               <button
                 type="button"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 h-10 px-4 cursor-pointer"
+                onClick={handleDeleteClick}
+                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 cursor-pointer"
               >
                 <Trash2 size={16} /> 삭제
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 h-10 px-4 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800  cursor-pointer"
               >
                 <Save size={16} /> 저장
               </button>
@@ -184,7 +204,6 @@ export default function BookDetailPage() {
         </div>
       </div>
 
-      {/* 삭제 확인 모달 */}
       <ConfirmModal
         open={showDeleteConfirm}
         message="정말 삭제하시겠습니까?"
@@ -192,7 +211,6 @@ export default function BookDetailPage() {
         onCancel={() => setShowDeleteConfirm(false)}
       />
 
-      {/* 결과 모달 */}
       <ResultModal
         open={showResultModal}
         message={modalMessage}

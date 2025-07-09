@@ -24,25 +24,22 @@ export default function LibraryBookItem({
           <BookThumbnail
             title={title}
             src={thumbnailUrl}
-            className="w-24 h-32"
+            className="w-[120px] h-[152px]"
           />
         </div>
-
         <div className="flex-1 min-w-0  pl-4">
-          <h3 className="font-semibold text-lg mb-1 truncate">
-            {title}
+          <h3 className="font-semibold text-lg mb-1 truncate h-6">
+            {title || '\u00A0'}
           </h3>
-          <p className="text-gray-600 text-sm mb-1 truncate">
-            {author}
+          <p className="text-gray-600 text-sm mb-1 truncate h-5">
+            {author || '\u00A0'}
           </p>
-          {hasReview && (
-            <p className="text-gray-500 text-xs mb-3 truncate">
-              읽은 날: {review.endDate}
-            </p>
-          )}
-
-          <TagList tags={review?.tags ?? []} />
-
+          <p className="text-gray-500 text-xs mb-3 truncate h-4">
+            {hasReview ? `읽은 날: ${review.endDate}` : '\u00A0'}
+          </p>
+          <div className="mb-2 h-5 overflow-hidden">
+            <TagList tags={review?.tags ?? []} />
+          </div>
           <button
             onClick={goToDetail}
             className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-9 rounded-md px-3 mt-2 cursor-pointer

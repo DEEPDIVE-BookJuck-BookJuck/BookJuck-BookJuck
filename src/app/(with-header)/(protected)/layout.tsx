@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAuthStore } from '@/store/auth-store'
 import Modal from '@/common/modal'
 
@@ -12,13 +12,19 @@ interface ProtectedLayoutProps {
 export default function ProtectedLayout({
   children,
 }: ProtectedLayoutProps) {
-  const { user } = useAuthStore((state) => state)
   const router = useRouter()
+  const pathname = usePathname()
+  const { user } = useAuthStore((state) => state)
   const [showModal, setShowModal] = useState(false)
   const [countdown, setCountdown] = useState(3) // 시작 초 설정 : 3초
 
   useEffect(() => {
     if (!user) {
+      const isAuthPage = pathname.startsWith('/auth')
+      if (!isAuthPage) {
+        sessionStorage.setItem('redirectAfterLogin', pathname)
+      }
+
       setShowModal(true)
 
       const interval = setInterval(() => {
@@ -33,7 +39,7 @@ export default function ProtectedLayout({
 
       return () => clearInterval(interval)
     }
-  }, [user, router])
+  }, [user, pathname, router])
 
   if (!user && !showModal) return null
 

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { MonthlyBookType, StatisicType, TagBookType } from './_types'
 import { fetchWithAuthOnServer } from '@/lib/fetch-with-auth-server'
 import { BookType, ProfileType } from '../_types'
+import { cookies } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,6 +17,10 @@ export default async function MyPage() {
   let profileData: ProfileType | null = null
 
   try {
+    const cookieStore = await cookies()
+    const accessToken = cookieStore.get('accessToken')?.value
+    if (!accessToken) return
+
     const results = await Promise.allSettled<
       [
         Promise<StatisicType>,
@@ -62,8 +67,7 @@ export default async function MyPage() {
 
     if (results[4].status === 'fulfilled')
       profileData = results[4].value
-    else
-      console.error('프로파일 데이터 로딩 실패:', results[4].reason)
+    else console.error('프로필 데이터 로딩 실패:', results[4].reason)
   } catch (error) {
     console.error('전체 데이터 로딩 중 오류:', error)
   }
@@ -74,7 +78,7 @@ export default async function MyPage() {
         <section className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">
-              {profileData?.nickName} 님의 독서통계
+              {profileData?.nickName} 님의 독서 통계
             </h1>
             <p className="mt-3 text-gray-600">
               나의 독서 통계와 기록을 확인해보세요
@@ -111,7 +115,7 @@ export default async function MyPage() {
           {monthlyBookData && (
             <Graph
               title="MonthlyGraph"
-              data={monthlyBookData.reverse()}
+              data={monthlyBookData}
             />
           )}
           {tagBookData && (
