@@ -1,17 +1,9 @@
+'use client'
+
 import { FetchWithAuthOptionsType } from '@/app/(without-header)/auth/_types'
+import { useAuthStore } from '@/store/auth-store'
 
 const API_URL_CLIENT = process.env.NEXT_PUBLIC_API_URL!
-
-function getAccessTokenFromCookie(): string | null {
-  if (typeof document === 'undefined') return null
-
-  return (
-    document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('accessToken='))
-      ?.split('=')[1] || null
-  )
-}
 
 // 클라이언트 전용 fetch
 export async function fetchWithAuth<T = unknown>(
@@ -27,7 +19,7 @@ export async function fetchWithAuth<T = unknown>(
   const { auth = false, ...restOptions } = options
   const headers = new Headers(restOptions.headers || {})
 
-  const token = getAccessTokenFromCookie()
+  const token = useAuthStore.getState().accessToken
 
   if (auth && token) {
     headers.set('Authorization', `Bearer ${token}`)
