@@ -21,7 +21,7 @@ export default function MonthlyGraph({
       height={300}
     >
       <BarChart
-        data={data.reverse()}
+        data={data}
         margin={{
           top: 5,
           right: 30,
@@ -35,6 +35,7 @@ export default function MonthlyGraph({
         <Tooltip />
         <Bar
           dataKey="readBooks"
+          name="읽은 책"
           fill="#72A9F7"
           activeBar={
             <Rectangle
@@ -45,6 +46,7 @@ export default function MonthlyGraph({
         />
         <Bar
           dataKey="reviewBooks"
+          name="작성한 독후감"
           fill="#87CEEB"
           activeBar={
             <Rectangle
