@@ -12,24 +12,23 @@ export interface BookCardPropsType {
   book: BookType
 }
 
-function isErrorWithStatus(error: unknown): error is { status?: number } {
-  return typeof error === 'object' && error !== null && 'status' in error
-}
-
 const BookCard: FC<BookCardPropsType> = ({ book }) => {
   const [isAdded, setIsAdded] = useState(false)
-  const [modalMessage, setModalMessage] = useState<string | null>(null)
-  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] = useState(false)
+  const [modalMessage, setModalMessage] = useState<string | null>(
+    null,
+  )
+  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] =
+    useState(false)
   const router = useRouter()
 
   const handleAddToLibrary = async () => {
     try {
-    
       const cookies = document.cookie
       const accessToken = cookies
         .split('; ')
-        .find(row => row.startsWith('accessToken='))
+        .find((row) => row.startsWith('accessToken='))
         ?.split('=')[1]
+
       if (!accessToken) {
         setModalMessage('로그인 후 이용해주세요.')
         setShouldRedirectAfterModal(true)
@@ -54,20 +53,28 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
       setIsAdded(true)
       setShouldRedirectAfterModal(false)
     } catch (error: unknown) {
-      let status: number | undefined = undefined
-      if (isErrorWithStatus(error)) {
-        status = error.status
+      console.error('에러 내용:', error)
+
+      const err = error as any
+      let status: number | undefined =
+        err.status ?? err.response?.status ?? err.statusCode
+
+      if (
+        !status &&
+        err instanceof Error &&
+        err.message.includes('이미')
+      ) {
+        status = 409
       }
 
       if (status === 401) {
         setModalMessage('로그인 후 이용해주세요.')
         setShouldRedirectAfterModal(true)
       } else if (status === 409) {
-        setModalMessage('이미 내 서재에 있는 책입니다.')
+        setModalMessage('내 서재에 이미 존재하는 책입니다.')
         setIsAdded(true)
         setShouldRedirectAfterModal(false)
       } else {
-        console.error('서재 추가 실패:', error)
         setModalMessage('서재 추가에 실패했습니다.')
         setShouldRedirectAfterModal(false)
       }
@@ -77,7 +84,7 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
   return (
     <>
       <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow w-full h-[300px] flex flex-col overflow-hidden">
-        <div className="relative bg-gray-100 border-b border-gray-300 flex justify-center items-center h-[60%] p-4 rounded-t-lg">
+        <div className="relative bg-gray-200 flex justify-center items-center h-[60%] p-4 rounded-t-lg">
           <Image
             src={book.cover || '/images/placeholder-book.svg'}
             alt={book.title}
@@ -89,7 +96,7 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
           <div className="absolute top-2 right-2 flex gap-2">
             <button
               onClick={handleAddToLibrary}
-              className="w-8 h-8 flex items-center justify-center bg-white text-black border border-gray-300 rounded-full hover:bg-gray-100 transition"
+              className="w-8 h-8 flex items-center justify-center bg-white text-black border border-gray-300 rounded-full hover:bg-gray-100 transition cursor-pointer"
               aria-label="내 서재 추가"
             >
               <BookOpen
@@ -111,11 +118,23 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
         </div>
 
         <div className="h-[40%] px-3 py-2 flex flex-col justify-center items-center text-center">
-          <h3 className="text-sm font-semibold w-full truncate" title={book.title}>
+          <h3
+            className="text-lg font-semibold w-full truncate"
+            title={book.title}
+          >
             {book.title}
           </h3>
-          <p className="text-xs text-gray-500 w-full truncate" title={book.author}>
+          <p
+            className="text-base text-gray-500 w-full truncate"
+            title={book.author}
+          >
             {book.author}
+          </p>
+          <p
+            className="text-sm text-gray-400 w-full truncate"
+            title={book.isbn}
+          >
+            ISBN: {book.isbn || '정보 없음'}
           </p>
         </div>
       </div>
@@ -131,7 +150,7 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
                   router.push('/auth/log-in')
                 }
               }}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-4 py-2 bg-slate-950 text-white rounded hover:bg-slate-900 cursor-pointer"
             >
               확인
             </button>
@@ -143,3 +162,4 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
 }
 
 export default BookCard
+
