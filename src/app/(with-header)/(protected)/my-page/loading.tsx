@@ -9,7 +9,7 @@ export default function Loading() {
         <div>
           <div className="flex">
             <div className="w-20 px-4 py-2 bg-gray-200 text-gray-200 mr-2 rounded animate-pulse"></div>
-            <h1 className="text-3xl font-bold">님의 독서통계</h1>
+            <h1 className="text-3xl font-bold">님의 독서 통계</h1>
           </div>
           <p className="mt-3 text-gray-600">
             나의 독서 통계와 기록을 확인해보세요
