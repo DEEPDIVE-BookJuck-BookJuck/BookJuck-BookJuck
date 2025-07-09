@@ -14,11 +14,8 @@ export interface BookCardPropsType {
 
 const BookCard: FC<BookCardPropsType> = ({ book }) => {
   const [isAdded, setIsAdded] = useState(false)
-  const [modalMessage, setModalMessage] = useState<string | null>(
-    null,
-  )
-  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] =
-    useState(false)
+  const [modalMessage, setModalMessage] = useState<string | null>(null)
+  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] = useState(false)
   const router = useRouter()
 
   const handleAddToLibrary = async () => {
@@ -55,15 +52,16 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
     } catch (error: unknown) {
       console.error('에러 내용:', error)
 
-      const err = error as any
+      const err = error as Error & {
+        status?: number
+        response?: { status?: number }
+        statusCode?: number
+      }
+
       let status: number | undefined =
         err.status ?? err.response?.status ?? err.statusCode
 
-      if (
-        !status &&
-        err instanceof Error &&
-        err.message.includes('이미')
-      ) {
+      if (!status && err instanceof Error && err.message.includes('이미')) {
         status = 409
       }
 
@@ -118,22 +116,13 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
         </div>
 
         <div className="h-[40%] px-3 py-2 flex flex-col justify-center items-center text-center">
-          <h3
-            className="text-lg font-semibold w-full truncate"
-            title={book.title}
-          >
+          <h3 className="text-lg font-semibold w-full truncate" title={book.title}>
             {book.title}
           </h3>
-          <p
-            className="text-base text-gray-500 w-full truncate"
-            title={book.author}
-          >
+          <p className="text-base text-gray-500 w-full truncate" title={book.author}>
             {book.author}
           </p>
-          <p
-            className="text-sm text-gray-400 w-full truncate"
-            title={book.isbn}
-          >
+          <p className="text-sm text-gray-400 w-full truncate" title={book.isbn}>
             ISBN: {book.isbn || '정보 없음'}
           </p>
         </div>
@@ -162,4 +151,3 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
 }
 
 export default BookCard
-
