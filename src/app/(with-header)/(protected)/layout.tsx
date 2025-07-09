@@ -26,20 +26,21 @@ export default function ProtectedLayout({
       }
 
       setShowModal(true)
+      setCountdown(3)
 
-      const interval = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            router.replace('/auth/log-in')
-            return 0
-          }
-          return prev - 1
-        })
+      const timer = setInterval(() => {
+        setCountdown((prev) => prev - 1)
       }, 1000)
 
-      return () => clearInterval(interval)
+      return () => clearInterval(timer)
     }
-  }, [user, pathname, router])
+  }, [user, pathname])
+
+  useEffect(() => {
+    if (countdown === 0 && !user) {
+      router.replace('/auth/log-in')
+    }
+  }, [countdown, user, router])
 
   if (!user && !showModal) return null
 
