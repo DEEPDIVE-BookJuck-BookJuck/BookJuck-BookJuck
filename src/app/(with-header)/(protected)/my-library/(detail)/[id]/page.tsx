@@ -118,11 +118,13 @@ export default function BookDetailPage() {
       setShowResultModal(true)
     } catch (e) {
       console.error('저장 실패:', e)
-      setModalMessage(
-        isNew
+      const errorMsg =
+        e instanceof Error
+          ? e.message
+          : isNew
           ? '독후감 저장에 실패하였습니다.'
-          : '독후감 수정에 실패하였습니다.',
-      )
+          : '독후감 수정에 실패하였습니다.'
+      setModalMessage(errorMsg)
       setShouldGoBack(false)
       setShowResultModal(true)
     }
@@ -153,7 +155,10 @@ export default function BookDetailPage() {
       setShowResultModal(true)
     } catch (e) {
       console.error('삭제 실패:', e)
-      setModalMessage('독후감 삭제에 실패했습니다.')
+      const errorMsg =
+        e instanceof Error ? e.message : '독후감 삭제에 실패했습니다.'
+      setModalMessage(errorMsg)
+
       setShouldGoBack(false)
       setShowResultModal(true)
     }
