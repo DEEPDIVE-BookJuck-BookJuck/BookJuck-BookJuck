@@ -27,6 +27,7 @@ export default function ProfileItem() {
         setNickName(newNickName?.nickName)
         setUpdateNickName('')
         setActive(false)
+        router.refresh()
       } catch (error) {
         if (error instanceof Error)
           console.error('닉네임 변경 로딩 실패:', error.message)

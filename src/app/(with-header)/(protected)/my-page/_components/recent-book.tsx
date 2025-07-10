@@ -18,6 +18,7 @@ export default function RecentBook({ data }: { data: BookType[] }) {
               author={recentBook.author}
               date={recentBook.review.endDate}
               rating={recentBook.review.rating}
+              tags={recentBook.review.tags}
             />
           ))}
         </div>
