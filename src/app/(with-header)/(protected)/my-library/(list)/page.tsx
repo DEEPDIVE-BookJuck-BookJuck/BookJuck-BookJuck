@@ -62,7 +62,6 @@ export default function MyLibraryPage() {
     return () => mql.removeEventListener('change', onChange)
   }, [])
 
-  // 모바일: 무한 스크롤
   useEffect(() => {
     if (!isMobile) return
 
@@ -78,7 +77,6 @@ export default function MyLibraryPage() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [isMobile, loading, hasMore, fetchBooks])
 
-  // 스켈레톤 노출
   if (loading && books.length === 0) {
     return <ListPageSkeleton />
   }
