@@ -19,7 +19,16 @@ export function validateEmail(email: string): string {
 
 // 닉네임 유효성 검사 함수
 export function validateNickname(nickName: string): string {
-  return nickName.trim() ? '' : '사용하실 닉네임을 입력해 주세요.'
+  const trimmed = nickName.trim()
+
+  if (!trimmed) {
+    return '사용하실 닉네임을 입력해 주세요.'
+  }
+  if (trimmed.length > 7) {
+    return '닉네임은 7글자 이하로 설정해주세요.'
+  }
+
+  return ''
 }
 
 // 비밀번호 유효성 검사 함수
