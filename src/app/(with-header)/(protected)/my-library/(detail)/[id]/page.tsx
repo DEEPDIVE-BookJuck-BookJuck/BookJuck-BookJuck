@@ -2,12 +2,9 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState, useRef, FormEvent } from 'react'
-import { Save, Trash2 } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
-
 import BookThumbnail from '../../_components/_detail/book-thumbnail'
-import RatingInput from '../../_components/_detail/rating-input'
-import TagInput from '../../_components/_detail/tag-input'
+import ReviewForm from '../../_components/review-form'
 import ConfirmModal from '../../_components/_detail/confirm-modal'
 import ResultModal from '../../_components/_detail/result-modal'
 import DetailPageSkeleton from '../../_components/skeleton/detail-page-skeleton'
@@ -47,7 +44,6 @@ export default function BookDetailPage() {
         setRating(data.review?.rating ?? 0)
         setTags(data.review?.tags ?? [])
         setDirty(false)
-
         originalMemo.current = data.review?.memo ?? ''
         originalRating.current = data.review?.rating ?? 0
         originalTags.current = data.review?.tags ?? []
@@ -178,7 +174,7 @@ export default function BookDetailPage() {
     <>
       <BookThumbnail book={book} />
       <div className="lg:col-span-2">
-        <div className="rounded-lg border border-gray-300 text-gray-900 bg-white shadow-sm mb-8">
+        {/* <div className="rounded-lg border border-gray-300 text-gray-900 bg-white shadow-sm mb-8">
           <div className="flex flex-col space-y-1.5 p-6">
             <h3 className="text-2xl font-semibold">독후감</h3>
           </div>
@@ -228,7 +224,21 @@ export default function BookDetailPage() {
               </button>
             </div>
           </form>
-        </div>
+        </div> */}
+        <ReviewForm
+          mode="edit"
+          rating={rating}
+          setRating={setRating}
+          memo={memo}
+          onChangeMemo={setMemo}
+          tags={tags}
+          onAddTag={(t) => setTags((prev) => [...prev, t])}
+          onRemoveTag={(t) =>
+            setTags((prev) => prev.filter((x) => x !== t))
+          }
+          onSubmit={handleSubmit}
+          onDelete={() => setShowDeleteConfirm(true)}
+        />
       </div>
 
       <ConfirmModal
