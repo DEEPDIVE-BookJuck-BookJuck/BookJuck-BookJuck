@@ -96,7 +96,7 @@ export default function LoginPage() {
         <FormError message={emailError} />
 
         <label
-          className="text-sm font-semibold mt-5 mb-2 block"
+          className="text-sm font-semibold mb-2 block"
           htmlFor="password"
         >
           비밀번호

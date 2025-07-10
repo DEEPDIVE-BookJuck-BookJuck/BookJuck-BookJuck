@@ -13,7 +13,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const className = `
-    w-full h-10 px-3 py-2 mt-4 mb-4 rounded-md text-white bg-slate-950 hover:bg-gray-800 hover:cursor-pointer
+    w-full h-10 px-3 py-2 mt-1.5 mb-4 rounded-md text-white bg-slate-950 hover:bg-gray-800 hover:cursor-pointer
     disabled:bg-gray-400
     disabled:cursor-not-allowed
   `

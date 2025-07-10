@@ -100,7 +100,7 @@ export default function SignupPage() {
         <FormError message={nickNameError} />
 
         <label
-          className="text-sm font-semibold mt-4 mb-2 block"
+          className="text-sm font-semibold mb-2 block"
           htmlFor="email"
         >
           이메일
@@ -116,7 +116,7 @@ export default function SignupPage() {
         <FormError message={emailError} />
 
         <label
-          className="text-sm font-semibold mt-4 mb-2 block"
+          className="text-sm font-semibold mb-2 block"
           htmlFor="password"
         >
           비밀번호
@@ -131,7 +131,7 @@ export default function SignupPage() {
         <FormError message={passwordError} />
 
         <label
-          className="text-sm font-semibold mt-4 mb-2 block"
+          className="text-sm font-semibold mb-2 block"
           htmlFor="confirm"
         >
           비밀번호 확인
