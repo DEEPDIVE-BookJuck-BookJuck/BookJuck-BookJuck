@@ -15,6 +15,7 @@ import {
 import { useAuthStore } from '@/store/auth-store'
 import { logout } from '@/lib/auth'
 import { useEffect, useState } from 'react'
+import Modal from './modal'
 
 export default function Header() {
   const pathname = usePathname()
@@ -22,6 +23,7 @@ export default function Header() {
   const clearAuth = useAuthStore((state) => state.clearAuth)
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? 'hidden' : ''
@@ -29,6 +31,10 @@ export default function Header() {
       document.body.style.overflow = ''
     }
   }, [isMenuOpen])
+
+  const confirmLogout = () => {
+    setShowLogoutConfirm(true)
+  }
 
   const handleLogout = () => {
     logout()
@@ -94,7 +100,7 @@ export default function Header() {
           <div className="hidden md:hidden lg:flex gap-2 text-sm">
             {accessToken ? (
               <button
-                onClick={handleLogout}
+                onClick={confirmLogout}
                 className="px-4 py-2 border bg-slate-950 text-white rounded hover:bg-gray-800 hover: cursor-pointer"
               >
                 로그아웃
@@ -151,7 +157,7 @@ export default function Header() {
               {accessToken ? (
                 <button
                   onClick={() => {
-                    handleLogout()
+                    confirmLogout()
                     setIsMenuOpen(false)
                   }}
                   className="flex items-center gap-3 text-md font-semibold text-gray-900"
@@ -182,6 +188,29 @@ export default function Header() {
             </div>
           </div>
         </div>
+      )}
+      {showLogoutConfirm && (
+        <Modal>
+          <div className="text-center mb-4">
+            <p className="text-md font-semibold mb-2">
+              로그아웃하시겠습니까?
+            </p>
+          </div>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={handleLogout}
+              className="bg-slate-950 text-white text-sm py-2 px-4 rounded hover:bg-gray-800 cursor-pointer"
+            >
+              예
+            </button>
+            <button
+              onClick={() => setShowLogoutConfirm(false)}
+              className="border border-gray-300 text-sm py-2 px-4 rounded hover:bg-gray-100 cursor-pointer"
+            >
+              아니오
+            </button>
+          </div>
+        </Modal>
       )}
     </>
   )
