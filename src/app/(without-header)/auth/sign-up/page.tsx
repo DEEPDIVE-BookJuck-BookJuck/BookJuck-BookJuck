@@ -70,6 +70,16 @@ export default function SignupPage() {
     }
   }
 
+  const isFormValid =
+    nickName.trim() !== '' &&
+    email.trim() !== '' &&
+    password !== '' &&
+    confirmPassword !== '' &&
+    !nickNameError &&
+    !emailError &&
+    !passwordError &&
+    !confirmError
+
   return (
     <>
       <form
@@ -94,13 +104,17 @@ export default function SignupPage() {
           type="text"
           placeholder="홍길동"
           value={nickName}
-          onChange={(e) => setNickName(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setNickName(value)
+            setNickNameError(validateNickname(value))
+          }}
           hasError={!!nickNameError}
         />
         <FormError message={nickNameError} />
 
         <label
-          className="text-sm font-semibold mt-4 mb-2 block"
+          className="text-sm font-semibold mb-2 block"
           htmlFor="email"
         >
           이메일
@@ -110,13 +124,17 @@ export default function SignupPage() {
           type="email"
           placeholder="your@email.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setEmail(value)
+            setEmailError(validateEmail(value))
+          }}
           hasError={!!emailError}
         />
         <FormError message={emailError} />
 
         <label
-          className="text-sm font-semibold mt-4 mb-2 block"
+          className="text-sm font-semibold mb-2 block"
           htmlFor="password"
         >
           비밀번호
@@ -125,13 +143,20 @@ export default function SignupPage() {
           id="password"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setPassword(value)
+            setPasswordError(
+              validatePassword(value, { requireSpecialChar: true }),
+            )
+            setConfirmError(validateConfirm(confirmPassword, value))
+          }}
           hasError={!!passwordError}
         />
         <FormError message={passwordError} />
 
         <label
-          className="text-sm font-semibold mt-4 mb-2 block"
+          className="text-sm font-semibold mb-2 block"
           htmlFor="confirm"
         >
           비밀번호 확인
@@ -140,12 +165,21 @@ export default function SignupPage() {
           id="confirm"
           type="password"
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setConfirmPassword(value)
+            setConfirmError(validateConfirm(value, password))
+          }}
           hasError={!!confirmError}
         />
         <FormError message={confirmError} />
 
-        <Button isLoading={isLoading}>회원가입</Button>
+        <Button
+          isLoading={isLoading}
+          disabled={!isFormValid}
+        >
+          회원가입
+        </Button>
 
         <div className="text-sm text-center">
           이미 계정이 있으신가요?{' '}
