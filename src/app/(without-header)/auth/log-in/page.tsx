@@ -90,7 +90,11 @@ export default function LoginPage() {
           type="email"
           value={email}
           placeholder="your@email.com"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setEmail(value)
+            setEmailError(validateEmail(value))
+          }}
           hasError={!!emailError}
         />
         <FormError message={emailError} />
@@ -105,7 +109,11 @@ export default function LoginPage() {
           id="password"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setPassword(value)
+            setPasswordError(validatePassword(value))
+          }}
           hasError={!!passwordError}
         />
         <FormError message={passwordError} />

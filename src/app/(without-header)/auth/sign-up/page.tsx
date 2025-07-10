@@ -94,7 +94,11 @@ export default function SignupPage() {
           type="text"
           placeholder="홍길동"
           value={nickName}
-          onChange={(e) => setNickName(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setNickName(value)
+            setNickNameError(validateNickname(value))
+          }}
           hasError={!!nickNameError}
         />
         <FormError message={nickNameError} />
@@ -110,7 +114,11 @@ export default function SignupPage() {
           type="email"
           placeholder="your@email.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setEmail(value)
+            setEmailError(validateEmail(value))
+          }}
           hasError={!!emailError}
         />
         <FormError message={emailError} />
@@ -125,7 +133,14 @@ export default function SignupPage() {
           id="password"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setPassword(value)
+            setPasswordError(
+              validatePassword(value, { requireSpecialChar: true }),
+            )
+            setConfirmError(validateConfirm(confirmPassword, value))
+          }}
           hasError={!!passwordError}
         />
         <FormError message={passwordError} />
@@ -140,7 +155,11 @@ export default function SignupPage() {
           id="confirm"
           type="password"
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setConfirmPassword(value)
+            setConfirmError(validateConfirm(value, password))
+          }}
           hasError={!!confirmError}
         />
         <FormError message={confirmError} />
