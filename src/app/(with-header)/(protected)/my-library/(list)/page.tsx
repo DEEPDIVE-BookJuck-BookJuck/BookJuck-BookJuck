@@ -94,7 +94,7 @@ export default function MyLibraryPage() {
               placeholder="제목 또는 저자 검색"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm pl-10"
+              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm pl-10 focus:ring-1 focus:ring-inset focus:ring-gray-400 focus:outline-none"
             />
           </div>
         </div>
