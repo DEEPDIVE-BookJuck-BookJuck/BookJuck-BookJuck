@@ -9,6 +9,7 @@ export default function ProfileItem() {
   const [nickName, setNickName] = useState('')
   const [email, setEmail] = useState('')
   const [updateNickName, setUpdateNickName] = useState('')
+  const [errorMsg, setErrorMsg] = useState('')
   const [active, setActive] = useState(false)
   const router = useRouter()
 
@@ -40,9 +41,15 @@ export default function ProfileItem() {
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     setUpdateNickName(newValue)
-    setActive(newValue.trim() !== '')
-  }
 
+    if (newValue.length > 7) {
+      setErrorMsg('닉네임은 7글자 이하로 설정해주세요!')
+      setActive(false)
+    } else {
+      setErrorMsg('')
+      setActive(newValue.trim() !== '')
+    }
+  }
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -78,18 +85,21 @@ export default function ProfileItem() {
           <div className="w-2/3 h-6 bg-gray-200 rounded animate-pulse"></div>
         )}
       </div>
-      <div className="flex w-5/6 justify-between items-center">
-        <label className="font-bold w-1/4 text-sm text-center pr-2 pt-1">
+      <div className="flex w-5/6 justify-between items-start">
+        <label className="font-bold w-1/4 text-sm text-center pr-2 pt-3">
           닉네임
         </label>
-        <input
-          type="text"
-          name="nickName"
-          value={updateNickName}
-          onChange={handleInput}
-          placeholder={nickName}
-          className="w-2/3 h-11 p-2 border border-zinc-200 rounded focus:ring-1 focus:ring-inset focus:ring-gray-400 focus:outline-none"
-        />
+        <div className="flex flex-col justify-start w-2/3 gap-1.5">
+          <input
+            type="text"
+            name="nickName"
+            value={updateNickName}
+            onChange={handleInput}
+            placeholder={nickName}
+            className="w-full h-11 p-2 border border-zinc-200 rounded focus:ring-1 focus:ring-inset focus:ring-gray-400 focus:outline-none"
+          />
+          <div className="text-sm h-6 text-red-600">{errorMsg}</div>
+        </div>
       </div>
       <section className="flex w-1/2 justify-between mt-2">
         <button
