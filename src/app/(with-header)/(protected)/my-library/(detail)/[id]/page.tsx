@@ -126,18 +126,6 @@ export default function BookDetailPage() {
     }
   }
 
-  const handleDeleteClick = () => {
-    if (
-      !book?.review ||
-      (memo === '' && rating === 0 && tags.length === 0)
-    ) {
-      setModalMessage('독후감을 작성해주세요')
-      setShouldGoBack(false)
-      setShowResultModal(true)
-    } else {
-      setShowDeleteConfirm(true)
-    }
-  }
   const confirmDelete = async () => {
     if (!book) return
     setShowDeleteConfirm(false)
@@ -174,57 +162,6 @@ export default function BookDetailPage() {
     <>
       <BookThumbnail book={book} />
       <div className="lg:col-span-2">
-        {/* <div className="rounded-lg border border-gray-300 text-gray-900 bg-white shadow-sm mb-8">
-          <div className="flex flex-col space-y-1.5 p-6">
-            <h3 className="text-2xl font-semibold">독후감</h3>
-          </div>
-          <form
-            onSubmit={handleSubmit}
-            className="p-6 pt-0 space-y-6"
-          >
-            <RatingInput
-              rating={rating}
-              setRating={setRating}
-            />
-
-            <hr className="border-gray-300" />
-
-            <div>
-              <label className="text-base font-medium mb-3 block">
-                리뷰
-              </label>
-              <textarea
-                value={memo}
-                onChange={(e) => setMemo(e.target.value)}
-                className="flex w-full rounded-md border border-gray-300 px-3 py-2 text-sm min-h-[200px] resize-none"
-              />
-            </div>
-            <hr className="border-gray-300" />
-            <TagInput
-              tags={tags}
-              addTag={(t) => {
-                const v = t.trim()
-                if (v && !tags.includes(v)) setTags([...tags, v])
-              }}
-              removeTag={(t) => setTags(tags.filter((x) => x !== t))}
-            />
-            <div className="flex justify-between pt-4">
-              <button
-                type="button"
-                onClick={handleDeleteClick}
-                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 cursor-pointer"
-              >
-                <Trash2 size={16} /> 삭제
-              </button>
-              <button
-                type="submit"
-                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 cursor-pointer"
-              >
-                <Save size={16} /> 저장
-              </button>
-            </div>
-          </form>
-        </div> */}
         <ReviewForm
           mode="edit"
           rating={rating}

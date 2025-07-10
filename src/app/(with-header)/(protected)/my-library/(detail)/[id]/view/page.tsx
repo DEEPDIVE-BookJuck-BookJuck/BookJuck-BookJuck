@@ -5,8 +5,6 @@ import React, { useEffect, useState } from 'react'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
 
 import BookThumbnail from '../../../_components/_detail/book-thumbnail'
-import RatingInput from '../../../_components/_detail/rating-input'
-import TagList from '@/app/(with-header)/(protected)/_components/tag-list'
 import ReviewForm from '../../../_components/review-form'
 import ResultModal from '../../../_components/_detail/result-modal'
 import DetailPageSkeleton from '../../../_components/skeleton/detail-page-skeleton'
