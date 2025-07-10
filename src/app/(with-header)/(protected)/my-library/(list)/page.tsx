@@ -84,7 +84,7 @@ export default function MyLibraryPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <>
       <div className="mb-8 space-y-4">
         <div className="flex gap-4">
           <div className="relative flex-1">
@@ -128,6 +128,6 @@ export default function MyLibraryPage() {
           </button>
         </div>
       )}
-    </div>
+    </>
   )
 }
