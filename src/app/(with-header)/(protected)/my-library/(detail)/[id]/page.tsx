@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState, FormEvent } from 'react'
+import React, { useEffect, useState, useRef, FormEvent } from 'react'
 import { Save, Trash2 } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
 
@@ -12,10 +12,12 @@ import ConfirmModal from '../../_components/_detail/confirm-modal'
 import ResultModal from '../../_components/_detail/result-modal'
 import DetailPageSkeleton from '../../_components/skeleton/detail-page-skeleton'
 import { BookType } from '../../../_types'
+import { useDirty } from './layout'
 
 export default function BookDetailPage() {
   const { id } = useParams()
   const router = useRouter()
+  const setDirty = useDirty()
 
   const [book, setBook] = useState<BookType | null>(null)
   const [memo, setMemo] = useState('')
@@ -26,6 +28,11 @@ export default function BookDetailPage() {
   const [modalMessage, setModalMessage] = useState('')
   const [showResultModal, setShowResultModal] = useState(false)
   const [shouldGoBack, setShouldGoBack] = useState(false)
+
+  const isFirstLoad = useRef(true)
+  const originalMemo = useRef<string>('')
+  const originalRating = useRef<number>(0)
+  const originalTags = useRef<string[]>([])
 
   useEffect(() => {
     async function load() {
@@ -39,6 +46,11 @@ export default function BookDetailPage() {
         setMemo(data.review?.memo ?? '')
         setRating(data.review?.rating ?? 0)
         setTags(data.review?.tags ?? [])
+        setDirty(false)
+
+        originalMemo.current = data.review?.memo ?? ''
+        originalRating.current = data.review?.rating ?? 0
+        originalTags.current = data.review?.tags ?? []
       } catch (e) {
         console.error('상세 조회 실패:', e)
         setModalMessage('상세 조회에 실패했습니다.')
@@ -46,10 +58,23 @@ export default function BookDetailPage() {
         setShowResultModal(true)
       } finally {
         setLoading(false)
+        isFirstLoad.current = false
       }
     }
     if (id) load()
-  }, [id])
+  }, [id, setDirty])
+
+  useEffect(() => {
+    if (isFirstLoad.current) return
+
+    const changed =
+      memo !== originalMemo.current ||
+      rating !== originalRating.current ||
+      tags.length !== originalTags.current.length ||
+      tags.some((t, i) => t !== originalTags.current[i])
+
+    setDirty(changed)
+  }, [memo, rating, tags, setDirty])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -115,7 +140,6 @@ export default function BookDetailPage() {
       setShowDeleteConfirm(true)
     }
   }
-
   const confirmDelete = async () => {
     if (!book) return
     setShowDeleteConfirm(false)
@@ -140,11 +164,9 @@ export default function BookDetailPage() {
     if (shouldGoBack) router.back()
   }
 
-  // 스켈레톤 노출
   if (loading) {
     return <DetailPageSkeleton />
   }
-
   if (!book) return <p>책을 찾을 수 없습니다.</p>
 
   return (
@@ -195,7 +217,7 @@ export default function BookDetailPage() {
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800  cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-md text-sm font-medium bg-slate-950 text-white hover:bg-slate-800 cursor-pointer"
               >
                 <Save size={16} /> 저장
               </button>
