@@ -32,7 +32,7 @@ export default function ProtectedLayout({
     return (
       <Modal>
         <div className="mb-4">
-          <p className="whitespace-normal text-center text-md">
+          <p className="text-center text-md">
             로그인이 필요한 서비스입니다.
           </p>
           <p className="text-center text-md">로그인 하시겠습니까?</p>
