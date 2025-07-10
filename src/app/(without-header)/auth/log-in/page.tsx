@@ -118,7 +118,14 @@ export default function LoginPage() {
         />
         <FormError message={passwordError} />
 
-        <Button isLoading={isLoading}>로그인</Button>
+        <Button
+          isLoading={isLoading}
+          disabled={
+            !email || !password || !!emailError || !!passwordError
+          }
+        >
+          로그인
+        </Button>
 
         <div className="text-sm text-center">
           계정이 없으신가요?{' '}

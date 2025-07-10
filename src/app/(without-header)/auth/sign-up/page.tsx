@@ -70,6 +70,16 @@ export default function SignupPage() {
     }
   }
 
+  const isFormValid =
+    nickName.trim() !== '' &&
+    email.trim() !== '' &&
+    password !== '' &&
+    confirmPassword !== '' &&
+    !nickNameError &&
+    !emailError &&
+    !passwordError &&
+    !confirmError
+
   return (
     <>
       <form
@@ -164,7 +174,12 @@ export default function SignupPage() {
         />
         <FormError message={confirmError} />
 
-        <Button isLoading={isLoading}>회원가입</Button>
+        <Button
+          isLoading={isLoading}
+          disabled={!isFormValid}
+        >
+          회원가입
+        </Button>
 
         <div className="text-sm text-center">
           이미 계정이 있으신가요?{' '}
