@@ -20,10 +20,7 @@ export default function RatingInput({
             fill={v <= rating ? '#FBBF24' : '#D1D5DB'}
             stroke="none"
             className="cursor-pointer"
-            onClick={() =>
-              // 이제 오류 없이 prev를 사용할 수 있습니다
-              setRating((prev) => (prev === v ? 0 : v))
-            }
+            onClick={() => setRating((prev) => (prev === v ? 0 : v))}
             aria-label={`${v}점 별`}
           />
         ))}
