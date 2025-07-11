@@ -204,7 +204,7 @@ export default function Header() {
         <Modal>
           <div className="text-center mb-4">
             <p className="text-md font-semibold mb-2">
-              로그아웃하시겠습니까?
+              로그아웃 하시겠습니까?
             </p>
           </div>
           <div className="flex justify-center gap-4">
