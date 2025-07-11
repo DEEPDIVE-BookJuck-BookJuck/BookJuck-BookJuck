@@ -132,13 +132,23 @@ export default function Header() {
       </header>
 
       {/* 모바일 사이드 메뉴 */}
-      {isMenuOpen && (
-        <div className="flex md:flex lg:hidden fixed top-0 right-0 w-full h-full bg-gray-800/50 z-50">
-          <div
-            className="w-2/3"
-            onClick={() => setIsMenuOpen(false)}
-          />
-          <div className="w-[70vw] max-w-xs px-6 py-8 bg-white flex flex-col justify-between">
+      <div
+        className={`flex md:flex lg:hidden fixed inset-0 z-50 transition-opacity duration-300 ${
+          isMenuOpen
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <div
+          className="w-full h-full bg-gray-800/50"
+          onClick={() => setIsMenuOpen(false)}
+        />
+        <div
+          className={`fixed top-0 right-0 h-full bg-white w-[70vw] max-w-xs px-6 py-8 z-50 transform transition-transform duration-300 ease-in-out ${
+            isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <div className="flex flex-col justify-between h-full">
             <div>
               {navItems.map(({ href, label, icon: Icon }) => (
                 <Link
@@ -188,7 +198,8 @@ export default function Header() {
             </div>
           </div>
         </div>
-      )}
+      </div>
+
       {showLogoutConfirm && (
         <Modal>
           <div className="text-center mb-4">
