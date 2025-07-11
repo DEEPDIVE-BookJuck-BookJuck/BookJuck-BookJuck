@@ -45,7 +45,7 @@ export default function ReviewViewPage() {
     if (shouldGoBack) router.back()
   }
 
-  if (loading) return <DetailPageSkeleton />
+  if (loading) return <DetailPageSkeleton mode="view" />
   if (!book) return <p>책을 찾을 수 없습니다.</p>
 
   const { review } = book

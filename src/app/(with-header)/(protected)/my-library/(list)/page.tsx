@@ -8,7 +8,7 @@ import { fetchWithAuth } from '@/lib/fetch-with-auth'
 import { useDebounce } from '@/hooks/use-debounce'
 import { BookType } from '../../_types'
 
-const LIMIT = 9
+const LIMIT = 6
 
 export default function MyLibraryPage() {
   const [books, setBooks] = useState<BookType[]>([])
@@ -116,7 +116,7 @@ export default function MyLibraryPage() {
         ))}
       </div>
       {!isMobile && hasMore && (
-        <div className="text-center mt-6">
+        <div className="text-center mt-8">
           <button
             disabled={loading}
             onClick={() => fetchBooks()}
