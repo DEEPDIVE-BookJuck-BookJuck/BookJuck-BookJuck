@@ -10,16 +10,15 @@ export default async function MyLibraryLayout({
 }: {
   children: ReactNode
 }) {
-  const cookieStore = await cookies()
-  const token = cookieStore.get('accessToken')?.value
-  if (!token) {
-    return (
-      <p className="text-center text-gray-500 mt-20">
-        로그인 후 이용해주세요
-      </p>
-    )
-  }
   let nickName = '사용자'
+  try {
+    const cookieStore = await cookies()
+    const accessToken = cookieStore.get('accessToken')?.value
+    if (!accessToken) return
+  } catch (e) {
+    console.error('쿠키 조회 실패:', e)
+    return null
+  }
   try {
     const user = await fetchWithAuthOnServer<ProfileType>(
       '/api/user/profile',
