@@ -48,6 +48,9 @@ export default function ReviewForm({
           <p className="whitespace-pre-wrap border p-4 rounded-md min-h-[200px]">
             {memo}
           </p>
+          <label className="block text-base font-medium mb-2">
+            태그
+          </label>
           <TagList tags={tags} />
           <div className="flex justify-end">
             <button
