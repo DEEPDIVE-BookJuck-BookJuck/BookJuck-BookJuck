@@ -1,74 +1,136 @@
 'use client'
 
 import Image from 'next/image'
-
-import { FC, useState } from 'react'
 import { BookOpen } from 'lucide-react'
+import { FC, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import {
+  BookType,
+  AddBookResponse,
+  DeleteBookResponse,
+} from '@/app/(with-header)/(main)/_types'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
 import Modal from '@/common/modal'
-import { AddBookResponse, BookType } from '../_types'
 
 export interface BookCardPropsType {
   book: BookType
 }
 
+interface LibraryBook {
+  id: string
+  title: string
+  author: string
+  thumbnailUrl: string
+  review?: {
+    endDate?: string
+    memo?: string
+    rating?: number
+    tags?: string[]
+  }
+}
+
 const BookCard: FC<BookCardPropsType> = ({ book }) => {
   const [isAdded, setIsAdded] = useState(false)
-  const [modalMessage, setModalMessage] = useState<string | null>(
-    null,
-  )
-  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] =
-    useState(false)
+  const [libraryBookId, setLibraryBookId] = useState<string | null>(null)
+  const [modalMessage, setModalMessage] = useState<string | null>(null)
+  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] = useState(false)
   const router = useRouter()
 
-  const handleAddToLibrary = async () => {
-    try {
-      const cookies = document.cookie
-      const accessToken = cookies
-        .split('; ')
-        .find((row) => row.startsWith('accessToken='))
-        ?.split('=')[1]
-
-      if (!accessToken) {
-        setModalMessage('로그인 후 이용해주세요.')
-        setShouldRedirectAfterModal(true)
-        return
+  useEffect(() => {
+    const checkIfBookExists = async () => {
+      try {
+        const libraryBooks = await fetchWithAuth<LibraryBook[]>(
+          '/api/library?offset=0&limit=100',
+          { auth: true },
+        )
+        const existingBook = libraryBooks.find(
+          (b) => b.title === book.title && b.author === book.author,
+        )
+        if (existingBook) {
+          setIsAdded(true)
+          setLibraryBookId(existingBook.id)
+        }
+      } catch (error) {
+        console.error('내 서재 상태 확인 실패:', error)
       }
+    }
 
-      await fetchWithAuth<AddBookResponse>('/api/library', {
-        method: 'POST',
-        auth: true,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: book.title,
-          author: book.author,
-          thumbnailUrl: book.cover,
-          isbn: book.isbn,
-        }),
-      })
+    checkIfBookExists()
+  }, [book.title, book.author])
 
-      setModalMessage('내 서재에 추가되었습니다!')
-      setIsAdded(true)
-      setShouldRedirectAfterModal(false)
+  const handleToggleLibrary = async () => {
+    const cookies = document.cookie
+    const accessToken = cookies
+      .split('; ')
+      .find((row) => row.startsWith('accessToken='))
+      ?.split('=')[1]
+
+    if (!accessToken) {
+      setModalMessage('로그인 후 이용해주세요.')
+      setShouldRedirectAfterModal(true)
+      return
+    }
+
+    try {
+      if (!isAdded) {
+        const res = await fetchWithAuth<AddBookResponse>(
+          '/api/library',
+          {
+            method: 'POST',
+            auth: true,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: book.title,
+              author: book.author,
+              thumbnailUrl: book.cover,
+              isbn: book.isbn,
+            }),
+          },
+        )
+
+        setLibraryBookId(res.book.id)
+        setModalMessage('내 서재에 추가되었습니다!')
+        setIsAdded(true)
+      } else {
+        if (!libraryBookId) {
+          setModalMessage('삭제할 책의 ID가 없습니다.')
+          return
+        }
+
+        await fetchWithAuth<DeleteBookResponse>(
+          `/api/library/${libraryBookId}`,
+          {
+            method: 'DELETE',
+            auth: true,
+          },
+        )
+
+        setModalMessage('내 서재에서 삭제되었습니다.')
+        setIsAdded(false)
+        setLibraryBookId(null)
+      }
     } catch (error: unknown) {
       console.error('에러 내용:', error)
 
-      const err = error as Error & {
-        status?: number
-        response?: { status?: number }
-        statusCode?: number
-      }
-
-      let status: number | undefined =
-        err.status ?? err.response?.status ?? err.statusCode
+      let status: number | undefined
 
       if (
-        !status &&
-        err instanceof Error &&
-        err.message.includes('이미')
+        typeof error === 'object' &&
+        error !== null &&
+        'status' in error &&
+        typeof (error as { status?: number }).status === 'number'
+      ) {
+        status = (error as { status: number }).status
+      } else if (
+        typeof error === 'object' &&
+        error !== null &&
+        'response' in error &&
+        typeof (error as { response?: { status?: number } }).response?.status === 'number'
+      ) {
+        status = (error as { response: { status: number } }).response.status
+      } else if (
+        error instanceof Error &&
+        error.message.includes('이미')
       ) {
         status = 409
       }
@@ -79,10 +141,16 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
       } else if (status === 409) {
         setModalMessage('내 서재에 이미 존재하는 책입니다.')
         setIsAdded(true)
-        setShouldRedirectAfterModal(false)
+      } else if (status === 404) {
+        setModalMessage('삭제할 책을 찾을 수 없습니다.')
+        setIsAdded(false)
+        setLibraryBookId(null)
       } else {
-        setModalMessage('서재 추가에 실패했습니다.')
-        setShouldRedirectAfterModal(false)
+        setModalMessage(
+          isAdded
+            ? '서재 삭제에 실패했습니다.'
+            : '서재 추가에 실패했습니다.',
+        )
       }
     }
   }
@@ -101,9 +169,11 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
 
           <div className="absolute top-2 right-2 flex gap-2">
             <button
-              onClick={handleAddToLibrary}
+              onClick={handleToggleLibrary}
               className="w-8 h-8 flex items-center justify-center bg-white text-black border border-gray-300 rounded-full hover:bg-gray-100 transition cursor-pointer"
-              aria-label="내 서재 추가"
+              aria-label={
+                isAdded ? '내 서재에서 삭제' : '내 서재에 추가'
+              }
             >
               <BookOpen
                 className="w-4 h-4"
@@ -118,7 +188,7 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
               className="absolute bottom-2 left-2 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md select-none"
               style={{ backgroundColor: '#22C55E' }}
             >
-              추가됨
+              읽음
             </div>
           )}
         </div>
