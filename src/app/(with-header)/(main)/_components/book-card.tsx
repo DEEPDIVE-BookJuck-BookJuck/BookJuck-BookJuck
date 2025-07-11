@@ -38,6 +38,16 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
 
   useEffect(() => {
     const checkIfBookExists = async () => {
+      const cookies = document.cookie
+      const accessToken = cookies
+        .split('; ')
+        .find((row) => row.startsWith('accessToken='))
+        ?.split('=')[1]
+
+      if (!accessToken) {
+        return 
+      }
+
       try {
         const libraryBooks = await fetchWithAuth<LibraryBook[]>(
           '/api/library?offset=0&limit=100',
@@ -238,3 +248,4 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
 }
 
 export default BookCard
+

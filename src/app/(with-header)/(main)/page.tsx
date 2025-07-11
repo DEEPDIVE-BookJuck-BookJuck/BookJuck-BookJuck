@@ -73,9 +73,9 @@ export default function Home() {
   return (
     <main className="flex flex-col justify-center w-full mx-auto pt-2 p-8">
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-12 text-center w-full leading-snug">
-        당신만의 독서 여행을
+        당신만의 독서 여행을&nbsp;
         <br className="block sm:hidden" />
-        시작해보세요
+        시작해 보세요
       </h1>
 
       <div className="w-full flex flex-col items-center">
