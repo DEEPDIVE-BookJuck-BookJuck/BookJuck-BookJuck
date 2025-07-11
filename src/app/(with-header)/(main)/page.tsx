@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-
 import { Search } from 'lucide-react'
 import { BookType, RawBookItemType } from './_types'
 import BookCard from './_components/book-card'
@@ -25,9 +24,7 @@ export default function Home() {
       const mappedBooks: BookType[] = (data.item || []).map(
         (item: RawBookItemType) => ({
           id: item.itemId,
-          cover:
-            item.cover ||
-            'https://via.placeholder.com/96x144?text=No+Image',
+          cover: item.cover || 'https://via.placeholder.com/96x144?text=No+Image',
           title: item.title || '제목 없음',
           author: item.author || '저자 미상',
           isbn: item.isbn || '',
@@ -54,9 +51,7 @@ export default function Home() {
       const mappedBooks: BookType[] = (data.item || []).map(
         (item: RawBookItemType) => ({
           id: item.itemId,
-          cover:
-            item.cover ||
-            'https://via.placeholder.com/96x144?text=No+Image',
+          cover: item.cover || 'https://via.placeholder.com/96x144?text=No+Image',
           title: item.title || '제목 없음',
           author: item.author || '저자 미상',
           isbn: item.isbn || '',
@@ -77,8 +72,10 @@ export default function Home() {
 
   return (
     <main className="flex flex-col justify-center w-full mx-auto pt-2 p-8">
-      <h1 className="text-4xl font-bold mb-12 text-center w-full">
-        당신만의 독서 여행을 시작해보세요
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-12 text-center w-full leading-snug">
+        당신만의 독서 여행을
+        <br className="block sm:hidden" />
+        시작해보세요
       </h1>
 
       <div className="w-full flex flex-col items-center">
@@ -100,13 +97,15 @@ export default function Home() {
           <p className="text-center w-full">검색 결과가 없습니다.</p>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-start w-full">
           {books.map((book) => (
-            <BookCard
-              key={book.id}
-              book={book}
-            />
+            <BookCard key={book.id} book={book} />
           ))}
+
+          {books.length > 0 &&
+            Array.from({ length: (4 - (books.length % 4)) % 4 }).map((_, i) => (
+              <div key={`empty-${i}`} className="h-[300px] invisible" />
+            ))}
         </div>
       </div>
     </main>
