@@ -7,7 +7,7 @@ export default function ListPageSkeleton() {
       <SearchSkeleton />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.from({ length: 9 }).map((_, i) => (
+        {Array.from({ length: 6 }).map((_, i) => (
           <BookCardSkeleton key={i} />
         ))}
       </div>
