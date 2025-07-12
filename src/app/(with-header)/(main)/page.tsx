@@ -4,12 +4,14 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Search } from 'lucide-react'
 import { BookType, RawBookItemType } from './_types'
 import BookCard from './_components/book-card'
+import BookCardSkeleton from './_components/skeleton/book-card-skeleton'
+import ListPageSkeleton from './_components/skeleton/list-page-skeleton'
 
 export default function Home() {
   const [query, setQuery] = useState('')
   const [books, setBooks] = useState<BookType[]>([])
   const [loading, setLoading] = useState(false)
-
+  const [initialLoading, setInitialLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const loaderRef = useRef<HTMLDivElement | null>(null)
@@ -45,6 +47,7 @@ export default function Home() {
         setHasMore(false)
       } finally {
         setLoading(false)
+        setInitialLoading(false)
       }
     },
     [],
@@ -75,6 +78,7 @@ export default function Home() {
   const handleSearch = async () => {
     if (!query.trim()) return
     setLoading(true)
+    setInitialLoading(true)
     try {
       const res = await fetch(
         `/api/aladin-search?query=${encodeURIComponent(query)}`,
@@ -101,7 +105,12 @@ export default function Home() {
       setBooks([])
     } finally {
       setLoading(false)
+      setInitialLoading(false)
     }
+  }
+
+  if (initialLoading) {
+    return <ListPageSkeleton />
   }
 
   return (
@@ -113,7 +122,6 @@ export default function Home() {
       </h1>
 
       <div className="w-full flex flex-col items-center">
-
         <div className="relative w-full mb-12">
           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
             <Search className="w-5 h-5" />
@@ -145,6 +153,11 @@ export default function Home() {
               book={book}
             />
           ))}
+
+          {loading &&
+            Array.from({ length: 4 }).map((_, i) => (
+              <BookCardSkeleton key={`skeleton-${i}`} />
+            ))}
           {books.length > 0 &&
             Array.from({
               length: (4 - (books.length % 4)) % 4,
