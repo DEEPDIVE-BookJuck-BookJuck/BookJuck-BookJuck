@@ -7,6 +7,8 @@ import BookCard from './_components/book-card'
 import BookCardSkeleton from './_components/skeleton/book-card-skeleton'
 import ListPageSkeleton from './_components/skeleton/list-page-skeleton'
 
+const MAX_PAGE = 10 
+
 export default function Home() {
   const [query, setQuery] = useState('')
   const [books, setBooks] = useState<BookType[]>([])
@@ -39,7 +41,8 @@ export default function Home() {
         setBooks((prev) =>
           pageToLoad === 1 ? mapped : [...prev, ...mapped],
         )
-        if (!data.item || data.item.length === 0) {
+
+        if (!data.item || data.item.length === 0 || pageToLoad >= MAX_PAGE) {
           setHasMore(false)
         }
       } catch (e) {
@@ -174,7 +177,6 @@ export default function Home() {
           className="h-8 flex justify-center items-center mt-4"
         >
           {loading && <p>로딩 중...</p>}
-          {!hasMore && <p>더 이상 불러올 책이 없습니다.</p>}
         </div>
       </div>
     </main>
