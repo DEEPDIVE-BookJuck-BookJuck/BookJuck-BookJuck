@@ -14,10 +14,12 @@ export default function RecentBook({ data }: { data: BookType[] }) {
           {data.map((recentBook) => (
             <RecentBookItem
               key={recentBook.id}
+              id={recentBook.id}
               title={recentBook.title}
               author={recentBook.author}
               date={recentBook.review.endDate}
               rating={recentBook.review.rating}
+              tags={recentBook.review.tags}
             />
           ))}
         </div>

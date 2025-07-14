@@ -25,3 +25,13 @@ export interface AddBookResponse {
     created_at: string
   }
 }
+
+export interface DeletedBook {
+  id: string
+  title: string
+}
+
+export interface DeleteBookResponse {
+  message: string
+  deletedBook: DeletedBook
+}

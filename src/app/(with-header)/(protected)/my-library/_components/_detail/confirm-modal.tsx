@@ -23,7 +23,7 @@ export default function ConfirmModal({
           onClick={onConfirm}
           className="rounded-md text-sm font-medium bg-red-400 text-white hover:bg-red-300 h-10 px-4 cursor-pointer"
         >
-          삭제
+          확인
         </button>
         <button
           onClick={onCancel}

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { PenLine } from 'lucide-react'
 import BookThumbnail from './book-thumbnail'
-import TagList from './tag-list'
+import TagList from '../../../_components/tag-list'
 import { BookType } from '../../../_types'
 
 export default function LibraryBookItem({
@@ -14,8 +14,12 @@ export default function LibraryBookItem({
   review,
 }: BookType) {
   const router = useRouter()
-  const goToDetail = () => router.push(`/my-library/${id}`)
   const hasReview = Boolean(review?.endDate)
+
+  const goToDetail = () => {
+    if (hasReview) router.push(`/my-library/${id}/view`)
+    else router.push(`/my-library/${id}`)
+  }
 
   return (
     <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-shadow break-words">

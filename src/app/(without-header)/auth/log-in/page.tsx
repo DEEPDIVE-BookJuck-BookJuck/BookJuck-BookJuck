@@ -90,13 +90,17 @@ export default function LoginPage() {
           type="email"
           value={email}
           placeholder="your@email.com"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setEmail(value)
+            setEmailError(validateEmail(value))
+          }}
           hasError={!!emailError}
         />
         <FormError message={emailError} />
 
         <label
-          className="text-sm font-semibold mt-5 mb-2 block"
+          className="text-sm font-semibold mb-2 block"
           htmlFor="password"
         >
           비밀번호
@@ -105,12 +109,23 @@ export default function LoginPage() {
           id="password"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setPassword(value)
+            setPasswordError(validatePassword(value))
+          }}
           hasError={!!passwordError}
         />
         <FormError message={passwordError} />
 
-        <Button isLoading={isLoading}>로그인</Button>
+        <Button
+          isLoading={isLoading}
+          disabled={
+            !email || !password || !!emailError || !!passwordError
+          }
+        >
+          로그인
+        </Button>
 
         <div className="text-sm text-center">
           계정이 없으신가요?{' '}

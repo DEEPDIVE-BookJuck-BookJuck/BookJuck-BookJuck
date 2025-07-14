@@ -8,7 +8,7 @@ import { fetchWithAuth } from '@/lib/fetch-with-auth'
 import { useDebounce } from '@/hooks/use-debounce'
 import { BookType } from '../../_types'
 
-const LIMIT = 9
+const LIMIT = 6
 
 export default function MyLibraryPage() {
   const [books, setBooks] = useState<BookType[]>([])
@@ -62,7 +62,6 @@ export default function MyLibraryPage() {
     return () => mql.removeEventListener('change', onChange)
   }, [])
 
-  // 모바일: 무한 스크롤
   useEffect(() => {
     if (!isMobile) return
 
@@ -78,13 +77,12 @@ export default function MyLibraryPage() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [isMobile, loading, hasMore, fetchBooks])
 
-  // 스켈레톤 노출
   if (loading && books.length === 0) {
     return <ListPageSkeleton />
   }
 
   return (
-    <div className="min-h-screen">
+    <>
       <div className="mb-8 space-y-4">
         <div className="flex gap-4">
           <div className="relative flex-1">
@@ -94,7 +92,7 @@ export default function MyLibraryPage() {
               placeholder="제목 또는 저자 검색"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm pl-10"
+              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm pl-10 focus:ring-1 focus:ring-inset focus:ring-gray-400 focus:outline-none"
             />
           </div>
         </div>
@@ -118,7 +116,7 @@ export default function MyLibraryPage() {
         ))}
       </div>
       {!isMobile && hasMore && (
-        <div className="text-center mt-6">
+        <div className="text-center mt-8">
           <button
             disabled={loading}
             onClick={() => fetchBooks()}
@@ -128,6 +126,6 @@ export default function MyLibraryPage() {
           </button>
         </div>
       )}
-    </div>
+    </>
   )
 }

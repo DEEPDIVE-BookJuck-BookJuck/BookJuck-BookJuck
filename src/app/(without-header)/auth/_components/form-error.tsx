@@ -3,6 +3,13 @@ interface FormErrorProps {
 }
 
 export default function FormError({ message }: FormErrorProps) {
-  if (!message) return null
-  return <p className="text-red-500 text-sm mb-3">{message}</p>
+  return (
+    <p
+      className={`text-sm mb-1.5 transition-all ${
+        message ? 'text-red-500' : 'invisible'
+      } min-h-[20px]`}
+    >
+      {message || ''}
+    </p>
+  )
 }
