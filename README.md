@@ -1,36 +1,254 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# [ Book적 Book적 ] 프로젝트 소개
+- 개인의 독서 이력을 손쉽게 기록·관리할 수 있는 웹 애플리케이션입니다.
+- 알라딘 Open API로 실시간 베스트 셀러 및 도서 정보를 조회하고, 읽은 책을 나만의 서재에 담아 한 줄 독후감과 자유 태그를 추가할 수 있습니다.
+- 로그인 기능으로 개인화된 서재와 통계 대시보드를 제공하며, 반응형 UI/UX를 통해 언제 어디서나 편리하게 독서 현황을 확인할 수 있습니다.
+  
+<br /> 
 
-## Getting Started
+## 목차
+- [👥 팀원 소개](##👥-팀원-소개)
+  
+- [🔧 Tech Stack](##🔧-Tech-Stack)
+  
+- [🗄️ DB 설계(ERD)](##🗄️-DB-설계(ERD))
+  
+- [✅ 구현 기능](##✅-구현-기능)
+  
+- [🚀 설치 및 실행](##🚀-설치-및-실행)
+  
+<br /> 
 
-First, run the development server:
+## 👥 팀원 소개
+| 이름   | 역할 & 담당 기능                                         | GitHub                                                      | 
+| ------ | -------------------------------------------------------- | ----------------------------------------------------------- | 
+| 조연경(팀장) | 내 서재, 독후감 UI/기능 개발, 스켈레톤 구현, 내 서재 페이지 무한스크롤 구현 및 검색 시 debounce 처리     | [yg5057](https://github.com/yg5057)               | 
+| 권수영 | 로그인·회원가입 UI/상태관리, 공통 레이아웃 구현, 메인 페이지 스켈레톤 구현         | [ksy21019](https://github.com/ksy21019)               | 
+| 이설아 | DB 설계·API 개발, 마이 페이지, 프로필 UI/통계 기능 개발, 공통 모달 컴포넌트 및 공통 페이지(404 에러), 공통 스크롤 등 개발         | [SNXWXH](https://github.com/SNXWXH)                 
+| 최동윤 | 메인 페이지 UI/기능 개발,무한 스크롤 구현, 알라딘 Open API 연동        | [DD9260](https://github.com/DD9260)             | 
+
+<br /> 
+
+## 🔧 Tech Stack
+- **Frontend**: React, Next.js, TypeScript
+- **Styling**: Tailwind CSS
+- **Backend**: Next.js API Routes, Supabase
+- **State Management**: Zustand
+- **Data Fetching / API**: Fetch API, 알라딘 Open API
+- **Charts**: Recharts
+- **Icons**: Lucide
+- **Deployment**: Vercel
+- **Version Control**: GitHub
+
+<br /> 
+  
+## 🗄️ DB 설계(ERD)
+![ERD](https://github.com/user-attachments/assets/ed785a7f-7d32-44a4-8a70-b3293ddb4526)  
+
+<br /> 
+
+## ✅ 구현 기능
+### 🧑‍🧒‍🧒 회원가입 페이지(`/auth/sign-up`)
+- **반응형 적용**
+**입력 필드**
+- 닉네임 (nickName)
+- 이메일 (email)
+- 비밀번호 (password)
+- 비밀번호 확인 (confirmPassword)
+**유효성 검사**
+- **닉네임**: `validateNickname()` 함수로 실시간 검사
+- **이메일**: `validateEmail()` 함수로 실시간 검사
+- **비밀번호**: `validatePassword()` 함수로 실시간 검사 (특수문자 필수)
+- **비밀번호 확인**: `validateConfirm()` 함수로 비밀번호 일치 검사
+- **submit 조건**: 모든 필드 입력 완료 및 유효성 검사 통과
+**로그인 링크**
+- "이미 계정이 있으신가요? 로그인" 클릭 시 `/auth/log-in`으로 이동
+**회원가입 기능**
+- **API 연동**: `signup()` 함수 (`/lib/auth`)
+- **성공 시**:
+    - "회원가입이 완료되었습니다!" 모달 표시
+    - 확인 버튼 클릭 시 로그인 페이지(`/auth/log-in`)로 이동
+- **실패 시**: Modal로 에러 메시지 표시
+    - 이메일 형식 오류: `올바른 이메일 주소를 입력해주세요.`
+    - 이미 존재하는 이메일: `이미 존재하는 이메일입니다.`
+    - 비밀번호 조건 불충족: `비밀번호는 최소 8자 이상이어야 합니다.`, `비밀번호에 특수문자를 하나 이상 포함해 주세요.`
+    - 비밀번호 불일치: `비밀번호가 일치하지 않습니다.`
+
+***
+
+### 🔒 로그인 페이지(`/auth/log-in`) 
+- **반응형 적용**
+**입력 필드:** 
+- 이메일 (email)
+- 비밀번호 (password)
+**유효성 검사**
+- **이메일 형식 검증**: `validateEmail()` 함수로 실시간 검사
+- **비밀번호 검증**: `validatePassword()` 함수로 실시간 검사
+- **submit 조건**: 모든 입력 필드가 채워지고 유효성 검사 통과해야 로그인 가능
+**회원가입 링크**
+- "계정이 없으신가요? 회원가입" 클릭 시 `/auth/sign-up`로 이동
+**로그인 기능**
+- **API 연동**: `login()` 함수 (`/lib/auth`)
+- **성공 시**:
+    - JWT accessToken을 쿠키에 저장 (24시간)
+    - Zustand store에 인증 상태 저장
+    - 메인 페이지(`/`) 또는 로그인 이전에 방문했던 페이지로 이동
+    - sessionStorage에 저장된 `redirectAfterLogin` 경로 활용
+- **실패 시**: Modal로 에러 메시지 표시
+    - 이메일 불일치: 가입되지 않은 회원입니다.
+    - 비밀번호 불일치: 이메일 또는 비밀번호 불일치.
+**보호된 페이지 접근 시**
+- **대상 페이지**: 읽은 책, 내 서재, 마이페이지 등 주요 기능
+- **처리 방식**:
+    - "로그인이 필요합니다" 모달 표시
+    - 예, 아니오 선택하여 로그인 페이지(`/auth/log-in`)로 이동
+    - 현재 페이지 경로를 `sessionStorage`에 저장하여 로그인 후 복귀 가능
+**인증 상태 관리**
+- **서버(JWT 토큰 저장)**
+    - **저장 방식**: HTTP 쿠키 (`document.cookie`)
+    - **만료 시간**: 24시간 (86400초)
+    - **경로**: 전체 사이트 (`path=/`)
+- 클라이언트(Zustand 토큰 저장)
+    - **Zustand Store**: `useAuthStore`
+    - **저장 데이터**: accessToken, 사용자 정보
+    - **상태 업데이트**: `setAuth(accessToken, user)`
+
+***
+
+### 🏠 메인 페이지(`/`)
+- 반응형 적용
+- 스켈레톤 적용
+**검색 기능**
+- **검색 필드**: 제목 또는 저자 검색
+- **외부 API 연동**: 알라딘 상품리스트 API를 활용해 입력된 검색어에 해당하는 책 목록을 실시간으로 조회(최대 200개 제한)
+- **검색 아이콘**: Lucide React의 Search 아이콘 표시
+**베스트 셀러 조회**
+- **외부 API 연동**: 알라딘 상품검색 API를 활용해 알라딘 베스트셀러를 실시간으로 조회(최대 200개 제한)
+- **페이지네이션**: offset/limit 방식, 한 번에 10개씩 로드
+- **무한 스크롤**
+    - **트리거 조건**: 페이지 하단 200px 이내 도달 시
+    - **중복 방지**: 로딩 중이거나 더 이상 데이터가 없을 때 비활성화
+- **읽음 기능 (내 서재에 책 추가 및 삭제)**
+    - **API 연동**: `/api/library`
+    - **인증 필요**: `fetchWithAuth` 함수로 JWT 토큰 포함 요청
+    - **작성**:  ‘읽음’ 버튼 클릭시 POST 메서드로 `/api/library` 호출
+        - **성공 시**: 모달로 "내서재에서 추가되었습니다." 메시지 후 북 카드에 ‘읽음’ chip 노출
+    - **삭제**:  활성화된 ‘읽음’ 버튼 클릭시 DELETE 메서드로 `/api/library/${id}` 호출
+        - **성공 시**: 모달로 "내서재에서 삭제되었습니다." 메시지 후 북 카드에 ‘읽음’ chip을 제거
+- **그리드 레이아웃**: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`
+
+***
+
+### 📚 내 서재 목록 페이지(`/my-library`)
+- **스켈레톤 적용**
+- **반응형 적용**
+**검색 기능**
+- **검색 필드**: 제목 또는 저자 검색
+- **실시간 검색**: `useDebounce` 훅으로 300ms 지연 후 검색 실행
+- **검색 아이콘**: Lucide React의 Search 아이콘 표시
+**책 목록 조회**
+- **API 연동**: `/api/library?offset=${offset}&limit=${limit}&q=${query}`
+- **인증 필요**: `fetchWithAuth` 함수로 JWT 토큰 포함 요청
+- **페이지네이션**: offset/limit 방식, 한 번에 6개씩 로드
+- **무한 스크롤 (모바일)**
+    - **스크롤 감지**: `window.addEventListener('scroll')`
+    - **트리거 조건**: 페이지 하단 100px 이내 도달 시
+    - **중복 방지**: 로딩 중이거나 더 이상 데이터가 없을 때 비활성화
+- **더보기 버튼 (데스크톱)**
+    - **표시 조건**: 모바일이 아니고 더 가져올 데이터가 있을 때
+    - **버튼 상태**: 로딩 중 비활성화
+- **그리드 레이아웃**:  `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`
+
+***
+
+### 📖 독후감 작성/수정 페이지(`/my-library/[id]`)
+- **반응형 적용**
+- **스켈레톤 적용**
+**책 정보 조회**
+- **API 연동**: `/api/library/review/${id}`
+- **인증 필요**: `fetchWithAuth` 함수로 JWT 토큰 포함 요청
+- **에러 처리**: 조회 실패 시 "상세 조회에 실패했습니다." 모달 표시
+**독후감 입력 필드**
+- **메모** (memo): 텍스트 영역
+- **평점** (rating): 별점 (0-5점)
+- **태그** (tags): 문자열 배열, 추가/삭제 가능
+**독후감 저장/수정**
+- **작성**: POST 메서드로 `/api/library/review/${id}` 호출
+- **수정**: PATCH 메서드로 `/api/library/review/${id}` 호출
+- **submit 조건**: 메모, 평점, 태그 중 하나 이상 입력 필요
+- **성공 메시지**:
+    - 작성: "독후감이 저장되었습니다."
+    - 수정: "독후감이 수정되었습니다."
+- **변경사항 확인**: 수정된 내용이 있으면 "저장하지 않았습니다. 정말 돌아가시겠습니까?" 모달 표시
+**독후감 삭제**
+- **삭제 확인**: "정말 삭제하시겠습니까?" 확인 모달
+- **API 호출**: DELETE 메서드로 `/api/library/review/${id}` 호출
+- **성공 시**: 모달로 "독후감이 삭제되었습니다." 메시지 후 이전 페이지로 이동
+
+***
+
+### 📊 마이페이지(`/my-page`)
+- **반응형 적용**
+- **스켈레톤 적용**
+**회원 정보**
+- ****닉네임 수정 페이지를 모달로 보여줌
+**4가지 통계 카드**
+- **API 연동**: `/api/reading/statistics`
+- **인증 필요**: `fetchWithAuthOnServer` 함수로 JWT 토큰 포함 요청
+- **총 읽은 책** 수
+- **작성한 독후감 수**
+- **현재 연속 독서일 수**
+- **최장 연속 독서일 수**
+**월별 독서량 차트**
+- **API 연동**: `/api/reading/monthly`
+- **인증 필요**: `fetchWithAuthOnServer` 함수로 JWT 토큰 포함 요청
+- **라이브러리**: Recharts 사용
+- **데이터**: 월별 읽은 책 수 vs 독후감 작성 수
+- **차트 타입**: BarChart (읽은 책, 독후감)
+- 최근 6개월의 추이를 시각적으로 표시
+**태그별 통계 파이차트**
+- **API 연동**: `/api/reading/tags/statistics`
+- **인증 필요**: `fetchWithAuthOnServer` 함수로 JWT 토큰 포함 요청
+- **라이브러리**: Recharts 사용
+- **데이터 처리**: `groupExtraTags` 유틸로 비율이 높은 태그 이후 6개 태그들을 "기타"로 통합
+- **하단 범례**: 색상 점과 함께 태그별 개수 표시
+**최근 읽은 책**
+- **API 연동**: `/api/library/review/recent`
+- **인증 필요**: `fetchWithAuthOnServer` 함수로 JWT 토큰 포함 요청
+- **책 정보**: 제목, 저자, 완료 날짜
+- **평점 표시**: 별점 (★) 5점 만점, 노란색/회색 구분
+- **태그 리스트**
+- **페이지 이동**: `/my-library/${id}/view` 독후감 상세 페이지로 이동
+
+***
+
+### 👤 프로필 페이지(`/profile`)
+- **반응형 적용**
+- **스켈레톤 적용**
+**회원 정보 표시**
+- **API 연동**: `/api/user/profile`
+- **인증 필요**: `fetchWithAuth` 함수로 JWT 토큰 포함 요청
+- **이메일, 닉네임 정보 제공**
+**닉네임 수정**
+- **API 연동**: `/api/user/profile`
+- **입력 필드:** 닉네임(nickName)
+- **submit 조건**: 모든 필드 입력 완료 및 유효성 검사 통과
+- **유효성 검사:** 글자 수 제한(7글자 초과 시 "닉네임은 7글자 이하로 설정해주세요!" 에러 메시지)
+- **성공 시**: 새 닉네임으로 상태 업데이트
+
+<br /> 
+
+## 🚀 설치 및 실행
+프로젝트를 설치하고 개발 서버를 실행하려면 다음 명령어를 순서대로 실행해 주세요.
 
 ```bash
+# 저장소 클론
+git clone https://github.com/your-org/bookjeok-bookjeok.git
+cd bookjeok-bookjeok
+
+# 의존성 설치
+npm install
+
+# 개발 서버 실행
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
