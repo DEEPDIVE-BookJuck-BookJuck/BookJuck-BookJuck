@@ -54,6 +54,16 @@ export default function MyLibraryPage() {
   }, [fetchBooks])
 
   useEffect(() => {
+    const onFocus = () => {
+      if (!loading && books.length === 0) {
+        fetchBooks(true)
+      }
+    }
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [fetchBooks, loading, books.length])
+
+  useEffect(() => {
     const mql = window.matchMedia('(max-width: 767px)')
     const onChange = (e: MediaQueryListEvent) =>
       setIsMobile(e.matches)
