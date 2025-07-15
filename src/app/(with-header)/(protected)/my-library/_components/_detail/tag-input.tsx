@@ -78,6 +78,7 @@ export default function TagInput({
           >
             {t}
             <button
+              type="button"
               onClick={() => removeTag(t)}
               className="ml-1 hover:text-red-500 cursor-pointer"
             >
