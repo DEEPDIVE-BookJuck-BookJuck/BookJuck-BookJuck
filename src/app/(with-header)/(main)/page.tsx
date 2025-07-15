@@ -7,7 +7,7 @@ import BookCard from './_components/book-card'
 import BookCardSkeleton from './_components/skeleton/book-card-skeleton'
 import ListPageSkeleton from './_components/skeleton/list-page-skeleton'
 
-const MAX_PAGE = 10 // 최대 200개(20개 * 10페이지)
+const MAX_PAGE = 10 
 
 export default function Home() {
   const [query, setQuery] = useState('')
@@ -141,7 +141,11 @@ export default function Home() {
               }
             }}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="w-full pl-10 pr-4 py-4 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white placeholder-gray-500"
+            className="w-full pl-10 pr-4 py-4 border-2 border-gray-300 rounded-xl bg-white placeholder-gray-500
+            focus:ring-1 focus:ring-inset focus:ring-gray-400 focus:outline-none
+            hover:bg-gray-100 hover:border-gray-500 transition"
+
+
           />
         </div>
 
