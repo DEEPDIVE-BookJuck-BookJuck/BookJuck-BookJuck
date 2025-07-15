@@ -142,8 +142,10 @@ export default function Home() {
             }}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             className="w-full pl-10 pr-4 py-4 border-2 border-gray-300 rounded-xl bg-white placeholder-gray-500
-                      focus:outline-none focus:ring-2 focus:ring-blue-500
-                      hover:border-blue-400 hover:shadow-md transition"
+            focus:ring-1 focus:ring-inset focus:ring-gray-400 focus:outline-none
+            hover:bg-gray-100 hover:border-gray-500 transition"
+
+
           />
         </div>
 
