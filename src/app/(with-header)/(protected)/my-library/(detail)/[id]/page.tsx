@@ -111,6 +111,7 @@ export default function BookDetailPage() {
           : '독후감이 수정되었습니다.',
       )
       setShouldGoBack(true)
+      setDirty(false)
       setShowResultModal(true)
     } catch (e) {
       console.error('저장 실패:', e)
@@ -136,6 +137,7 @@ export default function BookDetailPage() {
       })
       setModalMessage('독후감이 삭제되었습니다.')
       setShouldGoBack(true)
+      setDirty(false)
       setShowResultModal(true)
     } catch (e) {
       console.error('삭제 실패:', e)
@@ -169,7 +171,9 @@ export default function BookDetailPage() {
           memo={memo}
           onChangeMemo={setMemo}
           tags={tags}
-          onAddTag={(t) => setTags((prev) => [...prev, t])}
+          onAddTag={(t) =>
+            setTags((prev) => Array.from(new Set([...prev, t])))
+          }
           onRemoveTag={(t) =>
             setTags((prev) => prev.filter((x) => x !== t))
           }
