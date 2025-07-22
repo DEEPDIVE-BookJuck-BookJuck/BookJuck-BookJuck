@@ -39,7 +39,9 @@ export default function LibraryBookItem({
             {author || '\u00A0'}
           </p>
           <p className="text-gray-500 text-xs mb-3 truncate h-4">
-            {hasReview ? `읽은 날: ${review.endDate}` : '\u00A0'}
+            {hasReview
+              ? `독후감 작성 날짜 : ${review.endDate}`
+              : '\u00A0'}
           </p>
           <div className="mb-2 h-5 overflow-hidden">
             <TagList tags={review?.tags ?? []} />
