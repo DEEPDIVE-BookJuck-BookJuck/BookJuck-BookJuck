@@ -13,7 +13,7 @@ const LIMIT = 6
 export default function MyLibraryPage() {
   const [books, setBooks] = useState<BookType[]>([])
   const [query, setQuery] = useState('')
-  const debouncedQuery = useDebounce(query, 300)
+  const debouncedQuery = useDebounce(query, 500)
   const offsetRef = useRef(0)
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false)
