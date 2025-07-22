@@ -1,7 +1,6 @@
 'use client'
 
 import { FetchWithAuthOptionsType } from '@/app/(without-header)/auth/_types'
-import { useAuthStore } from '@/store/auth-store'
 
 const API_URL_CLIENT = process.env.NEXT_PUBLIC_API_URL!
 
@@ -19,10 +18,8 @@ export async function fetchWithAuth<T = unknown>(
   const { auth = false, ...restOptions } = options
   const headers = new Headers(restOptions.headers || {})
 
-  const token = useAuthStore.getState().accessToken
-
-  if (auth && token) {
-    headers.set('Authorization', `Bearer ${token}`)
+  if (auth) {
+    options.credentials = 'include'
   }
 
   const res = await fetch(`${API_URL_CLIENT}${endpoint}`, {
