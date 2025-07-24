@@ -19,8 +19,7 @@ import Modal from './modal'
 
 export default function Header() {
   const pathname = usePathname()
-  const accessToken = useAuthStore((state) => state.accessToken)
-  const clearAuth = useAuthStore((state) => state.clearAuth)
+  const user = useAuthStore((state) => state.user)
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
@@ -38,7 +37,6 @@ export default function Header() {
 
   const handleLogout = () => {
     logout()
-    clearAuth()
     window.location.href = '/'
   }
 
@@ -98,7 +96,7 @@ export default function Header() {
 
           {/* 데스크탑용 버튼 */}
           <div className="hidden md:hidden lg:flex gap-2 text-sm">
-            {accessToken ? (
+            {user ? (
               <button
                 onClick={confirmLogout}
                 className="px-4 py-2 border bg-slate-950 text-white rounded hover:bg-gray-800 hover: cursor-pointer"
@@ -164,7 +162,7 @@ export default function Header() {
             </div>
 
             <div className="pt-6 border-t border-gray-300">
-              {accessToken ? (
+              {user ? (
                 <button
                   onClick={() => {
                     confirmLogout()
