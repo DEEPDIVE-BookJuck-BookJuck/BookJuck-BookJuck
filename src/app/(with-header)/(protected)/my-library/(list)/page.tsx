@@ -26,7 +26,10 @@ export default function MyLibraryPage() {
         const currentOffset = reset ? 0 : offsetRef.current
         const res = await fetchWithAuth<BookType[]>(
           `/api/library?offset=${currentOffset}&limit=${LIMIT}&q=${debouncedQuery}`,
-          { auth: true },
+          {
+            auth: true,
+            credentials: 'include', // ! 추가
+          },
         )
         if (reset) {
           setBooks(res)
