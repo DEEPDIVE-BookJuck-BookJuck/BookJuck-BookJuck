@@ -5,9 +5,8 @@ export interface UserType {
 }
 
 export interface AuthStateType {
-  accessToken: string | null
   user: UserType | null
-  setAuth: (accessToken: string, user: UserType) => void
+  setAuth: (user: UserType) => void
   clearAuth: () => void
 }
 
@@ -17,7 +16,7 @@ export interface LoginParamsType {
 }
 
 export interface LoginResponseType {
-  accessToken: string
+  message: string
   user: {
     email: string
     nickname: string
@@ -32,7 +31,6 @@ export interface SignupParamsType {
 
 export interface SignupResponseType {
   message: string
-  accessToken: string
   user: {
     email: string
     nickName: string

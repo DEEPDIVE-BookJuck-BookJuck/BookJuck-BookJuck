@@ -19,6 +19,7 @@ export async function login({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ email, password }),
+    credentials: 'include',
   })
 
   if (!res.ok) {
@@ -40,6 +41,7 @@ export async function signup({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ nickName, email, password }),
+    credentials: 'include',
   })
 
   if (!res.ok) {
@@ -50,8 +52,15 @@ export async function signup({
   return res.json()
 }
 
-export function logout() {
-  document.cookie = 'accessToken=; Max-Age=0; path=/'
+export async function logout() {
+  try {
+    await fetch(`${API_URL}/api/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+  } catch (error) {
+    console.error('로그아웃 요청 실패:', error)
+  }
 
   if (typeof window !== 'undefined') {
     const { clearAuth } = useAuthStore.getState()
