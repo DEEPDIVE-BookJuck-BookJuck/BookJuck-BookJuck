@@ -16,22 +16,20 @@ export async function fetchWithAuth<T = unknown>(
     )
   }
 
-  const { auth = false, ...restOptions } = options
+  const restOptions = options
 
   const headers = new Headers(restOptions.headers || {})
   const requestOptions: RequestInit = {
     ...restOptions,
     headers,
-  }
-
-  if (auth) {
-    requestOptions.credentials = 'include'
+    credentials: 'include',
   }
 
   let res = await fetch(
     `${API_URL_CLIENT}${endpoint}`,
     requestOptions,
   )
+  console.log(res)
 
   if (res.status === 401) {
     try {
@@ -53,6 +51,7 @@ export async function fetchWithAuth<T = unknown>(
         requestOptions,
       )
     } catch (error) {
+      console.error('세션 갱신 실패:', error)
       useAuthStore.getState().clearAuth()
       throw new Error(
         '세션 갱신에 실패했습니다. 다시 로그인해주세요.',
