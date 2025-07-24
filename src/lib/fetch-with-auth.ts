@@ -16,19 +16,48 @@ export async function fetchWithAuth<T = unknown>(
     )
   }
 
-  const { auth = false, ...restOptions } = options
+  const restOptions = options
+
   const headers = new Headers(restOptions.headers || {})
-
-  const token = useAuthStore.getState().accessToken
-
-  if (auth && token) {
-    headers.set('Authorization', `Bearer ${token}`)
-  }
-
-  const res = await fetch(`${API_URL_CLIENT}${endpoint}`, {
+  const requestOptions: RequestInit = {
     ...restOptions,
     headers,
-  })
+    credentials: 'include',
+  }
+
+  let res = await fetch(
+    `${API_URL_CLIENT}${endpoint}`,
+    requestOptions,
+  )
+  console.log(res)
+
+  if (res.status === 401) {
+    try {
+      const refreshRes = await fetch(
+        `${API_URL_CLIENT}/api/auth/refresh`,
+        {
+          method: 'POST',
+          credentials: 'include',
+        },
+      )
+
+      if (!refreshRes.ok) {
+        useAuthStore.getState().clearAuth()
+        throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.')
+      }
+
+      res = await fetch(
+        `${API_URL_CLIENT}${endpoint}`,
+        requestOptions,
+      )
+    } catch (error) {
+      console.error('세션 갱신 실패:', error)
+      useAuthStore.getState().clearAuth()
+      throw new Error(
+        '세션 갱신에 실패했습니다. 다시 로그인해주세요.',
+      )
+    }
+  }
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({}))

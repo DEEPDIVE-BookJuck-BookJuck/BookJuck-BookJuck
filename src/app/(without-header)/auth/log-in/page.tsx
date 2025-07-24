@@ -38,14 +38,12 @@ export default function LoginPage() {
 
     try {
       setIsLoading(true)
-      const { accessToken, user } = await login({
+      const { user } = await login({
         email: email.trim(),
         password: password.trim(),
       })
 
-      document.cookie = `accessToken=${accessToken}; path=/; max-age=86400`
-
-      setAuth(accessToken, user)
+      setAuth(user)
 
       const redirectPath =
         sessionStorage.getItem('redirectAfterLogin') || '/'

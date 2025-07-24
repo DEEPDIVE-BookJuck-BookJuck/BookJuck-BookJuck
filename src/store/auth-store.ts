@@ -5,10 +5,9 @@ import { persist } from 'zustand/middleware'
 export const useAuthStore = create<AuthStateType>()(
   persist(
     (set) => ({
-      accessToken: null,
       user: null,
-      setAuth: (token, user) => set({ accessToken: token, user }),
-      clearAuth: () => set({ accessToken: null, user: null }),
+      setAuth: (user) => set({ user }),
+      clearAuth: () => set({ user: null }),
     }),
     {
       name: 'auth-storage',
