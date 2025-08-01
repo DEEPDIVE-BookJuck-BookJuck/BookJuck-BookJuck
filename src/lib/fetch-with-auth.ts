@@ -3,8 +3,6 @@
 import { FetchWithAuthOptionsType } from '@/app/(without-header)/auth/_types'
 import { useAuthStore } from '@/store/auth-store'
 
-const API_URL_CLIENT = process.env.NEXT_PUBLIC_API_URL!
-
 // 클라이언트 전용 fetch
 export async function fetchWithAuth<T = unknown>(
   endpoint: string,
@@ -16,19 +14,21 @@ export async function fetchWithAuth<T = unknown>(
     )
   }
 
-  const { auth = false, ...restOptions } = options
+  const restOptions = options
+
   const headers = new Headers(restOptions.headers || {})
-
-  const token = useAuthStore.getState().accessToken
-
-  if (auth && token) {
-    headers.set('Authorization', `Bearer ${token}`)
-  }
-
-  const res = await fetch(`${API_URL_CLIENT}${endpoint}`, {
+  const requestOptions: RequestInit = {
     ...restOptions,
     headers,
-  })
+    credentials: 'include',
+  }
+
+  const res = await fetch(`/api/proxy${endpoint}`, requestOptions)
+
+  if (res.status === 401) {
+    useAuthStore.getState().clearAuth()
+    throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.')
+  }
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({}))

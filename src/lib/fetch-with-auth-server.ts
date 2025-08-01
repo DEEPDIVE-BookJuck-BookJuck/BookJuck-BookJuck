@@ -1,24 +1,77 @@
-import { cookies } from 'next/headers'
-
 const API_URL_SERVER = process.env.API_URL!
 
-// 서버 전용 fetch
 export async function fetchWithAuthOnServer<T = unknown>(
   endpoint: string,
+  accessToken?: string,
+  refreshToken?: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get('accessToken')?.value
+  let currentAccessToken = accessToken
+  let currentRefreshToken = refreshToken
 
-  const headers = new Headers(options.headers || {})
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`)
+  // 쿠키 넣어주는 함수
+  // 이걸 통해서 api를 다시 요청할 때에도 쿠키를 넣어줌
+  const makeRequest = async (accessToken: string | undefined) => {
+    const cookieHeader = `accessToken=${accessToken}; refreshToken=${currentRefreshToken}`
+
+    console.log(
+      '🚀 ~ makeRequest ~ cookieHeaderrrrrrrrrrr:',
+      cookieHeader,
+    )
+    const headers = new Headers(options.headers || {})
+    headers.set('Cookie', cookieHeader)
+
+    return fetch(`${API_URL_SERVER}${endpoint}`, {
+      ...options,
+      headers,
+    })
   }
 
-  const res = await fetch(`${API_URL_SERVER}${endpoint}`, {
-    ...options,
-    headers,
-  })
+  // 최초 요청
+  let res = await makeRequest(currentAccessToken)
+
+  if (res.status === 401) {
+    try {
+      console.log('토큰 갱신 시도...')
+      const refreshRes = await fetch(
+        `${API_URL_SERVER}/api/auth/refresh`,
+        {
+          method: 'POST',
+          headers: {
+            // 여기서는 리프레시니까 원래 있던 토큰 넣어줌
+            Cookie: `accessToken=${currentAccessToken}; refreshToken=${currentRefreshToken}`,
+          },
+        },
+      )
+
+      if (!refreshRes.ok) {
+        throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.')
+      }
+
+      // 리프레시로 받은 응답값의 헤더에서 토큰을 뽑아서 바로 넣어줌
+      const setCookieHeader = refreshRes.headers.get('set-cookie')
+      if (setCookieHeader) {
+        const cookies = setCookieHeader
+          .split(',')
+          .map((cookie) => cookie.trim())
+        console.log('🚀 ~ cookies:', cookies)
+
+        for (const cookie of cookies) {
+          if (cookie.startsWith('accessToken='))
+            currentAccessToken = cookie.split('=')[1].split(';')[0]
+          else if (cookie.startsWith('refreshToken='))
+            currentRefreshToken = cookie.split('=')[1].split(';')[0]
+        }
+      }
+
+      console.log('새 액세스 토큰:', currentAccessToken)
+
+      res = await makeRequest(currentAccessToken)
+    } catch (error) {
+      console.error('리프레시 토큰 요청 실패:', error)
+      throw new Error('세션 갱신 중 오류가 발생했습니다.')
+    }
+  }
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({}))
