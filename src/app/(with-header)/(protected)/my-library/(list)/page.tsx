@@ -36,24 +36,47 @@ export default function MyLibraryPage() {
       setLoading(true)
       try {
         const currentOffset = reset ? 0 : offsetRef.current
+
         const res = await fetchWithAuth<BookType[]>(
           `/api/library?offset=${currentOffset}&limit=${LIMIT}&q=${debouncedQuery}&sort=${sort}`, // Todo: sort 추가!
           {
             auth: true,
           },
         )
+
+        // ✅ 여기 추가
+        console.log(
+          `[debug] 서버 응답 (${sort}):`,
+          res.map((b) => ({
+            title: b.title,
+            endDate: b.review?.endDate,
+          })),
+        )
+
+        const filteredRes =
+          filterType === 'review'
+            ? res.filter(
+                (b) =>
+                  b.review &&
+                  typeof b.review.memo === 'string' &&
+                  b.review.memo.trim() !== '',
+              )
+            : res
+
         if (reset) {
-          setBooks(res)
+          setBooks(filteredRes)
           offsetRef.current = LIMIT
         } else {
           setBooks((prev) => {
             const existingIds = new Set(prev.map((b) => b.id))
-            const filtered = res.filter((b) => !existingIds.has(b.id))
-            return [...prev, ...filtered]
+            const newItems = filteredRes.filter(
+              (b) => !existingIds.has(b.id),
+            )
+            return [...prev, ...newItems]
           })
           offsetRef.current += LIMIT
         }
-        setHasMore(res.length === LIMIT)
+        setHasMore(filteredRes.length === LIMIT)
       } catch (e) {
         console.error(e)
       } finally {
@@ -62,6 +85,10 @@ export default function MyLibraryPage() {
     },
     [debouncedQuery, filterType, sort], // Todo: filterType, sort 추가!
   )
+
+  useEffect(() => {
+    fetchBooks(true) // ✅ 수정: 필터/정렬 바뀌면 리로드
+  }, [filterType, sort])
 
   useEffect(() => {
     fetchBooks(true)
