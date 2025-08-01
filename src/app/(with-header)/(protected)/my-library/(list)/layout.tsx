@@ -14,16 +14,16 @@ export default async function MyLibraryLayout({
   try {
     const cookieStore = await cookies()
     const accessToken = cookieStore.get('accessToken')?.value
-    if (!accessToken) return
-  } catch (e) {
-    console.error('쿠키 조회 실패:', e)
-    return null
-  }
-  try {
-    const user = await fetchWithAuthOnServer<ProfileType>(
-      '/api/user/profile',
-    )
-    nickName = user.nickName
+    const refreshToken = cookieStore.get('refreshToken')?.value
+
+    if (accessToken && refreshToken) {
+      const user = await fetchWithAuthOnServer<ProfileType>(
+        '/api/user/profile',
+        accessToken,
+        refreshToken,
+      )
+      nickName = user.nickName
+    }
   } catch (e) {
     console.error('프로필 로드 실패:', e)
   }
