@@ -27,7 +27,6 @@ export default function ReviewViewPage() {
           `/api/library/review/${id}`,
           {
             auth: true,
-            credentials: 'include', // ! 추가
           },
         )
         setBook(data)

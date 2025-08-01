@@ -39,7 +39,6 @@ export default function BookDetailPage() {
           `/api/library/review/${id}`,
           {
             auth: true,
-            credentials: 'include', // ! 추가
           },
         )
         setBook(data)

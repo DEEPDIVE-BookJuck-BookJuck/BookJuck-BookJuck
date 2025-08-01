@@ -22,9 +22,6 @@ export default async function MyLibraryLayout({
   try {
     const user = await fetchWithAuthOnServer<ProfileType>(
       '/api/user/profile',
-      {
-        credentials: 'include', // ! 추가
-      },
     )
     nickName = user.nickName
   } catch (e) {
