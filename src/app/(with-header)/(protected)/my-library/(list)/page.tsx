@@ -195,6 +195,14 @@ export default function MyLibraryPage() {
           </button>
         </div>
       )}
+
+      {!hasMore && books.length > 0 && (
+        <div className="mt-12 flex justify-center">
+          <p className="text-sm text-gray-400 animate-fade-in">
+            📚 더 이상 불러올 책이 없습니다
+          </p>
+        </div>
+      )}
     </>
   )
 }
