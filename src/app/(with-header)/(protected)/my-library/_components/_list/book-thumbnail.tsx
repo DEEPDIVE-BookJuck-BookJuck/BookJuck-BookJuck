@@ -4,12 +4,14 @@ interface BookThumbnailProps {
   title: string
   src: string
   className?: string
+  priority?: boolean
 }
 
 export default function BookThumbnail({
   title,
   src,
   className = 'w-16 h-20',
+  priority = false,
 }: BookThumbnailProps) {
   return (
     <Image
@@ -18,6 +20,7 @@ export default function BookThumbnail({
       height={200}
       alt={title}
       className={`object-cover rounded ${className}`}
+      priority={priority}
     />
   )
 }
