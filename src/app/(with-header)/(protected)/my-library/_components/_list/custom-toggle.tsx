@@ -24,7 +24,7 @@ export default function CustomToggle({
           className={`px-4 py-1 mr-1 text-sm rounded-full transition-colors cursor-pointer ${
             value === opt.value
               ? 'bg-white text-black font-semibold border border-slate-950'
-              : 'text-gray-500 hover:bg-white hover:text-black hover:border border-slate-950'
+              : 'bg-gray-200 text-gray-500 hover:bg-white hover:text-black hover:border border-slate-950'
           }`}
           onClick={() => onChange(opt.value)}
         >
