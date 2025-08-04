@@ -54,7 +54,10 @@ async function handleRequest(
     const refreshToken = cookieStore.get('refreshToken')?.value
 
     const endpoint = `/${params.path.join('/')}`
-    const url = `${API_URL_SERVER}${endpoint}`
+    const searchParams = request.nextUrl.searchParams.toString()
+    const url = `${API_URL_SERVER}${endpoint}${
+      searchParams ? `?${searchParams}` : ''
+    }`
 
     // request body 처리
     let body = undefined
@@ -84,9 +87,6 @@ async function handleRequest(
     // 쿠키 헤더 설정
     headers.set('Cookie', cookieHeader)
 
-    console.log(`🚀 프록시 요청: ${method} ${url}`)
-    console.log('🍪 쿠키 헤더:', cookieHeader)
-
     const response = await fetch(url, {
       method,
       headers,
@@ -95,7 +95,6 @@ async function handleRequest(
 
     // 401 오류 시 토큰 갱신 시도
     if (response.status === 401) {
-      console.log('토큰 갱신 시도...')
       const refreshRes = await fetch(
         `${API_URL_SERVER}/api/auth/refresh`,
         {
@@ -128,7 +127,6 @@ async function handleRequest(
         const newCookieHeader = `accessToken=${newAccessToken}; refreshToken=${newRefreshToken}`
         headers.set('Cookie', newCookieHeader)
 
-        console.log('🔄 새 토큰으로 재시도')
         const retryResponse = await fetch(url, {
           method,
           headers,
