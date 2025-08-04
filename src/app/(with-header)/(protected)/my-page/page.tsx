@@ -21,6 +21,10 @@ export default async function MyPage() {
     const accessToken = cookieStore.get('accessToken')?.value
     const refreshToken = cookieStore.get('refreshToken')?.value
 
+    if (!accessToken || !refreshToken) {
+      return null
+    }
+
     const results = await Promise.allSettled<
       [
         Promise<StatisicType>,
