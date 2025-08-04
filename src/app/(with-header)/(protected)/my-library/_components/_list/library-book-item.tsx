@@ -31,6 +31,7 @@ export default function LibraryBookItem({
             title={title}
             src={thumbnailUrl}
             className="w-[120px] h-[152px]"
+            priority={true}
           />
         </div>
         <div className="flex-1 min-w-0  pl-4">
