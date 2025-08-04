@@ -54,7 +54,9 @@ export default function Graph<
         {title == 'MonthlyGraph' && (
           <MonthlyGraph data={currentData as MonthlyBookType[]} />
         )}
-        {title == 'TagGraph' && <TagGraph data={currentData as TagBookType[]} />}
+        {title == 'TagGraph' && (
+          <TagGraph data={data as TagBookType[]} />
+        )}
       </div>
     </div>
   )
