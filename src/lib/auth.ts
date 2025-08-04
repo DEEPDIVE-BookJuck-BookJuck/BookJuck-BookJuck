@@ -60,7 +60,7 @@ export async function signup({
 
 export async function logout() {
   try {
-    await fetch(`${API_URL}/api/auth/logout`, {
+    await fetch(`/api/auth/logout`, {
       method: 'POST',
       credentials: 'include',
     })
