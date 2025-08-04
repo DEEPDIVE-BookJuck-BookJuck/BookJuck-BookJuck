@@ -91,7 +91,7 @@ export default function TagGraph({ data }: { data: TagBookType[] }) {
     <div className="flex flex-col w-full h-full">
       <ResponsiveContainer
         width="100%"
-        height="100%"
+        height={250}
       >
         <PieChart>
           <Pie
