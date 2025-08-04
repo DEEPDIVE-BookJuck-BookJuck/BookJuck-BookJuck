@@ -154,7 +154,12 @@ export default function BookDetailPage() {
 
   const handleResultClose = () => {
     setShowResultModal(false)
-    if (shouldGoBack) router.back()
+    if (shouldGoBack) {
+      router.back()
+      setTimeout(() => {
+        window.location.reload()
+      }, 100)
+    }
   }
 
   if (loading) {
