@@ -5,13 +5,12 @@ import LibraryBookItem from '../_components/_list/library-book-item'
 import ListPageSkeleton from '../_components/skeleton/list-page-skeleton'
 import CustomSelectBox from '../_components/_list/custom-selectbox'
 import CustomToggle from '../_components/_list/custom-toggle'
-
 import { Search } from 'lucide-react'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
 import { useDebounce } from '@/hooks/use-debounce'
 import { BookType } from '../../_types'
 
-const LIMIT = 10
+const LIMIT = 6
 
 type FilterType = 'all' | 'review'
 type SortType = 'latest' | 'oldest' | 'title'
@@ -34,13 +33,13 @@ export default function MyLibraryPage() {
       if (loading) return
       setLoading(true)
 
-      try {
-        const offset = reset ? 0 : offsetRef.current
-        const endpoint =
-          filterType === 'review'
-            ? '/api/library/review'
-            : '/api/library'
+      const offset = reset ? 0 : offsetRef.current
+      const endpoint =
+        filterType === 'review'
+          ? '/api/library/review'
+          : '/api/library'
 
+      try {
         const res = await fetchWithAuth<BookType[]>(
           `${endpoint}?offset=${offset}&limit=${LIMIT}&q=${debouncedQuery}&sort=${sort}&t=${Date.now()}`,
           { auth: true },
@@ -51,21 +50,21 @@ export default function MyLibraryPage() {
           offsetRef.current = res.length
         } else {
           setBooks((prev) => {
-            const existingIds = new Set(prev.map((b) => b.id))
-            const toAdd = res.filter((b) => !existingIds.has(b.id))
-            offsetRef.current += res.length
+            const prevIds = new Set(prev.map((b) => b.id))
+            const toAdd = res.filter((b) => !prevIds.has(b.id))
+            offsetRef.current += toAdd.length
             return [...prev, ...toAdd]
           })
         }
 
         setHasMore(res.length === LIMIT)
-      } catch (e) {
-        console.error('fetchBooks error:', e)
+      } catch (err) {
+        console.error('fetchBooks error:', err)
       } finally {
         setLoading(false)
       }
     },
-    [debouncedQuery, filterType, sort, loading],
+    [debouncedQuery, filterType, sort],
   )
 
   const resetAndFetch = () => {
@@ -100,6 +99,7 @@ export default function MyLibraryPage() {
 
   useEffect(() => {
     if (!isMobile) return
+
     const handleScroll = () => {
       if (!hasMore || loading) return
       const { scrollTop, clientHeight, scrollHeight } =
@@ -108,6 +108,7 @@ export default function MyLibraryPage() {
         fetchBooks(false)
       }
     }
+
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [loading, hasMore, fetchBooks, isMobile])
