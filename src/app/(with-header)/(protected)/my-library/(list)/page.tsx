@@ -11,9 +11,8 @@ import { fetchWithAuth } from '@/lib/fetch-with-auth'
 import { useDebounce } from '@/hooks/use-debounce'
 import { BookType } from '../../_types'
 
-const LIMIT = 6
+const LIMIT = 10
 
-// Todo: 추가!
 type FilterType = 'all' | 'review'
 type SortType = 'latest' | 'oldest' | 'title'
 
@@ -22,7 +21,6 @@ export default function MyLibraryPage() {
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 500)
 
-  // Todo: 추가! 필터 & 정렬 상태
   const [filterType, setFilterType] = useState<FilterType>('all')
   const [sort, setSort] = useState<SortType>('latest')
 
@@ -33,76 +31,63 @@ export default function MyLibraryPage() {
 
   const fetchBooks = useCallback(
     async (reset = false) => {
+      if (loading) return
       setLoading(true)
+
       try {
-        const currentOffset = reset ? 0 : offsetRef.current
+        const offset = reset ? 0 : offsetRef.current
+        const endpoint =
+          filterType === 'review'
+            ? '/api/library/review'
+            : '/api/library'
 
         const res = await fetchWithAuth<BookType[]>(
-          `/api/library?offset=${currentOffset}&limit=${LIMIT}&q=${debouncedQuery}&sort=${sort}`, // Todo: sort 추가!
-          {
-            auth: true,
-          },
+          `${endpoint}?offset=${offset}&limit=${LIMIT}&q=${debouncedQuery}&sort=${sort}&t=${Date.now()}`,
+          { auth: true },
         )
-
-        // ✅ 여기 추가
-        console.log(
-          `[debug] 서버 응답 (${sort}):`,
-          res.map((b) => ({
-            title: b.title,
-            endDate: b.review?.endDate,
-          })),
-        )
-
-        const filteredRes =
-          filterType === 'review'
-            ? res.filter(
-                (b) =>
-                  b.review &&
-                  typeof b.review.memo === 'string' &&
-                  b.review.memo.trim() !== '',
-              )
-            : res
 
         if (reset) {
-          setBooks(filteredRes)
-          offsetRef.current = LIMIT
+          setBooks(res)
+          offsetRef.current = res.length
         } else {
           setBooks((prev) => {
             const existingIds = new Set(prev.map((b) => b.id))
-            const newItems = filteredRes.filter(
-              (b) => !existingIds.has(b.id),
-            )
-            return [...prev, ...newItems]
+            const toAdd = res.filter((b) => !existingIds.has(b.id))
+            offsetRef.current += res.length
+            return [...prev, ...toAdd]
           })
-          offsetRef.current += LIMIT
         }
-        setHasMore(filteredRes.length === LIMIT)
+
+        setHasMore(res.length === LIMIT)
       } catch (e) {
-        console.error(e)
+        console.error('fetchBooks error:', e)
       } finally {
         setLoading(false)
       }
     },
-    [debouncedQuery, filterType, sort], // Todo: filterType, sort 추가!
+    [debouncedQuery, filterType, sort, loading],
   )
 
-  useEffect(() => {
-    fetchBooks(true) // ✅ 수정: 필터/정렬 바뀌면 리로드
-  }, [filterType, sort])
+  const resetAndFetch = () => {
+    offsetRef.current = 0
+    setBooks([])
+    setHasMore(true)
+    fetchBooks(true)
+  }
 
   useEffect(() => {
-    fetchBooks(true)
-  }, [fetchBooks])
+    resetAndFetch()
+  }, [filterType, sort, debouncedQuery])
 
   useEffect(() => {
     const onFocus = () => {
-      if (!loading && books.length === 0) {
+      if (!loading && books.length === 0 && hasMore) {
         fetchBooks(true)
       }
     }
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
-  }, [fetchBooks, loading, books.length])
+  }, [fetchBooks, loading, books.length, hasMore])
 
   useEffect(() => {
     const mql = window.matchMedia('(max-width: 767px)')
@@ -116,16 +101,16 @@ export default function MyLibraryPage() {
   useEffect(() => {
     if (!isMobile) return
     const handleScroll = () => {
-      if (loading || !hasMore) return
+      if (!hasMore || loading) return
       const { scrollTop, clientHeight, scrollHeight } =
         document.documentElement
       if (scrollHeight - scrollTop - clientHeight < 100) {
-        fetchBooks()
+        fetchBooks(false)
       }
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [isMobile, loading, hasMore, fetchBooks])
+  }, [loading, hasMore, fetchBooks, isMobile])
 
   if (loading && books.length === 0) {
     return <ListPageSkeleton />
@@ -154,7 +139,6 @@ export default function MyLibraryPage() {
               value={filterType}
               onChange={(v) => setFilterType(v as FilterType)}
             />
-
             <CustomSelectBox
               options={[
                 { value: 'latest', label: '최신 순' },
@@ -167,6 +151,7 @@ export default function MyLibraryPage() {
           </div>
         </div>
       </div>
+
       {loading && books.length === 0 && (
         <p className="text-center text-gray-500 mt-20">
           불러오는 중...
@@ -177,6 +162,7 @@ export default function MyLibraryPage() {
           아직 저장된 책이 없습니다.
         </p>
       )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {books.map((book) => (
           <LibraryBookItem
@@ -185,12 +171,12 @@ export default function MyLibraryPage() {
           />
         ))}
       </div>
-      {!isMobile && hasMore && (
+
+      {!isMobile && hasMore && !loading && (
         <div className="text-center mt-8">
           <button
-            disabled={loading}
-            onClick={() => fetchBooks()}
-            className="bg-gray-200 px-6 py-2 rounded hover:bg-gray-300 cursor-pointer disabled:opacity-50"
+            onClick={() => fetchBooks(false)}
+            className="bg-gray-200 px-6 py-2 rounded hover:bg-gray-300 cursor-pointer"
           >
             더 보기
           </button>
