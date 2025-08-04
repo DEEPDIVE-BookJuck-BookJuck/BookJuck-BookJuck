@@ -19,7 +19,11 @@ export default async function MyPage() {
   try {
     const cookieStore = await cookies()
     const accessToken = cookieStore.get('accessToken')?.value
-    if (!accessToken) return
+    const refreshToken = cookieStore.get('refreshToken')?.value
+
+    if (!accessToken || !refreshToken) {
+      return null
+    }
 
     const results = await Promise.allSettled<
       [
@@ -30,11 +34,31 @@ export default async function MyPage() {
         Promise<ProfileType>,
       ]
     >([
-      fetchWithAuthOnServer('/api/reading/statistics'),
-      fetchWithAuthOnServer('/api/reading/monthly'),
-      fetchWithAuthOnServer('/api/reading/tags/statistics'),
-      fetchWithAuthOnServer('/api/library/review/recent'),
-      fetchWithAuthOnServer('/api/user/profile'),
+      fetchWithAuthOnServer(
+        '/api/reading/statistics',
+        accessToken,
+        refreshToken,
+      ),
+      fetchWithAuthOnServer(
+        '/api/reading/monthly',
+        accessToken,
+        refreshToken,
+      ),
+      fetchWithAuthOnServer(
+        '/api/reading/tags/statistics',
+        accessToken,
+        refreshToken,
+      ),
+      fetchWithAuthOnServer(
+        '/api/library/review/recent',
+        accessToken,
+        refreshToken,
+      ),
+      fetchWithAuthOnServer(
+        '/api/user/profile',
+        accessToken,
+        refreshToken,
+      ),
     ])
 
     if (results[0].status === 'fulfilled')

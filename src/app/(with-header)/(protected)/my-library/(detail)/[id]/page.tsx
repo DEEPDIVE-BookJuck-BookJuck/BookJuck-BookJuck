@@ -37,7 +37,9 @@ export default function BookDetailPage() {
       try {
         const data = await fetchWithAuth<BookType>(
           `/api/library/review/${id}`,
-          { auth: true },
+          {
+            auth: true,
+          },
         )
         setBook(data)
         setMemo(data.review?.memo ?? '')
@@ -152,7 +154,12 @@ export default function BookDetailPage() {
 
   const handleResultClose = () => {
     setShowResultModal(false)
-    if (shouldGoBack) router.back()
+    if (shouldGoBack) {
+      router.back()
+      setTimeout(() => {
+        window.location.reload()
+      }, 100)
+    }
   }
 
   if (loading) {

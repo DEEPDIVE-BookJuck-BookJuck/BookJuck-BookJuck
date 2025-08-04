@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { PenLine } from 'lucide-react'
 import BookThumbnail from './book-thumbnail'
 import TagList from '../../../_components/tag-list'
+import RatingStars from './rating-stars'
 import { BookType } from '../../../_types'
 
 export default function LibraryBookItem({
@@ -15,6 +16,7 @@ export default function LibraryBookItem({
 }: BookType) {
   const router = useRouter()
   const hasReview = Boolean(review?.endDate)
+  const rating = review?.rating ?? 0
 
   const goToDetail = () => {
     if (hasReview) router.push(`/my-library/${id}/view`)
@@ -29,17 +31,27 @@ export default function LibraryBookItem({
             title={title}
             src={thumbnailUrl}
             className="w-[120px] h-[152px]"
+            priority={true}
           />
         </div>
         <div className="flex-1 min-w-0  pl-4">
-          <h3 className="font-semibold text-lg mb-1 truncate h-6">
+          <h3 className="font-semibold text-lg mb-2 truncate h-6">
             {title || '\u00A0'}
           </h3>
-          <p className="text-gray-600 text-sm mb-1 truncate h-5">
+          <p className="text-gray-600 text-sm mb-2 truncate h-5">
             {author || '\u00A0'}
           </p>
+          {hasReview && rating > 0 && (
+            <RatingStars
+              value={rating}
+              showNumber
+              className="mb-2"
+            />
+          )}
           <p className="text-gray-500 text-xs mb-3 truncate h-4">
-            {hasReview ? `읽은 날: ${review.endDate}` : '\u00A0'}
+            {hasReview
+              ? `독후감 작성 날짜 : ${review.endDate}`
+              : '\u00A0'}
           </p>
           <div className="mb-2 h-5 overflow-hidden">
             <TagList tags={review?.tags ?? []} />

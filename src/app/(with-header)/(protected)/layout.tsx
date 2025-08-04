@@ -14,7 +14,8 @@ export default function ProtectedLayout({
 }: ProtectedLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const { user } = useAuthStore((state) => state)
+  const { user } = useAuthStore()
+  const [isReady, setIsReady] = useState(false)
   const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
@@ -23,8 +24,9 @@ export default function ProtectedLayout({
       if (!isAuthPage) {
         sessionStorage.setItem('redirectAfterLogin', pathname)
       }
-
       setShowModal(true)
+    } else {
+      setIsReady(true)
     }
   }, [user, pathname])
 
@@ -54,6 +56,8 @@ export default function ProtectedLayout({
       </Modal>
     )
   }
+
+  if (!isReady) return null
 
   return <>{children}</>
 }

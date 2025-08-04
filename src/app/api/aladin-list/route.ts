@@ -1,4 +1,6 @@
-export async function GET(request: Request) {
+import { NextRequest } from 'next/server'
+
+export async function GET(request: NextRequest) {
   const apiKey = process.env.NEXT_PUBLIC_ALADIN_API_KEY
   if (!apiKey) {
     return new Response('API key not found', { status: 500 })
@@ -7,7 +9,6 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const page = parseInt(searchParams.get('page') || '1', 10)
   const itemsPerPage = 10
-
   const start = (page - 1) * itemsPerPage + 1
 
   const apiUrl =

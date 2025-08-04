@@ -14,25 +14,32 @@ export default async function MyLibraryLayout({
   try {
     const cookieStore = await cookies()
     const accessToken = cookieStore.get('accessToken')?.value
-    if (!accessToken) return
+    const refreshToken = cookieStore.get('refreshToken')?.value
+
+    if (accessToken && refreshToken) {
+      const user = await fetchWithAuthOnServer<ProfileType>(
+        '/api/user/profile',
+        accessToken,
+        refreshToken,
+      )
+      nickName = user.nickName
+    }
   } catch (e) {
-    console.error('쿠키 조회 실패:', e)
-    return null
+    console.error('프로필 닉네임 로드 실패:', e)
   }
-  try {
-    const user = await fetchWithAuthOnServer<ProfileType>(
-      '/api/user/profile',
-    )
-    nickName = user.nickName
-  } catch (e) {
-    console.error('프로필 로드 실패:', e)
-  }
+
+  const isLoading = nickName === '사용자'
 
   return (
     <>
       <section className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {nickName} 님의 서재
+        <h1 className="flex items-center gap-2 mb-2 text-3xl font-bold text-gray-900">
+          {isLoading ? (
+            <div className="h-8 w-24 bg-gray-200 animate-pulse rounded-md" />
+          ) : (
+            <span>{nickName}</span>
+          )}
+          <span>님의 서재</span>
         </h1>
         <p className="text-gray-600">
           읽은 책들과 독후감을 관리하세요
