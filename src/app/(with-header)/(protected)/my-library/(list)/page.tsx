@@ -30,9 +30,12 @@ export default function MyLibraryPage() {
   const [initialLoading, setInitialLoading] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
 
+  const loadingRef = useRef(false)
+
   const fetchBooks = useCallback(
     async (reset = false) => {
-      if (loading) return
+      if (loadingRef.current) return
+      loadingRef.current = true
       setLoading(true)
       if (reset) setInitialLoading(true)
 
@@ -65,22 +68,21 @@ export default function MyLibraryPage() {
         console.error('fetchBooks error:', err)
       } finally {
         setLoading(false)
+        loadingRef.current = false
         if (reset) setInitialLoading(false)
       }
     },
     [debouncedQuery, filterType, sort],
   )
-
-  const resetAndFetch = () => {
-    offsetRef.current = 0
-    setBooks([])
-    setHasMore(true)
-    fetchBooks(true)
-  }
-
   useEffect(() => {
-    resetAndFetch()
-  }, [filterType, sort, debouncedQuery])
+    const doReset = async () => {
+      offsetRef.current = 0
+      setBooks([])
+      setHasMore(true)
+      await fetchBooks(true)
+    }
+    doReset()
+  }, [filterType, sort, debouncedQuery, fetchBooks])
 
   useEffect(() => {
     const onFocus = () => {
@@ -105,7 +107,7 @@ export default function MyLibraryPage() {
     if (!isMobile) return
 
     const handleScroll = () => {
-      if (!hasMore || loading) return
+      if (!hasMore || loadingRef.current) return
       const { scrollTop, clientHeight, scrollHeight } =
         document.documentElement
       if (scrollHeight - scrollTop - clientHeight < 100) {
