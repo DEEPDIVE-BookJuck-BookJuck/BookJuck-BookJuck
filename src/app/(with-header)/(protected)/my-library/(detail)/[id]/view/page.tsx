@@ -25,7 +25,9 @@ export default function ReviewViewPage() {
       try {
         const data = await fetchWithAuth<BookType>(
           `/api/library/review/${id}`,
-          { auth: true },
+          {
+            auth: true,
+          },
         )
         setBook(data)
       } catch (e) {

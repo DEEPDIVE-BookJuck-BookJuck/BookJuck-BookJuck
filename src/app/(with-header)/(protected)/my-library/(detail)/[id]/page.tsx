@@ -37,7 +37,9 @@ export default function BookDetailPage() {
       try {
         const data = await fetchWithAuth<BookType>(
           `/api/library/review/${id}`,
-          { auth: true },
+          {
+            auth: true,
+          },
         )
         setBook(data)
         setMemo(data.review?.memo ?? '')
