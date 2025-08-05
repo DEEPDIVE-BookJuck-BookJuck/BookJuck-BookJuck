@@ -32,7 +32,6 @@ export async function POST(request: NextRequest) {
 
     // 백엔드에서 받은 set-cookie 헤더 처리
     const setCookieHeader = response.headers.get('set-cookie')
-    console.log('🔍 백엔드 응답 set-cookie:', setCookieHeader)
 
     if (setCookieHeader) {
       const cookieStore = await cookies()
@@ -51,7 +50,6 @@ export async function POST(request: NextRequest) {
             sameSite: 'lax',
             path: '/',
           })
-          console.log('✅ accessToken 쿠키 설정 완료')
         } else if (cookiePart.startsWith('refreshToken=')) {
           const refreshToken = cookiePart.split('=')[1].split(';')[0]
           cookieStore.set('refreshToken', refreshToken, {
@@ -60,7 +58,6 @@ export async function POST(request: NextRequest) {
             sameSite: 'lax',
             path: '/',
           })
-          console.log('✅ refreshToken 쿠키 설정 완료')
         }
       }
     }
