@@ -40,7 +40,6 @@ export async function POST() {
 
     // 백엔드에서 받은 새로운 토큰으로 쿠키 업데이트
     const setCookieHeader = response.headers.get('set-cookie')
-    console.log('🔍 리프레시 응답 set-cookie:', setCookieHeader)
 
     const successResponse = NextResponse.json({ success: true })
 
@@ -60,7 +59,6 @@ export async function POST() {
             sameSite: 'lax',
             path: '/',
           })
-          console.log('✅ accessToken 갱신 완료')
         } else if (cookiePart.startsWith('refreshToken=')) {
           const newRefreshToken = cookiePart
             .split('=')[1]
@@ -75,7 +73,6 @@ export async function POST() {
               path: '/',
             },
           )
-          console.log('✅ refreshToken 갱신 완료')
         }
       }
     }

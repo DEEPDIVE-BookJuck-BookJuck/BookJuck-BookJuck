@@ -30,9 +30,6 @@ export async function login({
 
   const result = await res.json()
 
-  // 로그인 후 쿠키 확인
-  console.log('🍪 로그인 후 document.cookie:', document.cookie)
-
   return result
 }
 
