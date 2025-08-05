@@ -12,7 +12,6 @@ import FilterBarSkeleton from '../_components/skeleton/filter-bar-skeleton'
 import { Search } from 'lucide-react'
 
 const LIMIT = 6
-
 type FilterType = 'all' | 'review'
 type SortType = 'latest' | 'oldest' | 'title'
 
@@ -20,20 +19,18 @@ export default function MyLibraryPage() {
   const [books, setBooks] = useState<BookType[]>([])
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 500)
-
   const [filterType, setFilterType] = useState<FilterType>('all')
   const [sort, setSort] = useState<SortType>('latest')
 
   const offsetRef = useRef(0)
+  const loadingRef = useRef(false)
   const [hasMore, setHasMore] = useState(true)
-  const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
-
-  const loadingRef = useRef(false)
+  const [loading, setLoading] = useState(false)
 
   const fetchBooks = useCallback(
-    async (reset = false) => {
+    async ({ reset = false }: { reset?: boolean }) => {
       if (loadingRef.current) return
       loadingRef.current = true
       setLoading(true)
@@ -74,20 +71,18 @@ export default function MyLibraryPage() {
     },
     [debouncedQuery, filterType, sort],
   )
+
   useEffect(() => {
-    const doReset = async () => {
-      offsetRef.current = 0
-      setBooks([])
-      setHasMore(true)
-      await fetchBooks(true)
-    }
-    doReset()
+    offsetRef.current = 0
+    setBooks([])
+    setHasMore(true)
+    fetchBooks({ reset: true })
   }, [filterType, sort, debouncedQuery, fetchBooks])
 
   useEffect(() => {
     const onFocus = () => {
       if (!loading && books.length === 0 && hasMore) {
-        fetchBooks(true)
+        fetchBooks({ reset: true })
       }
     }
     window.addEventListener('focus', onFocus)
@@ -96,9 +91,9 @@ export default function MyLibraryPage() {
 
   useEffect(() => {
     const mql = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mql.matches)
     const onChange = (e: MediaQueryListEvent) =>
       setIsMobile(e.matches)
-    setIsMobile(mql.matches)
     mql.addEventListener('change', onChange)
     return () => mql.removeEventListener('change', onChange)
   }, [])
@@ -111,13 +106,13 @@ export default function MyLibraryPage() {
       const { scrollTop, clientHeight, scrollHeight } =
         document.documentElement
       if (scrollHeight - scrollTop - clientHeight < 100) {
-        fetchBooks(false)
+        fetchBooks({ reset: false })
       }
     }
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [loading, hasMore, fetchBooks, isMobile])
+  }, [hasMore, isMobile, fetchBooks])
 
   return (
     <>
@@ -125,36 +120,37 @@ export default function MyLibraryPage() {
         <FilterBarSkeleton />
       ) : (
         <div className="mb-8 space-y-4">
-          <div className="flex flex-col gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="제목 또는 저자 검색"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm pl-10 focus:ring-1 focus:ring-inset focus:ring-gray-400 focus:outline-none"
-              />
-            </div>
-            <div className="flex w-full items-center justify-between overflow-visible">
-              <CustomToggle
-                options={[
-                  { value: 'all', label: '전체' },
-                  { value: 'review', label: '독후감' },
-                ]}
-                value={filterType}
-                onChange={(v) => setFilterType(v as FilterType)}
-              />
-              <CustomSelectBox
-                options={[
-                  { value: 'latest', label: '최신 순' },
-                  { value: 'oldest', label: '오래된 순' },
-                  { value: 'title', label: '이름 순' },
-                ]}
-                value={sort}
-                onChange={(v) => setSort(v as SortType)}
-              />
-            </div>
+          {/* 검색 바 */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <input
+              type="text"
+              placeholder="제목 또는 저자 검색"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm pl-10 focus:ring-1 focus:ring-inset focus:ring-gray-400 focus:outline-none"
+            />
+          </div>
+
+          {/* 필터 / 정렬 */}
+          <div className="flex w-full items-center justify-between overflow-visible">
+            <CustomToggle
+              options={[
+                { value: 'all', label: '전체' },
+                { value: 'review', label: '독후감' },
+              ]}
+              value={filterType}
+              onChange={(v) => setFilterType(v as FilterType)}
+            />
+            <CustomSelectBox
+              options={[
+                { value: 'latest', label: '최신 순' },
+                { value: 'oldest', label: '오래된 순' },
+                { value: 'title', label: '이름 순' },
+              ]}
+              value={sort}
+              onChange={(v) => setSort(v as SortType)}
+            />
           </div>
         </div>
       )}
@@ -186,11 +182,11 @@ export default function MyLibraryPage() {
         )}
       </div>
 
-      {/* 더 보기 버튼 */}
+      {/* 더 보기 */}
       {!isMobile && hasMore && !loading && (
         <div className="text-center mt-8">
           <button
-            onClick={() => fetchBooks(false)}
+            onClick={() => fetchBooks({ reset: false })}
             className="bg-gray-200 px-6 py-2 rounded hover:bg-gray-300 cursor-pointer"
           >
             더 보기
