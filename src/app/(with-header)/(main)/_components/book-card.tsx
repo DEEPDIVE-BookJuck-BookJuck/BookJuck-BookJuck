@@ -14,59 +14,50 @@ import Modal from '@/common/modal'
 
 export interface BookCardPropsType {
   book: BookType
+  libraryBooks: {
+    id: string
+    title: string
+    author: string
+    thumbnailUrl: string
+    review?: {
+      endDate?: string
+      memo?: string
+      rating?: number
+      tags?: string[]
+    }
+  }[]
 }
 
-interface LibraryBook {
-  id: string
-  title: string
-  author: string
-  thumbnailUrl: string
-  review?: {
-    endDate?: string
-    memo?: string
-    rating?: number
-    tags?: string[]
-  }
-}
-
-const BookCard: FC<BookCardPropsType> = ({ book }) => {
+const BookCard: FC<BookCardPropsType> = ({ book, libraryBooks }) => {
   const [isAdded, setIsAdded] = useState(false)
   const [libraryBookId, setLibraryBookId] = useState<string | null>(null)
   const [modalMessage, setModalMessage] = useState<string | null>(null)
   const [shouldRedirectAfterModal, setShouldRedirectAfterModal] = useState(false)
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false)
+  const [hasReview, setHasReview] = useState(false)
+
   const router = useRouter()
 
   useEffect(() => {
-    const checkIfBookExists = async () => {
-      const cookies = document.cookie
-      const accessToken = cookies
-        .split('; ')
-        .find((row) => row.startsWith('accessToken='))
-        ?.split('=')[1]
+    const matched = libraryBooks.find(
+      (b) => b.title === book.title && b.author === book.author,
+    )
 
-      if (!accessToken) {
-        return 
-      }
+    if (matched) {
+      setIsAdded(true)
+      setLibraryBookId(matched.id)
 
-      try {
-        const libraryBooks = await fetchWithAuth<LibraryBook[]>(
-          '/api/library?offset=0&limit=100',
-          { auth: true },
-        )
-        const existingBook = libraryBooks.find(
-          (b) => b.title === book.title && b.author === book.author,
-        )
-        if (existingBook) {
-          setIsAdded(true)
-          setLibraryBookId(existingBook.id)
-        }
-      } catch (error) {
-        console.error('내 서재 상태 확인 실패:', error)
+      const reviewExists =
+        matched.review?.memo ||
+        matched.review?.rating ||
+        matched.review?.tags?.length ||
+        matched.review?.endDate
+
+      if (reviewExists) {
+        setHasReview(true)
       }
     }
-
-    checkIfBookExists()
-  }, [book.title, book.author])
+  }, [libraryBooks, book.title, book.author])
 
   const handleToggleLibrary = async () => {
     const cookies = document.cookie
@@ -101,23 +92,19 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
         setLibraryBookId(res.book.id)
         setModalMessage('내 서재에 추가되었습니다!')
         setIsAdded(true)
+        setHasReview(false)
       } else {
         if (!libraryBookId) {
           setModalMessage('삭제할 책의 ID가 없습니다.')
           return
         }
 
-        await fetchWithAuth<DeleteBookResponse>(
-          `/api/library/${libraryBookId}`,
-          {
-            method: 'DELETE',
-            auth: true,
-          },
-        )
+        if (hasReview) {
+          setShowConfirmDeleteModal(true)
+          return
+        }
 
-        setModalMessage('내 서재에서 삭제되었습니다.')
-        setIsAdded(false)
-        setLibraryBookId(null)
+        await deleteBook()
       }
     } catch (error: unknown) {
       console.error('에러 내용:', error)
@@ -162,6 +149,29 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
             : '서재 추가에 실패했습니다.',
         )
       }
+    }
+  }
+
+  const deleteBook = async () => {
+    if (!libraryBookId) return
+
+    try {
+      await fetchWithAuth<DeleteBookResponse>(
+        `/api/library/${libraryBookId}`,
+        {
+          method: 'DELETE',
+          auth: true,
+        },
+      )
+      setModalMessage('내 서재에서 삭제되었습니다.')
+      setIsAdded(false)
+      setLibraryBookId(null)
+      setHasReview(false)
+    } catch (error) {
+      console.error('삭제 실패:', error)
+      setModalMessage('내 서재에서 삭제에 실패했습니다.')
+    } finally {
+      setShowConfirmDeleteModal(false)
     }
   }
 
@@ -225,6 +235,7 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
         </div>
       </div>
 
+      {/* 일반 안내 모달 */}
       {modalMessage && (
         <Modal>
           <div className="text-center">
@@ -243,9 +254,35 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
           </div>
         </Modal>
       )}
+
+      {/* 삭제 확인 모달 */}
+      {showConfirmDeleteModal && (
+        <Modal>
+          <div className="text-center mb-4">
+            <p className="text-md font-semibold mb-2">
+              이 책에는 작성된 독후감이 있습니다.
+              <br />
+              정말 삭제하시겠습니까?
+            </p>
+          </div>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={deleteBook}
+              className="bg-red-600 text-white text-sm py-2 px-4 rounded hover:bg-red-700 cursor-pointer"
+            >
+              삭제
+            </button>
+            <button
+              onClick={() => setShowConfirmDeleteModal(false)}
+              className="border border-gray-300 text-sm py-2 px-4 rounded hover:bg-gray-100 cursor-pointer"
+            >
+              아니오
+            </button>
+          </div>
+        </Modal>
+      )}
     </>
   )
 }
 
 export default BookCard
-
