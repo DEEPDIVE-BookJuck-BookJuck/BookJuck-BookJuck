@@ -11,6 +11,7 @@ import {
 } from '@/app/(with-header)/(main)/_types'
 import { fetchWithAuth } from '@/lib/fetch-with-auth'
 import Modal from '@/common/modal'
+import { useAuthStore } from '@/store/auth-store'
 
 export interface BookCardPropsType {
   book: BookType
@@ -30,11 +31,18 @@ export interface BookCardPropsType {
 
 const BookCard: FC<BookCardPropsType> = ({ book, libraryBooks }) => {
   const [isAdded, setIsAdded] = useState(false)
-  const [libraryBookId, setLibraryBookId] = useState<string | null>(null)
-  const [modalMessage, setModalMessage] = useState<string | null>(null)
-  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] = useState(false)
-  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false)
+  const [libraryBookId, setLibraryBookId] = useState<string | null>(
+    null,
+  )
+  const [modalMessage, setModalMessage] = useState<string | null>(
+    null,
+  )
+  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] =
+    useState(false)
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] =
+    useState(false)
   const [hasReview, setHasReview] = useState(false)
+  const isLoggedIn = useAuthStore((state) => !!state.user)
 
   const router = useRouter()
 
@@ -122,9 +130,11 @@ const BookCard: FC<BookCardPropsType> = ({ book, libraryBooks }) => {
         typeof error === 'object' &&
         error !== null &&
         'response' in error &&
-        typeof (error as { response?: { status?: number } }).response?.status === 'number'
+        typeof (error as { response?: { status?: number } }).response
+          ?.status === 'number'
       ) {
-        status = (error as { response: { status: number } }).response.status
+        status = (error as { response: { status: number } }).response
+          .status
       } else if (
         error instanceof Error &&
         error.message.includes('이미')
@@ -197,13 +207,13 @@ const BookCard: FC<BookCardPropsType> = ({ book, libraryBooks }) => {
             >
               <BookOpen
                 className="w-4 h-4"
-                stroke={isAdded ? '#22C55E' : 'black'}
-                fill={isAdded ? '#22C55E' : 'none'}
+                stroke={isLoggedIn && isAdded ? '#22C55E' : 'black'}
+                fill={isLoggedIn && isAdded ? '#22C55E' : 'none'}
               />
             </button>
           </div>
 
-          {isAdded && (
+          {isLoggedIn && isAdded && (
             <div
               className="absolute bottom-2 left-2 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md select-none"
               style={{ backgroundColor: '#22C55E' }}
