@@ -278,7 +278,7 @@ const BookCard: FC<BookCardPropsType> = ({ book, libraryBooks }) => {
           <div className="flex justify-center gap-4">
             <button
               onClick={deleteBook}
-              className="bg-red-600 text-white text-sm py-2 px-4 rounded hover:bg-red-700 cursor-pointer"
+              className="bg-slate-950 text-white text-sm py-2 px-4 rounded hover:bg-slate-900 cursor-pointer"
             >
               삭제
             </button>
