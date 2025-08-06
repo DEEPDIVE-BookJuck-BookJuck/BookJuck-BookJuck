@@ -14,7 +14,7 @@ const ITEMS_PER_PAGE_SEARCH = 10
 const ITEMS_PER_PAGE_BESTSELLER = 10
 
 // 각각 다른 최대 페이지 수
-const MAX_SEARCH_PAGE = 10
+// const MAX_SEARCH_PAGE = 10
 const MAX_BESTSELLER_PAGE = 10
 
 interface LibraryBook {
@@ -272,6 +272,27 @@ export default function Home() {
           {loading && <p>로딩 중...</p>}
         </div>
       </div>
+
+      {/* 아직 다 불러오지 않았을 때 */}
+      {isSearching &&
+        !loading &&
+        books.length > 0 &&
+        allSearchResultsRef.current.length > books.length && (
+          <p className="text-center mt-4 text-gray-500">
+            📚 아직 모든 책을 불러오지 않았습니다 아래로 스크롤해
+            주세요.
+          </p>
+        )}
+
+      {/* 모든 책을 다 불러왔을 때 */}
+      {isSearching &&
+        !loading &&
+        books.length > 0 &&
+        books.length === allSearchResultsRef.current.length && (
+          <p className="text-center mt-4 text-gray-500">
+            📚 모든 책을 불러왔습니다.
+          </p>
+        )}
     </main>
   )
 }
