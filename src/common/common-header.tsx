@@ -74,7 +74,11 @@ export default function Header() {
           {/* 데스크탑용 네비게이션 */}
           <nav className="hidden md:hidden lg:flex flex-1 justify-center gap-6 text-sm font-medium">
             {navItems.map(({ href, label, icon: Icon }) => {
-              const isActive = pathname === href
+              // const isActive = pathname === href
+              const isActive =
+                href === '/'
+                  ? pathname === '/'
+                  : pathname.startsWith(href)
               return (
                 <Link
                   key={href}
