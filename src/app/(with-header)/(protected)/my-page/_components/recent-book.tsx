@@ -1,10 +1,21 @@
+import Link from 'next/link'
 import { BookType } from '../../_types'
 import RecentBookItem from './recent-book-item'
+import { ChevronRight } from 'lucide-react'
 
 export default function RecentBook({ data }: { data: BookType[] }) {
   return (
     <div className="bg-white border-1 border-gray-300 rounded-xl px-6 py-6">
-      <p className="text-2xl font-bold mb-3">최근 읽은 책</p>
+      <div className="flex justify-between items-center">
+        <p className="text-2xl font-bold mb-3">최근 작성된 독후감</p>
+        <Link
+          href={'/my-library'}
+          className="flex items-center font-semibold text-sm"
+        >
+          내 서재
+          <ChevronRight className="w-5 h-5" />
+        </Link>
+      </div>
       {data.length === 0 ? (
         <span className="flex justify-center items-center w-full h-14 font-medium">
           최근 작성한 독후감이 없습니다
