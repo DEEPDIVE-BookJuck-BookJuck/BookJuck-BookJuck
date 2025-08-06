@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react'
+import { logout } from '@/lib/auth'
 import { useAuthStore } from '@/store/auth-store'
 
-const AUTO_LOGOUT_TIME = 1000 * 60 * 30 // 30분
+const AUTO_LOGOUT_TIME = 1000 * 60 * 60 // 60분
 
 export function useAutoLogout() {
+  const isLoggedIn = useAuthStore((state) => !!state.user)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const resetTimer = () => {
@@ -11,20 +13,9 @@ export function useAutoLogout() {
     timerRef.current = setTimeout(logout, AUTO_LOGOUT_TIME)
   }
 
-  const logout = async () => {
-    try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      })
-    } catch (error) {
-      console.error('자동 로그아웃 실패:', error)
-    }
-
-    useAuthStore.getState().clearAuth()
-  }
-
   useEffect(() => {
+    if (!isLoggedIn) return
+
     const events = ['mousemove', 'keydown', 'click', 'scroll']
 
     events.forEach((event) =>
@@ -39,5 +30,5 @@ export function useAutoLogout() {
       )
       if (timerRef.current) clearTimeout(timerRef.current)
     }
-  }, [])
+  }, [isLoggedIn])
 }
