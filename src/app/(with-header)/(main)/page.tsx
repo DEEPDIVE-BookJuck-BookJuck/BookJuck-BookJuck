@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Search } from 'lucide-react'
+import { useDebounce } from '@/hooks/use-debounce'
 import { BookType, RawBookItemType } from './_types'
 import BookCard from './_components/book-card'
 import BookCardSkeleton from './_components/skeleton/book-card-skeleton'
 import ListPageSkeleton from './_components/skeleton/list-page-skeleton'
+import { fetchWithAuth } from '@/lib/fetch-with-auth'
 
 // 각각 다른 페이지당 개수
 const ITEMS_PER_PAGE_SEARCH = 5
@@ -15,13 +17,17 @@ const ITEMS_PER_PAGE_BESTSELLER = 10
 const MAX_SEARCH_PAGE = 10
 const MAX_BESTSELLER_PAGE = 10
 
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value)
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay)
-    return () => clearTimeout(handler)
-  }, [value, delay])
-  return debouncedValue
+interface LibraryBook {
+  id: string
+  title: string
+  author: string
+  thumbnailUrl: string
+  review?: {
+    endDate?: string
+    memo?: string
+    rating?: number
+    tags?: string[]
+  }
 }
 
 export default function Home() {
@@ -30,6 +36,7 @@ export default function Home() {
   const isSearching = debouncedQuery.trim().length > 0
 
   const [books, setBooks] = useState<BookType[]>([])
+  const [libraryBooks, setLibraryBooks] = useState<LibraryBook[]>([])
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -78,6 +85,23 @@ export default function Home() {
     [debouncedQuery, isSearching],
   )
 
+  const fetchLibrary = useCallback(async () => {
+    try {
+      const cookies = document.cookie
+      const accessToken = cookies
+        .split('; ')
+        .find((row) => row.startsWith('accessToken='))
+        ?.split('=')[1]
+
+      if (!accessToken) return
+
+      const library = await fetchWithAuth<LibraryBook[]>('/api/library?offset=0&limit=100', { auth: true })
+      setLibraryBooks(library)
+    } catch (error) {
+      console.error('내 서재 불러오기 실패:', error)
+    }
+  }, [])
+
   useEffect(() => {
     setPage(1)
     setBooks([])
@@ -88,6 +112,10 @@ export default function Home() {
   useEffect(() => {
     fetchBooks(page)
   }, [page, fetchBooks])
+
+  useEffect(() => {
+    fetchLibrary()
+  }, [fetchLibrary])
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -145,7 +173,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
           {books.map((book) => (
-            <BookCard key={book.id} book={book} />
+            <BookCard key={book.id} book={book} libraryBooks={libraryBooks} />
           ))}
 
           {loading &&
