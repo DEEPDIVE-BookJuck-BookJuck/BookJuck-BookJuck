@@ -68,17 +68,34 @@ export default function Header() {
           {/* 로고 */}
           <div className="flex items-center gap-2 text-xl font-bold">
             <BookOpen className="size-7 text-blue-500" />
-            <Link href="/">BookHub</Link>
+            <Link
+              href="/"
+              onClick={() => (location.href = '/')}
+            >
+              BookHub
+            </Link>
           </div>
 
           {/* 데스크탑용 네비게이션 */}
           <nav className="hidden md:hidden lg:flex flex-1 justify-center gap-6 text-sm font-medium">
             {navItems.map(({ href, label, icon: Icon }) => {
-              const isActive = pathname === href
+              // const isActive = pathname === href
+              const isActive =
+                href === '/'
+                  ? pathname === '/'
+                  : pathname.startsWith(href)
+
+              const handleClick = () => {
+                if (href === '/' && pathname === '/') {
+                  location.href = '/'
+                }
+              }
+
               return (
                 <Link
                   key={href}
                   href={href}
+                  onClick={handleClick}
                   className={`flex items-center gap-4 px-3 py-2 rounded
                 ${
                   isActive

@@ -14,10 +14,6 @@ export async function fetchWithAuthOnServer<T = unknown>(
   const makeRequest = async (accessToken: string | undefined) => {
     const cookieHeader = `accessToken=${accessToken}; refreshToken=${currentRefreshToken}`
 
-    // console.log(
-    //   '🚀 ~ makeRequest ~ cookieHeaderrrrrrrrrrr:',
-    //   cookieHeader,
-    // )
     const headers = new Headers(options.headers || {})
     headers.set('Cookie', cookieHeader)
 
@@ -32,7 +28,6 @@ export async function fetchWithAuthOnServer<T = unknown>(
 
   if (res.status === 401) {
     try {
-      // console.log('토큰 갱신 시도...')
       const refreshRes = await fetch(
         `${API_URL_SERVER}/api/auth/refresh`,
         {
@@ -54,7 +49,6 @@ export async function fetchWithAuthOnServer<T = unknown>(
         const cookies = setCookieHeader
           .split(',')
           .map((cookie) => cookie.trim())
-        // console.log('🚀 ~ cookies:', cookies)
 
         for (const cookie of cookies) {
           if (cookie.startsWith('accessToken='))
@@ -63,8 +57,6 @@ export async function fetchWithAuthOnServer<T = unknown>(
             currentRefreshToken = cookie.split('=')[1].split(';')[0]
         }
       }
-
-      // console.log('새 액세스 토큰:', currentAccessToken)
 
       res = await makeRequest(currentAccessToken)
     } catch (error) {

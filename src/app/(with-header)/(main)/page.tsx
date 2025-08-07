@@ -2,26 +2,32 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Search } from 'lucide-react'
+import { useDebounce } from '@/hooks/use-debounce'
 import { BookType, RawBookItemType } from './_types'
 import BookCard from './_components/book-card'
 import BookCardSkeleton from './_components/skeleton/book-card-skeleton'
 import ListPageSkeleton from './_components/skeleton/list-page-skeleton'
+import { fetchWithAuth } from '@/lib/fetch-with-auth'
 
 // 각각 다른 페이지당 개수
-const ITEMS_PER_PAGE_SEARCH = 5
+const ITEMS_PER_PAGE_SEARCH = 10
 const ITEMS_PER_PAGE_BESTSELLER = 10
 
 // 각각 다른 최대 페이지 수
-const MAX_SEARCH_PAGE = 10
+// const MAX_SEARCH_PAGE = 10
 const MAX_BESTSELLER_PAGE = 10
 
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value)
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay)
-    return () => clearTimeout(handler)
-  }, [value, delay])
-  return debouncedValue
+interface LibraryBook {
+  id: string
+  title: string
+  author: string
+  thumbnailUrl: string
+  review?: {
+    endDate?: string
+    memo?: string
+    rating?: number
+    tags?: string[]
+  }
 }
 
 export default function Home() {
@@ -30,81 +36,138 @@ export default function Home() {
   const isSearching = debouncedQuery.trim().length > 0
 
   const [books, setBooks] = useState<BookType[]>([])
+  const [libraryBooks, setLibraryBooks] = useState<LibraryBook[]>([])
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
 
   const loaderRef = useRef<HTMLDivElement | null>(null)
+  const allSearchResultsRef = useRef<BookType[]>([])
 
   const fetchBooks = useCallback(
     async (pageToLoad: number) => {
-      setLoading(true)
-      try {
-        const ITEMS_PER_PAGE = isSearching
-          ? ITEMS_PER_PAGE_SEARCH
-          : ITEMS_PER_PAGE_BESTSELLER
-        const baseUrl = isSearching
-          ? `/api/aladin-search?query=${encodeURIComponent(
+      // 검색 중일 때
+      if (isSearching) {
+        if (pageToLoad !== 1) return
+
+        setLoading(true)
+        try {
+          const res = await fetch(
+            `/api/aladin-search?query=${encodeURIComponent(
               debouncedQuery,
-            )}&page=${pageToLoad}&count=${ITEMS_PER_PAGE}`
-          : `/api/aladin-list?page=${pageToLoad}&count=${ITEMS_PER_PAGE}`
-
-        const res = await fetch(baseUrl)
-        const text = await res.text()
-        const data = JSON.parse(text)
-
-        const mapped: BookType[] = (data.item || []).map(
-          (item: RawBookItemType) => ({
-            id: item.itemId,
-            cover:
-              item.cover ||
-              'https://via.placeholder.com/96x144?text=No+Image',
-            title: item.title || '제목 없음',
-            author: item.author || '저자 미상',
-            isbn: item.isbn || '',
-          }),
-        )
-
-        setBooks((prev) => {
-          const existingIds = new Set(prev.map((b) => b.id))
-          const filteredNew = mapped.filter(
-            (book) => !existingIds.has(book.id),
+            )}&page=1&count=200`,
           )
-          return pageToLoad === 1
-            ? filteredNew
-            : [...prev, ...filteredNew]
-        })
+          const text = await res.text()
+          const data = JSON.parse(text)
 
-        const currentMaxPage = isSearching
-          ? MAX_SEARCH_PAGE
-          : MAX_BESTSELLER_PAGE
-        const hasMoreData =
-          data.item &&
-          data.item.length > 0 &&
-          pageToLoad < currentMaxPage
-        setHasMore(hasMoreData)
-      } catch (e) {
-        console.error('책 불러오기 실패:', e)
-        setHasMore(false)
-      } finally {
-        setLoading(false)
-        setInitialLoading(false)
+          const mapped: BookType[] = (data.item || []).map(
+            (item: RawBookItemType) => ({
+              id: item.itemId,
+              cover:
+                item.cover ||
+                'https://via.placeholder.com/96x144?text=No+Image',
+              title: item.title || '제목 없음',
+              author: item.author || '저자 미상',
+              isbn: item.isbn || '',
+            }),
+          )
+
+          allSearchResultsRef.current = mapped
+          setBooks(mapped.slice(0, ITEMS_PER_PAGE_SEARCH))
+          setHasMore(mapped.length > ITEMS_PER_PAGE_SEARCH)
+        } catch (e) {
+          console.error('검색 결과 불러오기 실패:', e)
+          setHasMore(false)
+        } finally {
+          setLoading(false)
+          setInitialLoading(false)
+        }
+      } else {
+        // 베스트셀러 모드
+        setLoading(true)
+        try {
+          const res = await fetch(
+            `/api/aladin-list?page=${pageToLoad}&count=${ITEMS_PER_PAGE_BESTSELLER}`,
+          )
+          const text = await res.text()
+          const data = JSON.parse(text)
+
+          const mapped: BookType[] = (data.item || []).map(
+            (item: RawBookItemType) => ({
+              id: item.itemId,
+              cover:
+                item.cover ||
+                'https://via.placeholder.com/96x144?text=No+Image',
+              title: item.title || '제목 없음',
+              author: item.author || '저자 미상',
+              isbn: item.isbn || '',
+            }),
+          )
+
+          setBooks((prev) => {
+            const existingIds = new Set(prev.map((b) => b.id))
+            const filteredNew = mapped.filter(
+              (book) => !existingIds.has(book.id),
+            )
+            return pageToLoad === 1
+              ? filteredNew
+              : [...prev, ...filteredNew]
+          })
+
+          const hasMoreData =
+            data.item &&
+            data.item.length > 0 &&
+            pageToLoad < MAX_BESTSELLER_PAGE
+          setHasMore(hasMoreData)
+        } catch (e) {
+          console.error('책 불러오기 실패:', e)
+          setHasMore(false)
+        } finally {
+          setLoading(false)
+          setInitialLoading(false)
+        }
       }
     },
     [debouncedQuery, isSearching],
   )
 
+  const fetchLibrary = useCallback(async () => {
+    try {
+      const cookies = document.cookie
+      const accessToken = cookies
+        .split('; ')
+        .find((row) => row.startsWith('accessToken='))
+        ?.split('=')[1]
+
+      if (!accessToken) return
+
+      const library = await fetchWithAuth<LibraryBook[]>(
+        '/api/library?offset=0&limit=100',
+        { auth: true },
+      )
+      setLibraryBooks(library)
+    } catch (error) {
+      console.error('내 서재 불러오기 실패:', error)
+    }
+  }, [])
+
+  // 검색어 변경 시 초기화
   useEffect(() => {
     setPage(1)
     setBooks([])
     setHasMore(true)
     setInitialLoading(true)
+    allSearchResultsRef.current = []
   }, [debouncedQuery])
 
   useEffect(() => {
     fetchBooks(page)
   }, [page, fetchBooks])
+
+  useEffect(() => {
+    fetchLibrary()
+  }, [fetchLibrary])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -126,6 +189,18 @@ export default function Home() {
       if (el) observer.unobserve(el)
     }
   }, [hasMore, loading])
+
+  // 검색 결과는 클라이언트에서 slice
+  useEffect(() => {
+    if (isSearching && page > 1) {
+      const next = allSearchResultsRef.current.slice(
+        0,
+        page * ITEMS_PER_PAGE_SEARCH,
+      )
+      setBooks(next)
+      setHasMore(next.length < allSearchResultsRef.current.length)
+    }
+  }, [page, isSearching])
 
   if (initialLoading) {
     return <ListPageSkeleton />
@@ -170,6 +245,7 @@ export default function Home() {
             <BookCard
               key={book.id}
               book={book}
+              libraryBooks={libraryBooks}
             />
           ))}
 
@@ -195,6 +271,27 @@ export default function Home() {
           {loading && <p>로딩 중...</p>}
         </div>
       </div>
+
+      {/* 아직 다 불러오지 않았을 때 */}
+      {isSearching &&
+        !loading &&
+        books.length > 0 &&
+        allSearchResultsRef.current.length > books.length && (
+          <p className="text-center mt-4 text-gray-500">
+            📚 아직 모든 책을 불러오지 않았습니다 아래로 스크롤해
+            주세요.
+          </p>
+        )}
+
+      {/* 모든 책을 다 불러왔을 때 */}
+      {isSearching &&
+        !loading &&
+        books.length > 0 &&
+        books.length === allSearchResultsRef.current.length && (
+          <p className="text-center mt-4 text-gray-500">
+            📚 모든 책을 불러왔습니다.
+          </p>
+        )}
     </main>
   )
 }

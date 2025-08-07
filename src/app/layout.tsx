@@ -2,6 +2,7 @@ import './globals.css'
 
 import { ReactNode } from 'react'
 import { Metadata } from 'next/types'
+import AutoLogoutProvider from '@/common/auto-logout-privider'
 
 export const metadata: Metadata = {
   title: 'BOOKJUCK-BOOKJUCK',
@@ -22,6 +23,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <AutoLogoutProvider />
         <main className="font-sans min-h-screen min-w-lg bg-gray-100 text-gray-900">
           {children}
         </main>
